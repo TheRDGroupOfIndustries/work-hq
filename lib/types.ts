@@ -10,8 +10,10 @@ export interface CustomUser extends NextAuthUser {
   password?: string;
   role: string;
   auth_integrated: string[];
+
   resetPasswordToken?: string;
   resetPasswordTokenExpiry?: Date;
+
   company_name?: string;
   organization_details?: string;
   position?: string;
@@ -19,8 +21,6 @@ export interface CustomUser extends NextAuthUser {
   department?: string;
   website?: string;
   address?: string;
-  bio?: string;
-  connections?: string[];
   preferred_communication?: string[];
 }
 

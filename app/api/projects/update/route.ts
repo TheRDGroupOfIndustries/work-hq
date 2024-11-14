@@ -11,16 +11,18 @@ export const PUT = async (request: NextRequest) => {
     manager,
     assigned_team,
     vendor,
-    ceo,
     start_date,
     end_date,
     status,
-    budget,
     technologies,
     milestones,
     files,
     progress,
     notes,
+    figma_link,
+    figma_iframe_link,
+    github_link,
+    deployed_link,
   } = await request.json();
 
   await connectToMongoDB();
@@ -35,7 +37,6 @@ export const PUT = async (request: NextRequest) => {
       });
     }
 
-    // const updatedFields: ProjectValues = {};
     const changedFields = [];
 
     if (existingProject.title !== title) {
@@ -62,10 +63,6 @@ export const PUT = async (request: NextRequest) => {
       existingProject.vendor = vendor;
       changedFields.push("vendor");
     }
-    if (existingProject.ceo !== ceo) {
-      existingProject.ceo = ceo;
-      changedFields.push("ceo");
-    }
     if (existingProject.start_date !== start_date) {
       existingProject.start_date = start_date;
       changedFields.push("start_date");
@@ -77,10 +74,6 @@ export const PUT = async (request: NextRequest) => {
     if (existingProject.status !== status) {
       existingProject.status = status;
       changedFields.push("status");
-    }
-    if (existingProject.budget !== budget) {
-      existingProject.budget = budget;
-      changedFields.push("budget");
     }
     if (existingProject.technologies !== technologies) {
       existingProject.technologies = technologies;
@@ -101,6 +94,22 @@ export const PUT = async (request: NextRequest) => {
     if (existingProject.notes !== notes) {
       existingProject.notes = notes;
       changedFields.push("notes");
+    }
+    if (existingProject.figma_link !== figma_link) {
+      existingProject.figma_link = figma_link;
+      changedFields.push("figma_link");
+    }
+    if (existingProject.figma_iframe_link !== figma_iframe_link) {
+      existingProject.figma_iframe_link = figma_iframe_link;
+      changedFields.push("figma_iframe_link");
+    }
+    if (existingProject.github_link !== github_link) {
+      existingProject.github_link = github_link;
+      changedFields.push("github_link");
+    }
+    if (existingProject.deployed_link !== deployed_link) {
+      existingProject.deployed_link = deployed_link;
+      changedFields.push("deployed_link");
     }
 
     const updatedProject = await existingProject.save();

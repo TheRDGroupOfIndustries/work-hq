@@ -17,15 +17,7 @@ interface CustomToken extends Record<string, unknown> {
 }
 
 interface CustomUserSession extends NextAuthSession {
-  user: {
-    _id: string;
-    first_name: string;
-    last_name: string;
-    profile_image: string;
-    email?: string;
-    phone_number?: string;
-    role: string;
-  };
+  user: CustomUser;
 }
 
 export const authOptions: NextAuthOptions = {
@@ -134,15 +126,7 @@ export const authOptions: NextAuthOptions = {
             (token as CustomToken).user?.phone_number,
         });
         if (dbUser) {
-          session.user = {
-            _id: dbUser._id,
-            first_name: dbUser.first_name,
-            last_name: dbUser.last_name,
-            profile_image: dbUser.profile_image,
-            email: dbUser.email,
-            phone_number: dbUser.phone_number,
-            role: dbUser.role,
-          } as CustomUser;
+          session.user = dbUser as CustomUser;
         }
       }
       return session as CustomUserSession;

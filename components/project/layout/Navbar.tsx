@@ -32,9 +32,6 @@ const Navbar = () => {
           <button className="flex items-center space-x-2 px-3 py-2 rounded">
             Project Dropdown
           </button>
-          {/* <div className="absolute top-0 right-0 -mt-1 -mr-1 bg-red-500 text-white w-5 h-5 flex-center rounded-full">
-            3
-            </div> */}
         </div>
         <Button>Add Project</Button>
       </div>

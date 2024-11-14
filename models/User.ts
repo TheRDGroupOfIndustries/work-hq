@@ -9,18 +9,18 @@ export interface UserDBTypes {
   password?: string;
   role: string;
   auth_integrated: string[];
+
   resetPasswordToken?: string;
   resetPasswordTokenExpiry?: Date;
-  company_name?: string;                 // For client and vendor organizations
-  organization_details?: string;         // Additional org. information for clients/vendors
-  position?: string;                     // Position in company, relevant for manager and CEO
-  projects?: Schema.Types.ObjectId[];    // Assigned projects for developer, manager, etc.
-  department?: string;                   // For team grouping, e.g., developers, managers
-  website?: string;                      // Optional, useful for vendor or clients
-  address?: string;                      // Contact address, useful for vendors or clients
-  bio?: string;                          // Brief bio or description, useful for CEO and manager
-  connections?: Schema.Types.ObjectId[]; // Relationship mapping, e.g., for client-vendor relations
-  preferred_communication?: string[];    // Preferred contact method, e.g., email, phone, etc.
+
+  company_name?: string;              // For client and vendor organizations
+  organization_details?: string;      // Additional org. information for clients/vendors
+  position?: string;                  // Position in company, relevant for manager and CEO
+  projects?: Schema.Types.ObjectId[]; // Assigned projects for developer, manager, etc.
+  department?: string;                // For team grouping, e.g., developers, managers
+  website?: string;                   // Optional, useful for vendor or clients
+  address?: string;                   // Contact address, useful for vendors or clients
+  preferred_communication?: string[]; // Preferred contact method, e.g., email, phone, etc.
 }
 
 const userSchema = new Schema<UserDBTypes>(
@@ -43,7 +43,7 @@ const userSchema = new Schema<UserDBTypes>(
     role: {
       type: String,
       required: true,
-      enum: ["client", "admin", "developer", "vendor", "manager", "ceo"],
+      enum: ["client", "vendor", "admin", "developer", "manager", "ceo"],
       default: "client",
     },
     auth_integrated: {
@@ -68,20 +68,21 @@ const userSchema = new Schema<UserDBTypes>(
     resetPasswordTokenExpiry: { type: Date, required: false },
 
     // Role-specific fields
-    company_name: { type: String, required: false },             // Client/vendor company
-    organization_details: { type: String, required: false },     // Additional org. information for clients/vendors
-    position: { type: String, required: false },                 // Manager/CEO position title
-    projects: [{ type: Schema.Types.ObjectId, ref: "Project" }], // Linked projects for roles
-    department: { type: String, required: false },               // Department info for managers/developers
-    website: { type: String, required: false },                  // Vendor/Client website URL
-    address: { type: String, required: false },                  // Contact address
-    bio: { type: String, required: false },                      // Bio for CEO/manager
-    connections: [{ type: Schema.Types.ObjectId, ref: "User" }], // Links to other users
+    department: { type: String, required: false },              // Department info for managers/developers
+    projects: [{ type: Schema.Types.ObjectId, ref: "Project" }],// Linked projects for roles
+
+    company_name: { type: String, required: false },            // Client/vendor company
+    organization_details: { type: String, required: false },    // Additional org. information for clients/vendors
+    position: { type: String, required: false },                // Manager/CEO position title
+    website: { type: String, required: false },                 // Vendor/Client website URL
+
+    address: { type: String, required: false },                 // Contact address - it can be a physical address or a google map link
+
     preferred_communication: {
       type: [
         {
           type: String,
-          enum: ["email", "phone", "zoom"],
+          enum: ["email", "phone", "meet"],
         },
       ],
       required: false,

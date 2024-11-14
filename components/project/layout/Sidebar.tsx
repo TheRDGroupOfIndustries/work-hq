@@ -4,8 +4,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
-import { Button } from "@/components/ui/button";
-// import { GiArmorUpgrade } from "react-icons/gi";
 import { HiOutlineLogout } from "react-icons/hi";
 import { CustomUser } from "@/lib/types";
 import { ProjectSectionValues } from "@/lib/sections/projectSections";
@@ -16,7 +14,7 @@ const Sidebar = ({ sections }: { sections: ProjectSectionValues[] }) => {
   const user = session?.user as CustomUser;
 
   return (
-    <aside className="w-fit md:w-60 max-w-lg h-full select-none flex-between flex-col p-2 md:p-4 bg-muted overflow-hidden">
+    <aside className="w-fit md:w-60 max-w-lg h-[calc(100vh-58px)] select-none flex-between flex-col p-2 md:p-4 bg-muted overflow-hidden">
       <div className="w-full grid justify-center md:justify-start">
         <div className="w-full h-fit space-y-2 mt-4 animate-slide-right">
           {sections.map((sec, index) => {
@@ -48,30 +46,24 @@ const Sidebar = ({ sections }: { sections: ProjectSectionValues[] }) => {
               alt="Profile Image"
               width="200"
               height="200"
-              className="w-10 h-10 rounded-full object-cover overflow-hidden"
+              className="w-9 h-9 rounded-full object-cover overflow-hidden"
             />
           </div>
           <div className="hidden md:block w-fit h-fit space-y-1">
-            <h4 className="line-clamp-1">
+            <h4 className="text-sm font-medium line-clamp-1">
               {user?.first_name + " " + user?.last_name ??
                 user?.name ??
                 "user name"}
             </h4>
             <h6 className="text-xs line-clamp-1">{user?.role}</h6>
           </div>
-        </div>
 
-        <div className="w-full flex flex-col md:flex-row gap-1">
-          {/* <Button className="w-full font-semibold p-0 md:px-4 md:py-2">
-            <GiArmorUpgrade
-              size={20}
-              className="md:hidden scale-105 md:scale-100 md:mr-1"
-            />
-            <span className="hidden md:inline">Upgrade to Pro</span>
-          </Button> */}
-          <Button title="Logout" onClick={() => signOut()} className="md:p-1">
-            <HiOutlineLogout size={20} />
-          </Button>
+          <HiOutlineLogout
+            onClick={() => signOut()}
+            size={20}
+            title="Logout"
+            className="cursor-pointer"
+          />
         </div>
       </div>
     </aside>

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import connectToMongoDB from "@/utils/db";
-import Project from "@/models/Project";
+import Project, { ProjectDBTypes } from "@/models/Project";
 
 export const POST = async (request: NextRequest) => {
   const {
@@ -10,17 +10,19 @@ export const POST = async (request: NextRequest) => {
     manager,
     assigned_team,
     vendor,
-    ceo,
     start_date,
     end_date,
     status,
-    budget,
     technologies,
     milestones,
     files,
     progress,
     notes,
-  } = await request.json();
+    figma_link,
+    figma_iframe_link,
+    github_link,
+    deployed_link,
+  }: ProjectDBTypes = await request.json();
 
   await connectToMongoDB();
 
@@ -32,16 +34,18 @@ export const POST = async (request: NextRequest) => {
       manager,
       assigned_team,
       vendor,
-      ceo,
       start_date,
       end_date,
       status,
-      budget,
       technologies,
       milestones,
       files,
       progress,
       notes,
+      figma_link,
+      figma_iframe_link,
+      github_link,
+      deployed_link,
     });
 
     const savedProject = await project.save();
