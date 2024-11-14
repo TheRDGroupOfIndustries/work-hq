@@ -2,31 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-* {
-  box-sizing: border-box;
-  scroll-behavior: smooth !important;
-  @apply scroll-smooth m-0 p-0;
-}
-
-::-webkit-scrollbar-thumb {
-  @apply rounded-full bg-zinc-500;
-}
-::-webkit-scrollbar {
-  @apply w-[2px] h-[2px];
-}
-.scroll-none::-webkit-scrollbar {
-  display: none;
-}
-
-.theme {
-  transition: 5s all ease;
-}
-
-body {
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -82,7 +57,6 @@ body {
     --chart-5: 340 75% 55%;
   }
 }
-
 @layer base {
   * {
     @apply border-border;
@@ -91,7 +65,6 @@ body {
     @apply bg-background text-foreground;
   }
 }
-
 @layer utilities {
   .flex-center {
     @apply flex justify-center items-center;
@@ -106,9 +79,6 @@ body {
     -webkit-text-fill-color: transparent;
     -webkit-text-stroke-width: 2px;
     /* -webkit-text-stroke-color: #000; */
-  }
-  .br {
-    @apply border border-[red];
   }
   .drop-shadow-lg-custom {
     --tw-drop-shadow: drop-shadow(0 10px 8px #00a2ff53)
@@ -126,4 +96,31 @@ body {
   .input-style {
     @apply w-full mt-2 p-2 bg-transparent border border-zinc-300 dark:border-zinc-800 rounded-md;
   }
+  .br {
+    @apply border border-[red];
+  }
+}
+
+* {
+  box-sizing: border-box;
+  scroll-behavior: smooth !important;
+  @apply scroll-smooth m-0 p-0;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply rounded-full bg-zinc-500;
+}
+::-webkit-scrollbar {
+  @apply w-[2px] h-[2px];
+}
+.scroll-none::-webkit-scrollbar {
+  display: none;
+}
+
+.theme {
+  transition: 5s all ease;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
 }

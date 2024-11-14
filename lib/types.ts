@@ -23,3 +23,30 @@ export interface CustomUser extends NextAuthUser {
   connections?: string[];
   preferred_communication?: string[];
 }
+
+// project types
+interface MilestoneValues {
+  _id: string;
+  title: string;
+  due_date: Date;
+  completed: boolean;
+}
+export interface ProjectValues {
+  _id: string;
+  title: string;
+  description: string;
+  client: string;
+  manager: string;
+  assigned_team: string[];
+  vendor?: string;
+  ceo?: string;
+  start_date: Date;
+  end_date?: Date;
+  status: string;
+  budget?: number;
+  technologies: string[];
+  milestones: MilestoneValues[];
+  files?: string[];
+  progress: number;
+  notes?: string[];
+}

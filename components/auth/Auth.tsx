@@ -26,14 +26,16 @@ const Auth: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <div className="w-full h-screen select-none flex-center flex-col">
       <div className="w-96 h-fit animate-slide-up p-6 rounded-lg border border-zinc-300 dark:border-zinc-800/50 border-opacity-30 shadow-md dark:shadow-muted hover:shadow-lg ease-in-out duration-300 overflow-hidden">
-        <h1 className="text-2xl font-bold text-center mb-4">
-          {isLogin
-            ? "Log In"
-            : isRegister
-            ? "Sign Up"
-            : isForgetPassword
-            ? "Forget Password"
-            : "Reset Password"}
+        <h1 className="text-2xl font-bold text-center mb-4 py-1 overflow-hidden">
+          {isLogin ? (
+            <span className="animate-slide-up">Log in</span>
+          ) : isRegister ? (
+            <span className="animate-slide-down">Sign Up</span>
+          ) : isForgetPassword ? (
+            <span className="animate-slide-down">Forget Password</span>
+          ) : (
+            <span className="animate-slide-down">Reset Password</span>
+          )}
         </h1>
 
         {children}
@@ -68,13 +70,13 @@ const Auth: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           </Link>
         </div>
         {oAuth && (
-          <div className="w-full flex-center flex-col gap-2 mt-4">
+          <div className="w-full flex-center flex-col gap-2 mt-4 animate-fade-in">
             <div className="flex-center gap-1">
               <span className="w-36 h-[1px] bg-[#8b8d93]"></span>
               <span className="text-[#8b8d93] font-semibold">OR</span>
               <span className="w-36 h-[1px] bg-[#8b8d93]"></span>
             </div>
-            <div className="w-full flex-between gap-2 px-10">
+            <div className="w-full flex-between gap-2 px-10 animate-slide-up">
               <Button
                 onClick={() => signIn("google")}
                 disabled={status === "loading"}
@@ -82,7 +84,7 @@ const Auth: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                 size="icon"
                 className="text-md"
               >
-                <FcGoogle />
+                <FcGoogle size={20} />
                 {/* {status === "loading" ? "Loading..." : "Login"} */}
               </Button>
               <Button
@@ -92,7 +94,7 @@ const Auth: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                 size="icon"
                 className="text-md"
               >
-                <FaGithub />
+                <FaGithub size={20} />
                 {/* {status === "loading" ? "Loading..." : "Login"} */}
               </Button>
               <Button
@@ -102,7 +104,7 @@ const Auth: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                 size="icon"
                 className="text-md"
               >
-                <FaLinkedin />
+                <FaLinkedin size={20} />
                 {/* {status === "loading" ? "Loading..." : "Login"} */}
               </Button>
             </div>

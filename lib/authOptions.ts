@@ -59,15 +59,15 @@ export const authOptions: NextAuthOptions = {
 
         try {
           const user = await User.findOne(
-            credentials.email
+            credentials?.email
               ? { email: credentials.email }
               : { phone_number: credentials.phone_number }
           );
           if (!user) throw new Error("User isn't registered!");
 
           const isPasswordCorrect = await bcrypt.compare(
-            credentials.password,
-            user.password
+            credentials?.password,
+            user?.password
           );
           if (isPasswordCorrect) {
             return user as NextAuthUser & UserDBTypes;
@@ -94,6 +94,8 @@ export const authOptions: NextAuthOptions = {
           const userExists = await User.findOne({ email: user?.email });
 
           if (userExists) {
+            userExists.profile_image = user?.image;
+            await userExists.save();
             if (userExists.auth_integrated.includes(account.provider)) {
               return userExists;
             }

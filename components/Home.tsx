@@ -2,10 +2,10 @@
 
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
 import { CustomUser } from "@/lib/types";
-// import { FcGoogle } from "react-icons/fc";
+import { Button } from "@/components/ui/button";
 
 export default function Home() {
   const { data: session, status } = useSession();
@@ -19,7 +19,7 @@ export default function Home() {
     <main className="w-full h-screen relative select-none flex-center flex-col gap-4 overflow-hidden">
       <div className="absolute top-2 left-2 flex-center gap-1 animate-slide-down">
         <div className="text-xl md:text-2xl lg:text-3xl font-semibold">
-          <span className="text-primary-green">Work</span>
+          <span className="text-primary">Work</span>
         </div>
         <Image
           src="/logo.png"
@@ -53,11 +53,14 @@ export default function Home() {
                   <h6 className="text-xs line-clamp-1">{user?.role}</h6>
                 </div>
               </div>
-              {/* <Link href="/admin/dashboard" className="mt-4 animate-slide-up">
+              <Link
+                href="/project-id/dashboard"
+                className="mt-4 animate-slide-up"
+              >
                 <Button type="button" size="lg" variant="outline">
                   Dashborad
                 </Button>
-              </Link> */}
+              </Link>
             </div>
           )}
           <Button

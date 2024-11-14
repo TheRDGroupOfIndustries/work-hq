@@ -36,7 +36,7 @@ export default function ThemeToggle() {
   }, []);
 
   const getNextTheme = () => {
-    // console.log("click theme",theme);
+    console.log("click theme", theme);
     if (theme === "light") return "dark";
     if (theme === "dark") return "system";
     return "light";

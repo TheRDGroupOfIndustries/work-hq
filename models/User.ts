@@ -11,16 +11,16 @@ export interface UserDBTypes {
   auth_integrated: string[];
   resetPasswordToken?: string;
   resetPasswordTokenExpiry?: Date;
-  company_name?: string;               // For client and vendor organizations
-  organization_details?: string;       // Additional org. information for clients/vendors
-  position?: string;                   // Position in company, relevant for manager and CEO
-  projects?: string[];                 // Assigned projects for developer, manager, etc.
-  department?: string;                 // For team grouping, e.g., developers, managers
-  website?: string;                    // Optional, useful for vendor or clients
-  address?: string;                    // Contact address, useful for vendors or clients
-  bio?: string;                        // Brief bio or description, useful for CEO and manager
-  connections?: string[];              // Relationship mapping, e.g., for client-vendor relations
-  preferred_communication?: string[];  // Preferred contact method, e.g., email, phone, etc.
+  company_name?: string;                 // For client and vendor organizations
+  organization_details?: string;         // Additional org. information for clients/vendors
+  position?: string;                     // Position in company, relevant for manager and CEO
+  projects?: Schema.Types.ObjectId[];    // Assigned projects for developer, manager, etc.
+  department?: string;                   // For team grouping, e.g., developers, managers
+  website?: string;                      // Optional, useful for vendor or clients
+  address?: string;                      // Contact address, useful for vendors or clients
+  bio?: string;                          // Brief bio or description, useful for CEO and manager
+  connections?: Schema.Types.ObjectId[]; // Relationship mapping, e.g., for client-vendor relations
+  preferred_communication?: string[];    // Preferred contact method, e.g., email, phone, etc.
 }
 
 const userSchema = new Schema<UserDBTypes>(
