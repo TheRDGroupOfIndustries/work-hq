@@ -1,6 +1,6 @@
 import { Schema, model, models } from "mongoose";
 
-export interface UserDBTypes {
+export interface UserDBTypes extends Document {
   first_name: string;
   last_name: string;
   profile_image: string;
@@ -9,6 +9,8 @@ export interface UserDBTypes {
   password?: string;
   role: string;
   auth_integrated: string[];
+  
+  projects?: { _id: Schema.Types.ObjectId, title: string }[]; // Assigned projects for developer, manager, etc.
 
   resetPasswordToken?: string;
   resetPasswordTokenExpiry?: Date;
@@ -16,7 +18,6 @@ export interface UserDBTypes {
   company_name?: string;              // For client and vendor organizations
   organization_details?: string;      // Additional org. information for clients/vendors
   position?: string;                  // Position in company, relevant for manager and CEO
-  projects?: Schema.Types.ObjectId[]; // Assigned projects for developer, manager, etc.
   department?: string;                // For team grouping, e.g., developers, managers
   website?: string;                   // Optional, useful for vendor or clients
   address?: string;                   // Contact address, useful for vendors or clients
@@ -63,13 +64,17 @@ const userSchema = new Schema<UserDBTypes>(
       default: ["email-password"],
     },
 
+    projects: [{
+      _id: { type: Schema.Types.ObjectId, ref: "Project" },
+      title: { type: String, required: false },
+    },],                                                        // Linked projects for roles
+
     // Password reset fields
     resetPasswordToken: { type: String, trim: true, required: false },
     resetPasswordTokenExpiry: { type: Date, required: false },
 
     // Role-specific fields
     department: { type: String, required: false },              // Department info for managers/developers
-    projects: [{ type: Schema.Types.ObjectId, ref: "Project" }],// Linked projects for roles
 
     company_name: { type: String, required: false },            // Client/vendor company
     organization_details: { type: String, required: false },    // Additional org. information for clients/vendors

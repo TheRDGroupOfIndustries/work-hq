@@ -1,27 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
 import connectToMongoDB from "@/utils/db";
 import Project, { ProjectDBTypes } from "@/models/Project";
+import User from "@/models/User";
 
 export const POST = async (request: NextRequest) => {
   const {
     title,
     description,
-    client,
-    manager,
-    assigned_team,
-    vendor,
+    logo,
     start_date,
     end_date,
-    status,
     technologies,
     milestones,
     files,
-    progress,
+    project_ref,
     notes,
-    figma_link,
-    figma_iframe_link,
-    github_link,
-    deployed_link,
+    progress = 0,
+    status = "pending",
+    client,
+    vendor,
   }: ProjectDBTypes = await request.json();
 
   await connectToMongoDB();
@@ -30,25 +27,35 @@ export const POST = async (request: NextRequest) => {
     const project = new Project({
       title,
       description,
-      client,
-      manager,
-      assigned_team,
-      vendor,
+      logo,
       start_date,
       end_date,
-      status,
       technologies,
       milestones,
       files,
-      progress,
+      project_ref,
       notes,
-      figma_link,
-      figma_iframe_link,
-      github_link,
-      deployed_link,
+      status,
+      progress,
+      client,
+      vendor,
     });
 
     const savedProject = await project.save();
+
+    if (!savedProject) {
+      return NextResponse.json({
+        status: 400,
+        success: false,
+        error: "Failed to create project!",
+      });
+    }
+
+    await User.findOneAndUpdate(client ? { _id: client } : { _id: vendor }, {
+      $push: {
+        projects: { _id: savedProject._id, title: savedProject.title },
+      },
+    });
 
     return NextResponse.json({
       status: 200,

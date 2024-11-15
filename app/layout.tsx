@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { getServerSession } from "next-auth";
 import localFont from "next/font/local";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
-import AuthProvider from "@/context/SessionProvider";
+import AuthSessionProvider from "@/context/SessionProvider";
 import { Toaster } from "@/components/ui/sonner";
 // import connectToMongoDB from "@/utils/db";
 import ThemeToggle from "@/components/ui/ThemeToggle";
@@ -36,7 +36,7 @@ export default async function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <AuthProvider session={session}>
+        <AuthSessionProvider session={session}>
           <NextThemesProvider
             attribute="class"
             defaultTheme="light"
@@ -46,7 +46,7 @@ export default async function RootLayout({
             <ThemeToggle />
             <Toaster />
           </NextThemesProvider>
-        </AuthProvider>
+        </AuthSessionProvider>
       </body>
     </html>
   );

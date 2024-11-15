@@ -47,27 +47,36 @@ export const PUT = async (request: NextRequest) => {
       existingProject.description = description;
       changedFields.push("description");
     }
-    if (existingProject.client !== client) {
+    if (existingProject.client.toString() !== client) {
       existingProject.client = client;
       changedFields.push("client");
     }
-    if (existingProject.manager !== manager) {
+    if (existingProject.manager.toString() !== manager) {
       existingProject.manager = manager;
       changedFields.push("manager");
     }
-    if (existingProject.assigned_team !== assigned_team) {
+    if (
+      JSON.stringify(existingProject.assigned_team) !==
+      JSON.stringify(assigned_team)
+    ) {
       existingProject.assigned_team = assigned_team;
       changedFields.push("assigned_team");
     }
-    if (existingProject.vendor !== vendor) {
+    if (existingProject.vendor?.toString() !== vendor) {
       existingProject.vendor = vendor;
       changedFields.push("vendor");
     }
-    if (existingProject.start_date !== start_date) {
+    if (
+      existingProject.start_date.toISOString() !==
+      new Date(start_date).toISOString()
+    ) {
       existingProject.start_date = start_date;
       changedFields.push("start_date");
     }
-    if (existingProject.end_date !== end_date) {
+    if (
+      existingProject.end_date?.toISOString() !==
+      new Date(end_date).toISOString()
+    ) {
       existingProject.end_date = end_date;
       changedFields.push("end_date");
     }
@@ -75,15 +84,20 @@ export const PUT = async (request: NextRequest) => {
       existingProject.status = status;
       changedFields.push("status");
     }
-    if (existingProject.technologies !== technologies) {
+    if (
+      JSON.stringify(existingProject.technologies) !==
+      JSON.stringify(technologies)
+    ) {
       existingProject.technologies = technologies;
       changedFields.push("technologies");
     }
-    if (existingProject.milestones !== milestones) {
+    if (
+      JSON.stringify(existingProject.milestones) !== JSON.stringify(milestones)
+    ) {
       existingProject.milestones = milestones;
       changedFields.push("milestones");
     }
-    if (existingProject.files !== files) {
+    if (JSON.stringify(existingProject.files) !== JSON.stringify(files)) {
       existingProject.files = files;
       changedFields.push("files");
     }
@@ -91,7 +105,7 @@ export const PUT = async (request: NextRequest) => {
       existingProject.progress = progress;
       changedFields.push("progress");
     }
-    if (existingProject.notes !== notes) {
+    if (JSON.stringify(existingProject.notes) !== JSON.stringify(notes)) {
       existingProject.notes = notes;
       changedFields.push("notes");
     }

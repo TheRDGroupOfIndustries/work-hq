@@ -11,7 +11,6 @@ import bcrypt from "bcryptjs";
 import connectToMongoDB from "@/utils/db";
 import User, { UserDBTypes } from "@/models/User";
 import { CustomUser } from "./types";
-
 interface CustomToken extends Record<string, unknown> {
   user?: CustomUser;
 }
@@ -120,11 +119,14 @@ export const authOptions: NextAuthOptions = {
     },
     async session({ session, token }) {
       if (token.user) {
-        const dbUser = await User.findOne({
-          email:
-            (token as CustomToken).user?.email ||
-            (token as CustomToken).user?.phone_number,
-        });
+        await connectToMongoDB();
+
+        const dbUser = await User.findOne(
+          (token as CustomToken).user?.email
+            ? { email: (token as CustomToken).user?.email }
+            : { phone_number: (token as CustomToken).user?.phone_number }
+        );
+
         if (dbUser) {
           session.user = dbUser as CustomUser;
         }

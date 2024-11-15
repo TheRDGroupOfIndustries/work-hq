@@ -22,7 +22,7 @@ const Sidebar = ({ sections }: { sections: ProjectSectionValues[] }) => {
             return (
               <Link
                 key={index}
-                href={`/project-id/${sec.id}`}
+                href={`/project/${sec.id}`}
                 className={`flex items-center gap-3 px-2 py-2 text-md font-medium transition-colors hover:text-primary group ${
                   isActive
                     ? "text-primary fill-primary underline underline-offset-8"
@@ -39,23 +39,27 @@ const Sidebar = ({ sections }: { sections: ProjectSectionValues[] }) => {
         </div>
       </div>
       <div className="w-full space-y-4 animate-slide-up">
-        <div className="flex items-center gap-2 md:bg-green-500/15 backdrop-blur-sm rounded-xl md:shadow md:p-2">
-          <div className="w-10 h-10 rounded-full overflow-hidden">
-            <Image
-              src={user?.profile_image ?? "/assets/user.png"}
-              alt="Profile Image"
-              width="200"
-              height="200"
-              className="w-9 h-9 rounded-full object-cover overflow-hidden"
-            />
-          </div>
-          <div className="hidden md:block w-fit h-fit space-y-1">
-            <h4 className="text-sm font-medium line-clamp-1">
-              {user?.first_name + " " + user?.last_name ??
-                user?.name ??
-                "user name"}
-            </h4>
-            <h6 className="text-xs line-clamp-1">{user?.role}</h6>
+        <div className="flex-between gap-2 md:bg-green-500/15 backdrop-blur-sm rounded-xl md:shadow md:p-2">
+          <div className="flex items-center gap-2">
+            <div className="w-10 h-10 rounded-full overflow-hidden">
+              <Image
+                src={user?.profile_image || "/assets/user.png"}
+                alt="Profile Image"
+                width="200"
+                height="200"
+                className="w-9 h-9 rounded-full object-cover overflow-hidden"
+              />
+            </div>
+            <div className="hidden md:block w-fit h-fit space-y-1">
+              <h4 className="text-sm font-medium line-clamp-1">
+                {(user.first_name as string) +
+                  " " +
+                  (user.last_name as string) ||
+                  user?.name ||
+                  "user name"}
+              </h4>
+              <h6 className="text-xs line-clamp-1">{user?.role}</h6>
+            </div>
           </div>
 
           <HiOutlineLogout

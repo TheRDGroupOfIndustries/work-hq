@@ -15,6 +15,7 @@ import {
 } from "stream-chat-react";
 import { CustomUser } from "@/lib/types";
 import "stream-chat-react/dist/css/v2/index.css";
+import { useProjectContext } from "@/context/ProjectProvider";
 
 const apiKey = process.env.NEXT_PUBLIC_STREAM_API_KEY as string;
 const chatClient = StreamChat.getInstance(apiKey);
@@ -22,39 +23,51 @@ const chatClient = StreamChat.getInstance(apiKey);
 const Chats = () => {
   const { data: session } = useSession();
   const user = session?.user as CustomUser;
-
+  const { selectedProject } = useProjectContext();
+  // console.log("selectedProject : ", selectedProject);
   const { theme } = useTheme();
 
   const [clientReady, setClientReady] = useState(false);
   const [channel, setChannel] = useState<StreamChannel | undefined>(undefined);
 
   useEffect(() => {
-    // Fetch user token from API
     const initChat = async () => {
-      if (!user?._id) {
-        console.error("User ID is missing");
+      if (!user?._id || !selectedProject._id) {
+        console.error("User ID or Project ID is missing");
         return;
       }
 
-      const response = await fetch("/api/chat-auth", {
+      const response = await fetch("/api/projects/chat-auth", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: user._id }),
+        body: JSON.stringify({
+          userId: user._id,
+          projectId: selectedProject._id,
+          projectTitle: selectedProject.title,
+        }),
       });
-      const { token } = await response.json();
-      // console.log(token);
+      const data = await response.json();
+
+      if (!data.success) {
+        console.error(data.error);
+        return;
+      }
+      // console.log(data);
 
       // connecting user to Stream Chat
       await chatClient.connectUser(
         {
           id: user._id,
-          name: user.first_name ?? "",
-          image: user.profile_image ?? "/assets/user.png",
+          name: user.first_name || "user name",
+          image: user.profile_image || "/assets/user.png",
         },
-        token
+        data.token
       );
 
-      const channel = chatClient.channel("messaging", "project-id");
+      const channel = chatClient.channel(
+        "messaging",
+        selectedProject?._id || "project-id"
+      );
 
       await channel.watch();
       setChannel(channel);
@@ -66,7 +79,13 @@ const Chats = () => {
     return () => {
       chatClient.disconnectUser();
     };
-  }, [user?._id, user?.first_name, user?.profile_image]);
+  }, [
+    user?._id,
+    user?.first_name,
+    user?.profile_image,
+    selectedProject._id,
+    selectedProject.title,
+  ]);
 
   if (!clientReady) return <div>Loading chat...</div>;
 

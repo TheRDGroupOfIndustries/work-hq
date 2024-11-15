@@ -5,7 +5,7 @@ import { projectSections } from "@/lib/sections/projectSections";
 export default function ProjectSectionPage({
   params,
 }: {
-  params: { project_id: string; section: string };
+  params: { section: string };
 }) {
   return Array.isArray(projectSections)
     ? projectSections.map(

@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/button";
 export default function Home() {
   const { data: session, status } = useSession();
   const user = session?.user as CustomUser;
-  // console.log(user);
   const router = useRouter();
 
   if (status === "unauthenticated") router.replace("/auth/sign-in");
@@ -53,14 +52,22 @@ export default function Home() {
                   <h6 className="text-xs line-clamp-1">{user?.role}</h6>
                 </div>
               </div>
-              <Link
-                href="/project-id/dashboard"
-                className="mt-4 animate-slide-up"
-              >
-                <Button type="button" size="lg" variant="outline">
-                  Dashborad
-                </Button>
-              </Link>
+              {user?.projects?.length && user?.projects?.length > 0 ? (
+                <Link
+                  href="/project/dashboard"
+                  className="mt-4 animate-slide-up"
+                >
+                  <Button type="button" size="lg" variant="outline">
+                    Dashborad
+                  </Button>
+                </Link>
+              ) : (
+                <Link href="/add-project" className="mt-4 animate-slide-up">
+                  <Button type="button" size="lg" variant="outline">
+                    Add Project
+                  </Button>
+                </Link>
+              )}
             </div>
           )}
           <Button

@@ -10,6 +10,7 @@ export interface CustomUser extends NextAuthUser {
   password?: string;
   role: string;
   auth_integrated: string[];
+  projects?: { _id: string; title: string }[];
 
   resetPasswordToken?: string;
   resetPasswordTokenExpiry?: Date;
@@ -17,7 +18,7 @@ export interface CustomUser extends NextAuthUser {
   company_name?: string;
   organization_details?: string;
   position?: string;
-  projects?: string[];
+
   department?: string;
   website?: string;
   address?: string;
@@ -29,24 +30,29 @@ interface MilestoneValues {
   _id: string;
   title: string;
   due_date: Date;
-  completed: boolean;
+  budget?: number;
+  completed?: boolean;
 }
 export interface ProjectValues {
   _id: string;
   title: string;
   description: string;
-  client: string;
-  manager: string;
-  assigned_team: string[];
-  vendor?: string;
-  ceo?: string;
-  start_date: Date;
+  logo?: string;
+  start_date?: Date;
   end_date?: Date;
   status: string;
-  budget?: number;
-  technologies: string[];
-  milestones: MilestoneValues[];
+  technologies?: string[];
+  milestones?: MilestoneValues[];
   files?: string[];
-  progress: number;
+  project_ref?: string[];
   notes?: string[];
+  client?: string;
+  vendor?: string;
+  manager?: string;
+  assigned_team?: string[];
+  figma_link?: string;
+  figma_iframe_link?: string;
+  github_link?: string;
+  deployed_link?: string;
+  progress: number;
 }

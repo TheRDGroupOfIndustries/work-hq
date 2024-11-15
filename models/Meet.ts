@@ -5,6 +5,7 @@ export interface MeetDBTypes {
   project_title: string;
   members: Schema.Types.ObjectId[]; // Array of User IDs can be involved in the meeting
   meetings: {
+    _id: Schema.Types.ObjectId;
     title: string;
     link: string;
     date: Date;
@@ -20,6 +21,7 @@ const meetSchema = new Schema<MeetDBTypes>(
     members: [{ type: Schema.Types.ObjectId, ref: "User", required: true }],
     meetings: [
       {
+        _id: { type: Schema.Types.ObjectId, required: true },
         title: { type: String, required: true },
         link: { type: String, required: true },
         date: { type: Date, required: true },
