@@ -52,7 +52,7 @@ export default function ThemeToggle() {
   return (
     <>
       <div className="relative z-50">
-        <div className="animate-slide-up grid gap-2 fixed bottom-2 right-2 bg-transparent p-2">
+        <div className="animate-slide-up grid gap-2 fixed bottom-20 left-2 bg-transparent p-2">
           {isVisible && (
             <Button
               type="button"

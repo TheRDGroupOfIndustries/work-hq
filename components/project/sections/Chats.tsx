@@ -1,19 +1,19 @@
 "use client";
 
-import { CustomUser } from "@/lib/types";
 import { useSession } from "next-auth/react";
-import { useTheme } from "next-themes";
 import React, { useEffect, useState } from "react";
+import { useTheme } from "next-themes";
 import { Channel as StreamChannel, StreamChat } from "stream-chat";
 import {
   Chat,
   Channel,
+  Window,
   ChannelHeader,
   MessageList,
   MessageInput,
-  Window,
   // ChannelList,
 } from "stream-chat-react";
+import { CustomUser } from "@/lib/types";
 import "stream-chat-react/dist/css/v2/index.css";
 
 const apiKey = process.env.NEXT_PUBLIC_STREAM_API_KEY as string;
@@ -54,9 +54,9 @@ const Chats = () => {
         token
       );
 
-      const channel = chatClient.channel("messaging", "general", {
-        name: "General Chat",
-      });
+      const channel = chatClient.channel("messaging", "project-id");
+
+      await channel.watch();
       setChannel(channel);
       setClientReady(true);
     };
@@ -66,7 +66,7 @@ const Chats = () => {
     return () => {
       chatClient.disconnectUser();
     };
-  }, [user._id, user.first_name, user.profile_image]);
+  }, [user?._id, user?.first_name, user?.profile_image]);
 
   if (!clientReady) return <div>Loading chat...</div>;
 
@@ -75,11 +75,15 @@ const Chats = () => {
   // const sort = { last_message_at: -1 as const };
 
   return (
-    <div className="w-full h-[calc(100vh-58px)]">
-      <Chat
-        theme={`messaging ${theme === "dark" ? "dark" : "light"}`}
-        client={chatClient}
-      >
+    <Chat
+      theme={`${
+        theme === "dark" || theme === "system"
+          ? "str-chat__theme-dark"
+          : "str-chat__theme-light"
+      }`}
+      client={chatClient}
+    >
+      <div className="flex w-full h-full">
         {/* <ChannelList sort={sort} filters={filters} options={options} /> */}
         <Channel channel={channel}>
           <Window>
@@ -88,8 +92,8 @@ const Chats = () => {
             <MessageInput />
           </Window>
         </Channel>
-      </Chat>
-    </div>
+      </div>
+    </Chat>
   );
 };
 

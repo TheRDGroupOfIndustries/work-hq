@@ -8,7 +8,9 @@ const ProjectLayout = ({ children }: { children: React.ReactNode }) => {
       <Navbar />
       <div className="w-full h-full flex">
         <Sidebar sections={projectSections} />
-        <div className="w-full h-full p-2 overflow-hidden">{children}</div>
+        <div className="w-full h-[calc(100vh-58px)] overflow-x-hidden overflow-y-scroll">
+          {children}
+        </div>
       </div>
     </section>
   );

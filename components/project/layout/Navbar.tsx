@@ -27,15 +27,14 @@ const Navbar = () => {
             className="w-8 h-8 overflow-hidden"
           />
         </Link>
-
-        <div className="relative">
+        <div className="relative animate-slide-down">
           <button className="flex items-center space-x-2 px-3 py-2 rounded">
             Project Dropdown
           </button>
         </div>
-        <Button>Add Project</Button>
+        <Button className="animate-slide-down">Add Project</Button>
       </div>
-      <div className="flex-center gap-4">
+      <div className="flex-center gap-4 animate-slide-down">
         <input
           type="text"
           placeholder="Search"
