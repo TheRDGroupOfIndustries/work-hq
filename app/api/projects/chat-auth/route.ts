@@ -2,8 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { StreamChat } from "stream-chat";
 import connectToMongoDB from "@/utils/db";
 import User from "@/models/User";
-// import Project from "@/models/Project";
-// import Chat from "@/models/Chat";
+import Project from "@/models/Project";
 
 const api_key = process.env.STREAM_API_KEY! ?? "";
 const api_secret = process.env.STREAM_API_SECRET! ?? "";
@@ -16,22 +15,14 @@ export const POST = async (request: NextRequest) => {
   try {
     await connectToMongoDB();
 
-    // uncomment this to fetch chat records from db when projectId is provided
-    // const chat = await Chat.findById({ project: projectId });
-    // if (!chat) {
-    //   return new NextResponse("Chat doesn't exist!", {
-    //     status: 404,
-    //   });
-    // }
-
-    // const project = await Project.findById({ _id: projectId });
-    // if (!project) {
-    //   return NextResponse.json({
-    //     status: 404,
-    //     success: false,
-    //     error: "Project doesn't exist!",
-    //   });
-    // }
+    const project = await Project.findById({ _id: projectId });
+    if (!project) {
+      return NextResponse.json({
+        status: 404,
+        success: false,
+        error: "Project doesn't exist!",
+      });
+    }
 
     const user = await User.findById({ _id: userId });
     if (!user) {
@@ -41,6 +32,21 @@ export const POST = async (request: NextRequest) => {
         error: "User doesn't exist!",
       });
     }
+
+    // --- comment out and replace below code to allow only thoes members to access the chat who are involed ---
+
+    // // fetching the CEO's user _id
+    // const ceo = await User.findOne({ role: "ceo" });
+
+    // // creating membersArray with CEO, manager, client or vendor, and assigned team members
+    // const projectDetails = await Project.findById({_id: projectId}).populate("manager client vendor assigned_team");
+    // const membersArray = [
+    //   ceo._id.toString(),
+    //   projectDetails.manager?.toString(),
+    //   projectDetails.client?.toString(),
+    //   projectDetails.vendor?.toString(),
+    //   ...projectDetails.assigned_team.map(teamMember => teamMember.toString())
+    // ].filter(Boolean); // filtering out any null or undefined values
 
     const members = await User.find();
 
@@ -73,7 +79,8 @@ export const POST = async (request: NextRequest) => {
       projectId || "project-id",
       {
         name: projectTitle || "Project Title",
-        members: [...memberIds], // replace with chat.members
+        members: [...memberIds],
+        // members: [...membersArray], // uncomment and replace to all only projects members
         created_by: { id: user._id.toString() },
       }
     );
