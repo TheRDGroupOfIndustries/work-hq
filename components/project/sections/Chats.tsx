@@ -1,7 +1,7 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useTheme } from "next-themes";
 import { Channel as StreamChannel, StreamChat } from "stream-chat";
 import {
@@ -11,7 +11,6 @@ import {
   ChannelHeader,
   MessageList,
   MessageInput,
-  // ChannelList,
 } from "stream-chat-react";
 import { CustomUser } from "@/lib/types";
 import "stream-chat-react/dist/css/v2/index.css";
@@ -24,14 +23,15 @@ const Chats = () => {
   const { data: session } = useSession();
   const user = session?.user as CustomUser;
   const { selectedProject } = useProjectContext();
-  // console.log("selectedProject : ", selectedProject);
   const { theme } = useTheme();
 
   const [clientReady, setClientReady] = useState(false);
   const [channel, setChannel] = useState<StreamChannel | undefined>(undefined);
+  const [clientConnected, setClientConnected] = useState(false);
+  const [reconnecting, setReconnecting] = useState(false);
 
-  useEffect(() => {
-    const initChat = async () => {
+  const initChat = useCallback(async () => {
+    try {
       if (!user?._id || !selectedProject._id) {
         console.error("User ID or Project ID is missing");
         return;
@@ -46,52 +46,87 @@ const Chats = () => {
           projectTitle: selectedProject.title,
         }),
       });
-      const data = await response.json();
 
+      const data = await response.json();
       if (!data.success) {
         console.error(data.error);
         return;
       }
-      // console.log(data);
 
-      // connecting user to Stream Chat
-      await chatClient.connectUser(
-        {
-          id: user._id,
-          name: user.first_name || "user name",
-          image: user.profile_image || "/assets/user.png",
-        },
-        data.token
-      );
+      // connecting user if not already connected
+      if (!chatClient?.userID) {
+        await chatClient.connectUser(
+          {
+            id: user._id,
+            name: user.first_name || "User Name",
+            image: user.profile_image || "/assets/user.png",
+          },
+          data.token
+        );
+        setClientConnected(true);
+      }
 
-      const channel = chatClient.channel(
+      const newChannel = chatClient.channel(
         "messaging",
-        selectedProject?._id || "project-id"
+        selectedProject._id || "project-id"
       );
-
-      await channel.watch();
-      setChannel(channel);
+      await newChannel.watch();
+      setChannel(newChannel);
       setClientReady(true);
-    };
-
-    initChat();
-
-    return () => {
-      chatClient.disconnectUser();
-    };
+    } catch (error) {
+      console.error("Error initializing chat:", error);
+    }
   }, [
-    user?._id,
-    user?.first_name,
-    user?.profile_image,
+    user._id,
+    user.first_name,
+    user.profile_image,
     selectedProject._id,
     selectedProject.title,
   ]);
 
-  if (!clientReady) return <div>Loading chat...</div>;
+  useEffect(() => {
+    initChat();
 
-  // const filters = { members: { $in: [user?._id] }, type: "messaging" };
-  // const options = { presence: true, state: true };
-  // const sort = { last_message_at: -1 as const };
+    return () => {
+      chatClient.disconnectUser();
+      setClientConnected(false);
+      setClientReady(false);
+    };
+  }, [
+    user._id,
+    user.first_name,
+    user.profile_image,
+    selectedProject._id,
+    selectedProject.title,
+    initChat,
+  ]);
+
+  // reconnecting if the client disconnects unexpectedly
+  useEffect(() => {
+    const handleReconnect = async () => {
+      if (!clientConnected && !reconnecting) {
+        setReconnecting(true);
+        await initChat();
+        setReconnecting(false);
+      }
+    };
+
+    chatClient.on("connection.changed", ({ online }) => {
+      if (!online) handleReconnect();
+    });
+
+    return () => {
+      chatClient.off("connection.changed", handleReconnect);
+    };
+  }, [clientConnected, initChat, reconnecting]);
+
+  if (!clientReady || reconnecting) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        {reconnecting ? "Reconnecting chat..." : "Loading chat..."}
+      </div>
+    );
+  }
 
   return (
     <Chat
@@ -103,14 +138,19 @@ const Chats = () => {
       client={chatClient}
     >
       <div className="flex w-full h-full">
-        {/* <ChannelList sort={sort} filters={filters} options={options} /> */}
-        <Channel channel={channel}>
-          <Window>
-            <ChannelHeader />
-            <MessageList />
-            <MessageInput />
-          </Window>
-        </Channel>
+        {channel ? (
+          <Channel channel={channel}>
+            <Window>
+              <ChannelHeader />
+              <MessageList />
+              <MessageInput />
+            </Window>
+          </Channel>
+        ) : (
+          <div className="flex items-center justify-center w-full h-full">
+            No channel available
+          </div>
+        )}
       </div>
     </Chat>
   );

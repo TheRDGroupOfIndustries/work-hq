@@ -7,10 +7,14 @@ import Image from "next/image";
 import { CustomUser } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { IoNotificationsOutline } from "react-icons/io5";
+import { useProjectContext } from "@/context/ProjectProvider";
 
 const Navbar = () => {
   const { data: session } = useSession();
   const user = session?.user as CustomUser;
+  const { selectedProject, setProject } = useProjectContext();
+  const userProjects = user?.projects;
+
   return (
     <nav className="flex-between py-2 px-6 shadow">
       <div className="flex-center gap-2 animate-slide-down">
@@ -28,11 +32,32 @@ const Navbar = () => {
           />
         </Link>
         <div className="relative animate-slide-down">
-          <button className="flex items-center space-x-2 px-3 py-2 rounded">
-            Project Dropdown
-          </button>
+          <select
+            defaultValue={selectedProject?._id}
+            onChange={(e) => {
+              const projectSelected = userProjects?.find(
+                (project) => project._id === e.target.value
+              );
+              if (projectSelected) {
+                setProject(projectSelected._id, projectSelected.title);
+              }
+            }}
+            className="flex-center cursor-pointer space-x-2 px-3 py-2 rounded shadow-lg"
+          >
+            {userProjects?.map((project) => (
+              <option
+                key={project._id}
+                value={project._id}
+                className="cursor-pointer"
+              >
+                {project.title}
+              </option>
+            ))}
+          </select>
         </div>
-        <Button className="animate-slide-down">Add Project</Button>
+        <Link href="/add-project">
+          <Button className="animate-slide-down">Add Project</Button>
+        </Link>
       </div>
       <div className="flex-center gap-4 animate-slide-down">
         <input

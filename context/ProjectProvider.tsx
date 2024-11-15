@@ -20,14 +20,22 @@ const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({
   const { data: session } = useSession();
   const user = session?.user as CustomUser;
 
-  const [selectedProject, setSelectedProject] = useState<ProjectContextType["selectedProject"]>(user?.projects?.[0] || { _id: "", title: "" });
+  const [selectedProject, setSelectedProject] = useState<ProjectContextType["selectedProject"]>(() => {
+    if (user?.projects && user.projects.length > 0) {
+      return user.projects[user.projects.length - 1];
+    } else {
+      return { _id: "", title: "Getting projects..." };
+    }
+  });
 
   const [projectDetails, setProjectDetails] = useState<ProjectContextType["projectDetails"]>(null);
 //   console.log("projectDetails", projectDetails);
 
   useEffect(() => {
-    if (user?.projects) setSelectedProject(user.projects[0]);
-    else setSelectedProject({ _id: "", title: "" });
+    if (user?.projects && user.projects.length > 0) 
+      setSelectedProject(user.projects[user.projects.length - 1]);
+    else 
+      setSelectedProject({ _id: "", title: "" });
   }, [user?.projects]);
 
   const getProjectDetails = async (_id: string) => {
