@@ -51,13 +51,13 @@ const projectSchema = new Schema<ProjectDBTypes>(
       {
         title: { type: String, required: true },
         due_date: { type: Date, required: true },
-        completed: { type: Boolean, required: true, default: false },
         budget: { type: Number, required: false },
-        priority: {
-          type: String,
-          required: false,
-          enum: ["low", "medium", "high"],
-        },
+        // completed: { type: Boolean, required: true, default: false },
+        // priority: {
+        //   type: String,
+        //   required: false,
+        //   enum: ["low", "medium", "high"],
+        // },
       },
     ],
     files: [{ type: String, required: false }],              // URL or ID reference
