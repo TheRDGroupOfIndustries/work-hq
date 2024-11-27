@@ -16,11 +16,11 @@ const twilioServiceSid = process.env.TWILIO_SERVICE_SID;
 const twilioAuthToken = process.env.TWILIO_AUTH_TOKEN;
 const client = twilio(twilioAccountSid, twilioAuthToken);
 
-export const sendOtpToPhone = async (phone_number: string) => {
+export const sendOtpToPhone = async (phone: string) => {
   if (!twilioAccountSid || !twilioAuthToken || !twilioServiceSid) {
     throw new Error("Missing Twilio environment variables");
   }
-  const extendedPhone = "+91" + phone_number;
+  const extendedPhone = "+91" + phone;
   console.log("sending otp to", extendedPhone);
 
   const verification = await client.verify.v2
@@ -31,11 +31,11 @@ export const sendOtpToPhone = async (phone_number: string) => {
   return false;
 };
 
-export const verifyOtpFromPhone = async (phone_number: string, otp: string) => {
+export const verifyOtpFromPhone = async (phone: string, otp: string) => {
   if (!twilioAccountSid || !twilioAuthToken || !twilioServiceSid) {
     throw new Error("Missing Twilio environment variables");
   }
-  const extendedPhone = "+91" + phone_number;
+  const extendedPhone = "+91" + phone;
   console.log("verifying otp from", extendedPhone);
   // verify OTP
   const verificationCheck = await client.verify.v2

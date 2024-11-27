@@ -1,11 +1,12 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { emailPattern, passwordPattern } from "./SignIn";
+import { useSession } from "next-auth/react";
 
 const SignUp: React.FC = () => {
   const router = useRouter();
@@ -18,7 +19,9 @@ const SignUp: React.FC = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPass, setShowPass] = useState("password");
   const [showConfirmPass, setShowConfirmPass] = useState("password");
-
+  const [passwordError, setPasswordError] = useState("");
+  const [ confirmPasswordError, setConfirmPasswordError] = useState("");
+const [emailError, setEmailError] = useState("");
   const [otp, setOtp] = useState("");
   const [checkOtpCode, setCheckOtpCode] = useState("");
 
@@ -34,58 +37,71 @@ const SignUp: React.FC = () => {
   const emailInputRef = useRef<HTMLInputElement>(null);
   const passwordInputRef = useRef<HTMLInputElement>(null);
   const confirmPasswordInputRef = useRef<HTMLInputElement>(null);
-
+  const { data: session } = useSession();
+  useEffect(() => {
+    if (session?.user) {
+      router.replace("/");
+    }
+  }, [router, session]);
   const handleEmailOrPhone = (e: React.ChangeEvent<HTMLInputElement>) => {
     let inputValue = e.target.value;
     setEmailOrPhone(inputValue);
     setEmail("");
 
     if (emailPattern.test(inputValue)) {
+      console.log("Valid email");
       setIsEmail(true);
       setEmail(inputValue);
-      toast.success("Valid e-mail");
+      setEmailError("");
       setDisableBtn(false);
-    } else {
-      setIsEmail(false);
-
+    } else if(inputValue.length === 10 && /^\d+$/.test(inputValue)) {
+      console.log("Valid phone number");
       if (/^\d+$/.test(inputValue)) {
         inputValue = inputValue.slice(0, 10);
         setEmailOrPhone(inputValue);
-        if (inputValue.length === 10) toast.success("Valid phone number");
+        if (inputValue.length === 10) {
+          setEmailError("");
+          toast.success("Valid phone number");
+        }
 
         setDisableBtn(inputValue.length !== 10);
       } else {
         setDisableBtn(true);
       }
+    } else{
+      setDisableBtn(true);
+      setEmail("");
+      setEmailError("Invalid email or phone number");
     }
   };
 
   const handlePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
     setPassword(inputValue);
-
+  
     if (inputValue.trim() === "") {
+      setPasswordError("Password is required.");
       setDisableBtn(true);
     } else if (!/(?=.*[a-z])/.test(inputValue)) {
-      toast.error("Include at least one lowercase letter.");
+      setPasswordError("Include at least one lowercase letter.");
       setDisableBtn(true);
     } else if (!/(?=.*[A-Z])/.test(inputValue)) {
-      toast.error("Include at least one uppercase letter.");
+      setPasswordError("Include at least one uppercase letter.");
       setDisableBtn(true);
     } else if (!/(?=.*\d)/.test(inputValue)) {
-      toast.error("Include at least one digit.");
+      setPasswordError("Include at least one digit.");
       setDisableBtn(true);
     } else if (!/(?=.*[@$!%*?&])/.test(inputValue)) {
-      toast.error("Include at least one special character (@$!%*?&).");
+      setPasswordError("Include at least one special character (@$!%*?&).");
       setDisableBtn(true);
     } else if (inputValue.length < 8) {
-      toast.error("Password must be at least 8 characters long.");
+      setPasswordError("Password must be at least 8 characters long.");
       setDisableBtn(true);
     } else if (!passwordPattern.test(inputValue)) {
-      toast.error("Invalid password");
+      setPasswordError("Invalid password.");
       setDisableBtn(true);
     } else {
-      toast.success("Valid password!");
+      setPasswordError("");
       setDisableBtn(false);
     }
   };
@@ -95,17 +111,19 @@ const SignUp: React.FC = () => {
 
     if (cpswd !== password) {
       setDisableBtn(true);
-      toast.error("Mismatch password!");
+      // toast.error("Mismatch password!");
+      setConfirmPasswordError("Passwords does not match!");
     } else {
       setDisableBtn(false);
-      toast.success("Password matched!");
+      // toast.success("Password matched!");
+      setConfirmPasswordError("");
     }
     setConfirmPassword(cpswd);
   };
 
-  const handleGetOtp = async (e: React.MouseEvent<HTMLButtonElement>) => {
+   const handleGetOtp = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-
+  
     if (
       !firstName ||
       !lastName ||
@@ -114,47 +132,54 @@ const SignUp: React.FC = () => {
       !confirmPassword
     ) {
       // console.log(firstName, lastName, emailOrPhone, password, confirmPassword);
-
+  
       return toast.error("Please fill all the fields!");
     }
     if (password !== confirmPassword) {
-      return toast.error("Passwords does not match!");
+      return toast.error("Passwords do not match!");
     }
-
+  
     setSendingOtp(true);
     // console.log("send otp");
-
+  
     try {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          first_name: firstName,
-          last_name: lastName,
+          firstName: firstName,
+          lastName: lastName,
           email: isEmail ? email : "",
-          phone_number: !isEmail ? emailOrPhone : "",
+          phone: !isEmail ? emailOrPhone : "",
           isEmail,
           password,
           otp,
           checkOtpCode,
         }),
       });
-
+  
+      const data = await res.json();
+      console.log("res1: ", res);
+      console.log("data1: ", data);
+  
       if (res.status === 400) {
         setSendingOtp(false);
         toast.error(`${email} is already registered!`);
-      }
-
-      if (res.status == 201) {
-        const otpCheck = await res.json();
-        setCheckOtpCode(otpCheck);
+      } else if (res.status === 201) {
+        setCheckOtpCode(data.otpCode);
         setOtpBtn(true);
         setOtpSuccess(true);
         toast.success(`OTP has been sent to your ${email}, check your email!`);
+      } else if (res.status === 200) {
+        // User already exists, so redirect
+        setSendingOtp(false);
+        toast.error("User already exists!");
+        router.push("/auth/sign-in");
       }
     } catch (error) {
       setSendingOtp(false);
-      throw error;
+      console.error("Error sending OTP:", error);
+      toast.error("Something went wrong, please try again!");
     }
   };
 
@@ -182,17 +207,19 @@ const SignUp: React.FC = () => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            first_name: firstName,
-            last_name: lastName,
+            firstName: firstName,
+            lastName: lastName,
             email: isEmail ? email : "",
-            phone_number: !isEmail ? emailOrPhone : "",
+            phone: !isEmail ? emailOrPhone : "",
             isEmail,
             password,
             otp,
             checkOtpCode,
           }),
         });
-
+        const data = await res.json();
+        console.log("data: ",data);
+        console.log("res: ",res);
         if (res.status === 400) {
           setSubmitting(false);
           throw new Error(`${emailOrPhone} is already registered!`);
@@ -216,6 +243,7 @@ const SignUp: React.FC = () => {
         }
       } catch (error) {
         setSubmitting(false);
+        console.log("Error registering user:", error);
         throw error;
       }
     };
@@ -282,6 +310,7 @@ const SignUp: React.FC = () => {
           }}
           className="input-style"
         />
+        <div className="text-red-500 text-sm">{emailError}</div>
         <div
           className={`input-style flex gap-2 ${!otpSuccess && "cursor-text"}`}
         >
@@ -319,6 +348,7 @@ const SignUp: React.FC = () => {
             )}
           </div>
         </div>
+        <div className="text-red-500 text-sm">{passwordError}</div>
         <div
           className={`input-style flex gap-2 ${!otpSuccess && "cursor-text"}`}
         >
@@ -358,12 +388,12 @@ const SignUp: React.FC = () => {
             )}
           </div>
         </div>
-
+        <div className="text-red-500 text-sm">{confirmPasswordError}</div>
         {!otpBtn || !otpSuccess ? (
           <Button
             type="button"
             onClick={handleGetOtp}
-            disabled={otpBtn || sendingOtp || otpSuccess}
+            disabled={disableBtn|| otpBtn || sendingOtp || otpSuccess}
             className={`w-full ${otpBtn && "animate-pulse"}`}
           >
             {sendingOtp

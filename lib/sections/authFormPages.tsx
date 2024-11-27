@@ -1,3 +1,4 @@
+import AdditionalInfo from "@/components/auth/form/AdditonalInfo";
 import ForgetPassword from "@/components/auth/form/ForgetPassword";
 import SignIn from "@/components/auth/form/SignIn";
 import SignUp from "@/components/auth/form/SignUp";
@@ -14,6 +15,12 @@ export const authFormPages = [
     head: "Sign Up",
     href: "/auth/sign-up",
     sectionNode: SignUp,
+  },
+  {
+    id: "additional-step",
+    head: "Additional Step",
+    href: "/auth/additional-step",
+    sectionNode: AdditionalInfo,
   },
   {
     id: "forget-password",

@@ -13,7 +13,7 @@ const Navbar = () => {
   const { data: session } = useSession();
   const user = session?.user as CustomUser;
   const { selectedProject, setProject } = useProjectContext();
-  const userProjects = user?.projects;
+  const userProjects = user?.allProjects;
 
   return (
     <nav className="flex-between py-2 px-6 shadow">
@@ -33,24 +33,24 @@ const Navbar = () => {
         </Link>
         <div className="relative animate-slide-down">
           <select
-            defaultValue={selectedProject?._id}
+            defaultValue={selectedProject}
             onChange={(e) => {
               const projectSelected = userProjects?.find(
-                (project) => project._id === e.target.value
+                (project) => project === e.target.value
               );
               if (projectSelected) {
-                setProject(projectSelected._id, projectSelected.title);
+                setProject(projectSelected);
               }
             }}
             className="flex-center cursor-pointer space-x-2 px-3 py-2 rounded shadow-lg"
           >
             {userProjects?.map((project) => (
               <option
-                key={project._id}
-                value={project._id}
+                key={project}
+                value={project}
                 className="cursor-pointer"
               >
-                {project.title}
+                {project}
               </option>
             ))}
           </select>

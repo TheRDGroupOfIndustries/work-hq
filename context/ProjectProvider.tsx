@@ -5,9 +5,9 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { CustomUser, ProjectValues } from "@/lib/types";
 
 interface ProjectContextType {
-  selectedProject: { _id: string; title: string };
+  selectedProject: string;
   projectDetails: ProjectValues | null;
-  setProject: (id: string, title: string) => Promise<void>;
+  setProject: (id: string) => Promise<void>;
 }
 
 export const ProjectContext = createContext<ProjectContextType | undefined>(
@@ -21,40 +21,39 @@ const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({
   const user = session?.user as CustomUser;
 
   const [selectedProject, setSelectedProject] = useState<ProjectContextType["selectedProject"]>(() => {
-    if (user?.projects && user.projects.length > 0) {
-      return user.projects[user.projects.length - 1];
+    if (user?.allProjects && user.allProjects.length > 0) {
+      return user.allProjects[user.allProjects.length - 1];
     } else {
-      return { _id: "", title: "Getting projects..." };
+      return "";
     }
   });
 
   const [projectDetails, setProjectDetails] = useState<ProjectContextType["projectDetails"]>(null);
-//   console.log("projectDetails", projectDetails);
 
   useEffect(() => {
-    if (user?.projects && user.projects.length > 0) 
-      setSelectedProject(user.projects[user.projects.length - 1]);
+    if (user?.allProjects && user.allProjects.length > 0) 
+      setSelectedProject(user.allProjects[user.allProjects.length - 1]);
     else 
-      setSelectedProject({ _id: "", title: "" });
-  }, [user?.projects]);
+      setSelectedProject("");
+  }, [user?.allProjects]);
 
   const getProjectDetails = async (_id: string) => {
     try {
-      const res = await fetch(`/api/projects/${_id}`);
+      const res = await fetch(`/api/allProjects/${_id}`);
       const data = await res.json();
-      //   console.log(data);
-
       setProjectDetails(data.project);
     } catch (error) {
       console.log(error);
     }
   };
-  useEffect(() => {
-    getProjectDetails(selectedProject._id);
-  }, [selectedProject._id]);
 
-  const setProject = async (_id: string, title: string) => {
-    setSelectedProject({ _id, title });
+  useEffect(() => {
+    if (selectedProject)
+      getProjectDetails(selectedProject);
+  }, [selectedProject]);
+
+  const setProject = async (_id: string) => {
+    setSelectedProject(_id);
     getProjectDetails(_id);
   };
 

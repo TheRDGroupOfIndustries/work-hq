@@ -6,13 +6,30 @@ import Link from "next/link";
 import Image from "next/image";
 import { CustomUser } from "@/lib/types";
 import { Button } from "@/components/ui/button";
+import { useEffect} from "react";
 
 export default function Home() {
   const { data: session, status } = useSession();
   const user = session?.user as CustomUser;
   const router = useRouter();
+  // const prevSessionRef = useRef(session);
 
-  if (status === "unauthenticated") router.replace("/auth/sign-in");
+  useEffect(() => {
+    // if (prevSessionRef.current !== session) {
+      console.log("session", session);
+    //   prevSessionRef.current = session;
+    // }
+  }, [session]);
+
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.replace("/auth/sign-in");
+    } else if (user?.loginStep === 0) {
+      router.replace("/auth/additional-step");
+    } else if(user?.loginStep === 1 && user?.allProjects?.length === 0) {
+      router.replace("/add-project");
+    }
+  }, [status, user, router]);
 
   return (
     <main className="w-full h-screen relative select-none flex-center flex-col gap-4 overflow-hidden">
@@ -47,18 +64,18 @@ export default function Home() {
                 </div>
                 <div className="block w-fit h-fit space-y-1">
                   <h4 className="line-clamp-1">
-                    {user?.first_name ?? user?.name ?? "user name"}
+                    {user?.firstName ?? user?.name ?? "user name"}
                   </h4>
                   <h6 className="text-xs line-clamp-1">{user?.role}</h6>
                 </div>
               </div>
-              {user?.projects?.length && user?.projects?.length > 0 ? (
+              {user?.allProjects?.length && user?.allProjects?.length > 0 ? (
                 <Link
                   href="/project/dashboard"
                   className="mt-4 animate-slide-up"
                 >
                   <Button type="button" size="lg" variant="outline">
-                    Dashborad
+                    Dashboard
                   </Button>
                 </Link>
               ) : (
@@ -84,7 +101,6 @@ export default function Home() {
             size="lg"
             className="text-lg"
           >
-            {/* <FcGoogle className="mr-1" /> */}
             {status === "loading"
               ? "Loading..."
               : status === "unauthenticated"

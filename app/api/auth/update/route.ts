@@ -5,8 +5,8 @@ import User from "@/models/User";
 
 export const PUT = async (request: NextRequest) => {
   try {
-    const { email, first_name, last_name, password } = await request.json();
-    // console.log(email, first_name, last_name, password);
+    const { email, firstName, lastName, password } = await request.json();
+    // console.log(email, firstName, lastName, password);
 
     await connectToMongoDB();
 
@@ -17,13 +17,13 @@ export const PUT = async (request: NextRequest) => {
 
     const updatedFields: string[] = [];
 
-    if (first_name && existingUser.first_name !== first_name) {
-      existingUser.first_name = first_name;
-      updatedFields.push("first_name");
+    if (firstName && existingUser.firstName !== firstName) {
+      existingUser.firstName = firstName;
+      updatedFields.push("firstName");
     }
-    if (last_name && existingUser.last_name !== last_name) {
-      existingUser.last_name = last_name;
-      updatedFields.push("last_name");
+    if (lastName && existingUser.lastName !== lastName) {
+      existingUser.lastName = lastName;
+      updatedFields.push("lastName");
     }
 
     if (password) {

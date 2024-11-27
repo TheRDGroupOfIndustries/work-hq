@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
@@ -19,12 +19,44 @@ const SignIn: React.FC = () => {
   const [emailOrPhone, setEmailOrPhone] = useState("");
   const [password, setPassword] = useState("");
   const [showPass, setShowPass] = useState("password");
+  const [passwordError, setPasswordError] = useState("");
+  const [emailError, setEmailError] = useState("");
 
   const [disableBtn, setDisableBtn] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
 
   const passwordInputRef = useRef<HTMLInputElement>(null);
+  const { data: session } = useSession();
+  useEffect(() => {
+    if (session?.user) {
+      router.replace("/");
+    }
+  }, [router, session]);
+  // const handleEmailOrPhone = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   let inputValue = e.target.value;
+  //   setEmailOrPhone(inputValue);
+  //   setEmail("");
+
+  //   if (emailPattern.test(inputValue)) {
+  //     setIsEmail(true);
+  //     setEmail(inputValue);
+  //     toast.success("Valid e-mail");
+  //     setDisableBtn(false);
+  //   } else {
+  //     setIsEmail(false);
+
+  //     if (/^\d+$/.test(inputValue)) {
+  //       inputValue = inputValue.slice(0, 10);
+  //       setEmailOrPhone(inputValue);
+  //       if (inputValue.length === 10) toast.success("Valid phone number");
+
+  //       setDisableBtn(inputValue.length !== 10);
+  //     } else {
+  //       setDisableBtn(true);
+  //     }
+  //   }
+  // };
 
   const handleEmailOrPhone = (e: React.ChangeEvent<HTMLInputElement>) => {
     let inputValue = e.target.value;
@@ -32,51 +64,59 @@ const SignIn: React.FC = () => {
     setEmail("");
 
     if (emailPattern.test(inputValue)) {
+      console.log("Valid email");
       setIsEmail(true);
       setEmail(inputValue);
-      toast.success("Valid e-mail");
+      setEmailError("");
       setDisableBtn(false);
-    } else {
-      setIsEmail(false);
-
+    } else if(inputValue.length === 10 && /^\d+$/.test(inputValue)) {
+      console.log("Valid phone number");
       if (/^\d+$/.test(inputValue)) {
         inputValue = inputValue.slice(0, 10);
         setEmailOrPhone(inputValue);
-        if (inputValue.length === 10) toast.success("Valid phone number");
+        if (inputValue.length === 10) {
+          setEmailError("");
+          toast.success("Valid phone number");
+        }
 
         setDisableBtn(inputValue.length !== 10);
       } else {
         setDisableBtn(true);
       }
+    } else{
+      setDisableBtn(true);
+      setEmail("");
+      setEmailError("Invalid email or phone number");
     }
   };
 
   const handlePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
     setPassword(inputValue);
-
+  
     if (inputValue.trim() === "") {
+      setPasswordError("Password is required.");
       setDisableBtn(true);
     } else if (!/(?=.*[a-z])/.test(inputValue)) {
-      toast.error("Include at least one lowercase letter.");
+      setPasswordError("Include at least one lowercase letter.");
       setDisableBtn(true);
     } else if (!/(?=.*[A-Z])/.test(inputValue)) {
-      toast.error("Include at least one uppercase letter.");
+      setPasswordError("Include at least one uppercase letter.");
       setDisableBtn(true);
     } else if (!/(?=.*\d)/.test(inputValue)) {
-      toast.error("Include at least one digit.");
+      setPasswordError("Include at least one digit.");
       setDisableBtn(true);
     } else if (!/(?=.*[@$!%*?&])/.test(inputValue)) {
-      toast.error("Include at least one special character (@$!%*?&).");
+      setPasswordError("Include at least one special character (@$!%*?&).");
       setDisableBtn(true);
     } else if (inputValue.length < 8) {
-      toast.error("Password must be at least 8 characters long.");
+      setPasswordError("Password must be at least 8 characters long.");
       setDisableBtn(true);
     } else if (!passwordPattern.test(inputValue)) {
-      toast.error("Invalid password");
+      setPasswordError("Invalid password.");
       setDisableBtn(true);
     } else {
-      toast.success("Valid password!");
+      setPasswordError("");
       setDisableBtn(false);
     }
   };
@@ -103,7 +143,7 @@ const SignIn: React.FC = () => {
         const res = await signIn("credentials", {
           redirect: false,
           email: isEmail ? email : "",
-          phone_number: !isEmail ? emailOrPhone : "",
+          phone: !isEmail ? emailOrPhone : "",
           password,
         });
         // console.log("res:", res);
@@ -142,11 +182,11 @@ const SignIn: React.FC = () => {
 
   return (
     <>
-      <form onSubmit={handleSubmit} className="space-y-4 animate-fade-in">
+      <form onSubmit={handleSubmit} className=" animate-fade-in">
         <input
           type={isEmail ? "email" : "text"}
           name="email"
-          placeholder="Email"
+          placeholder="Email or Phone"
           required
           value={emailOrPhone}
           onChange={handleEmailOrPhone}
@@ -159,6 +199,7 @@ const SignIn: React.FC = () => {
           className="input-style"
         />
 
+        <div className="text-red-500 text-sm">{emailError}</div>
         <div className="input-style flex gap-2 cursor-text">
           <input
             type={showPass}
@@ -193,8 +234,8 @@ const SignIn: React.FC = () => {
             )}
           </div>
         </div>
-
-        <div className="flex justify-end text-sm font-medium font-[family-name:var(--font-geist-mono)]">
+        <div className="text-red-500 text-sm mb-4">{passwordError}</div>
+        <div className="flex justify-end text-sm font-medium font-[family-name:var(--font-geist-mono)] mb-4">
           <Link href="/auth/forget-password" className="hover-link">
             Forgot your password?
           </Link>

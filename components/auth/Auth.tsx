@@ -14,13 +14,14 @@ const Auth: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const isLogin = pathname === "/auth/sign-in";
   const isRegister = pathname === "/auth/sign-up";
   const isForgetPassword = pathname === "/auth/forget-password";
+  const isAdditionalStep = pathname === "/auth/additional-step";
   const oAuth = isLogin || isRegister;
   const { status } = useSession();
 
   useEffect(() => {
-    if (status === "authenticated") {
-      router.replace("/");
-    }
+    // if (status === "authenticated") {
+    //   router.replace("/");
+    // }
   }, [status, router]);
 
   return (
@@ -33,7 +34,10 @@ const Auth: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             <span className="animate-slide-down">Sign Up</span>
           ) : isForgetPassword ? (
             <span className="animate-slide-down">Forget Password</span>
-          ) : (
+          ) : isAdditionalStep ? (
+            <span className="animate-slide-down">Additional Step</span>
+          )
+           : (
             <span className="animate-slide-down">Reset Password</span>
           )}
         </h1>

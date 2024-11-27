@@ -5,40 +5,18 @@ import User from "@/models/User";
 
 export const POST = async (request: NextRequest) => {
   const {
-    title,
-    description,
-    logo,
-    start_date,
-    end_date,
-    technologies,
-    milestones,
-    files,
-    project_ref,
-    notes,
-    progress = 0,
-    status = "pending",
-    client,
-    vendor,
+    projectDetails,
+    companyDetails,
+    developmentDetails,
   }: ProjectDBTypes = await request.json();
 
   await connectToMongoDB();
 
   try {
     const project = new Project({
-      title,
-      description,
-      logo,
-      start_date,
-      end_date,
-      technologies,
-      milestones,
-      files,
-      project_ref,
-      notes,
-      status,
-      progress,
-      client,
-      vendor,
+      projectDetails,
+      companyDetails,
+      developmentDetails,
     });
 
     const savedProject = await project.save();
@@ -51,11 +29,25 @@ export const POST = async (request: NextRequest) => {
       });
     }
 
-    await User.findOneAndUpdate(client ? { _id: client } : { _id: vendor }, {
-      $push: {
-        projects: { _id: savedProject._id, title: savedProject.title },
-      },
-    });
+    await User.findOneAndUpdate(
+      { _id: companyDetails.clientID },
+      {
+        $push: {
+          projects: { _id: savedProject._id, title: projectDetails.projectName },
+        },
+      }
+    );
+
+    if (projectDetails.hasVendor && projectDetails.vendorID) {
+      await User.findOneAndUpdate(
+        { _id: projectDetails.vendorID },
+        {
+          $push: {
+            projects: { _id: savedProject._id, title: projectDetails.projectName },
+          },
+        }
+      );
+    }
 
     return NextResponse.json({
       status: 200,

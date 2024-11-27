@@ -36,7 +36,7 @@ export const POST = async (request: NextRequest) => {
   const resetUrl = `${process.env.HOSTNAME}/auth/reset-password/${resetToken}`;
 
   const body = `<h1 style="color: #333; font-family: 'Arial', sans-serif;">Heya ${
-    existingUser.first_name ?? "name"
+    existingUser.firstName ?? "name"
   }!!</h1>
   <span style="color: #ccc; font-size: 18px; font-family: 'Arial', sans-serif;">To Reset the password : </span>
   <a href="${resetUrl}" style="display: inline-block; padding: 10px 20px; background-color: #53c28b; color: #fff; text-decoration: none; border-radius: 5px; font-size: 18px;">Click me</a>

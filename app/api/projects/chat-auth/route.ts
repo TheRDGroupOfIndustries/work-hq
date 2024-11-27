@@ -68,7 +68,7 @@ export const POST = async (request: NextRequest) => {
 
     await serverClient.upsertUser({
       id: user?._id.toString(),
-      name: user?.first_name || "user name",
+      name: user?.firstName || "user name",
       image: user?.profile_image || "/assets/user.png",
       role: "admin",
     });

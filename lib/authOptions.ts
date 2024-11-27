@@ -38,7 +38,7 @@ export const authOptions: NextAuthOptions = {
       name: "credentials",
       credentials: {
         email: { label: "E-mail", type: "text" },
-        phone_number: { label: "Phone", type: "text" },
+        phone: { label: "Phone", type: "text" },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
@@ -52,9 +52,12 @@ export const authOptions: NextAuthOptions = {
           const user = await User.findOne(
             credentials?.email
               ? { email: credentials.email }
-              : { phone_number: credentials.phone_number }
+              : { phone: credentials.phone }
           );
-          if (!user) throw new Error("User isn't registered!");
+          console.log("User:", user);
+          if (!user) {
+            console.log("User isn't registered!");
+            throw new Error("User isn't registered!");}
 
           const isPasswordCorrect = await bcrypt.compare(
             credentials?.password,
@@ -74,7 +77,10 @@ export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET || "",
   callbacks: {
     async signIn({ user, account }) {
-      if (account?.provider === "credentials") return true;
+      if (account?.provider === "credentials") {
+        console.log("Credentials provider sign-in");
+        return true;
+      }
 
       if (
         account?.provider &&
@@ -87,20 +93,20 @@ export const authOptions: NextAuthOptions = {
           if (userExists) {
             userExists.profile_image = user?.image;
             await userExists.save();
-            if (userExists.auth_integrated.includes(account.provider)) {
+            if (userExists.authIntegrated.includes(account.provider)) {
               return userExists;
             }
-            userExists.auth_integrated.push(account.provider);
+            userExists.authIntegrated.push(account.provider);
             return await userExists.save();
           }
 
           if (!userExists) {
             const newUser = new User({
-              first_name: user?.name?.split(" ")[0],
-              last_name: user?.name?.split(" ")[1],
+              firstName: user?.name?.split(" ")[0],
+              lastName: user?.name?.split(" ")[1],
               email: user?.email,
               profile_image: user?.image,
-              auth_integrated: [account.provider],
+              authIntegrated: [account.provider],
             });
             return await newUser.save();
           }
@@ -124,7 +130,7 @@ export const authOptions: NextAuthOptions = {
         const dbUser = await User.findOne(
           (token as CustomToken).user?.email
             ? { email: (token as CustomToken).user?.email }
-            : { phone_number: (token as CustomToken).user?.phone_number }
+            : { phone: (token as CustomToken).user?.phone }
         );
 
         if (dbUser) {

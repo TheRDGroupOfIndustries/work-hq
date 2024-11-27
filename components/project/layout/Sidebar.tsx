@@ -52,9 +52,9 @@ const Sidebar = ({ sections }: { sections: ProjectSectionValues[] }) => {
             </div>
             <div className="hidden md:block w-fit h-fit space-y-1">
               <h4 className="text-sm font-medium line-clamp-1">
-                {(user.first_name as string) +
+                {(user.firstName as string) +
                   " " +
-                  (user.last_name as string) ||
+                  (user.lastName as string) ||
                   user?.name ||
                   "user name"}
               </h4>

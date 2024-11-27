@@ -32,7 +32,7 @@ const Chats = () => {
 
   const initChat = useCallback(async () => {
     try {
-      if (!user?._id || !selectedProject._id) {
+      if (!user?._id || !selectedProject) {
         console.error("User ID or Project ID is missing");
         return;
       }
@@ -42,8 +42,8 @@ const Chats = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           userId: user._id,
-          projectId: selectedProject._id,
-          projectTitle: selectedProject.title,
+          projectId: selectedProject,
+          projectTitle: selectedProject,
         }),
       });
 
@@ -58,7 +58,7 @@ const Chats = () => {
         await chatClient.connectUser(
           {
             id: user._id,
-            name: user.first_name || "User Name",
+            name: user.firstName || "User Name",
             image: user.profile_image || "/assets/user.png",
           },
           data.token
@@ -68,7 +68,7 @@ const Chats = () => {
 
       const newChannel = chatClient.channel(
         "messaging",
-        selectedProject._id || "project-id"
+        selectedProject || "project-id"
       );
       await newChannel.watch();
       setChannel(newChannel);
@@ -78,10 +78,9 @@ const Chats = () => {
     }
   }, [
     user._id,
-    user.first_name,
+    user.firstName,
     user.profile_image,
-    selectedProject._id,
-    selectedProject.title,
+    selectedProject,
   ]);
 
   useEffect(() => {
@@ -94,10 +93,9 @@ const Chats = () => {
     };
   }, [
     user._id,
-    user.first_name,
+    user.firstName,
     user.profile_image,
-    selectedProject._id,
-    selectedProject.title,
+    selectedProject,
     initChat,
   ]);
 

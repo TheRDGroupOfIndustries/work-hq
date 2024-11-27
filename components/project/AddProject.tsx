@@ -2,26 +2,62 @@
 
 import React, { useState } from "react";
 import { Button } from "../ui/button";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { CustomUser } from "@/lib/types";
+import { useRouter } from "next/navigation";
+
+interface FormData {
+  projectDetails: {
+    projectName: string;
+    category: string;
+    deadline: string;
+    additionalFiles: string;
+    maintenanceNeeded: boolean;
+    description: string;
+    scope: string;
+    budget: { min: number; max: number };
+    hasVendor: boolean;
+  };
+  companyDetails: {
+    officialName: string;
+    logo: string;
+    about: string;
+    workingLocations: string;
+    contactNo: string;
+    address: string;
+    companyLink: string;
+    size: string;
+  };
+}
 
 const AddProject = () => {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const user = session?.user as CustomUser;
-  // console.log(session);
+  const router = useRouter();
 
-  const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    logo: "",
-    start_date: "",
-    end_date: "",
-    technologies: [],
-    milestones: [{ title: "", due_date: "", budget: 0, completed: false }],
-    files: [],
-    project_ref: [],
-    notes: [],
+  const [formData, setFormData] = useState<FormData>({
+    projectDetails: {
+      projectName: "",
+      category: "",
+      deadline: "",
+      additionalFiles: "",
+      maintenanceNeeded: false,
+      description: "",
+      scope: "",
+      budget: { min: 0, max: 0 },
+      hasVendor: false,
+    },
+    companyDetails: {
+      officialName: "",
+      logo: "",
+      about: "",
+      workingLocations: "",
+      contactNo: "",
+      address: "",
+      companyLink: "",
+      size: "",
+    },
   });
 
   const handleChange = (
@@ -30,48 +66,43 @@ const AddProject = () => {
     >
   ) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]:
-        name === "technologies" ||
-        name === "files" ||
-        name === "project_ref" ||
-        name === "notes"
-          ? value.split(",").map((tech) => tech)
-          : value,
+    const [section, field, subField] = name.split(".");
+    setFormData((prevFormData: FormData) => {
+      const sectionData = prevFormData[section as keyof FormData];
+      if (field === "budget" && subField) {
+        return {
+          ...prevFormData,
+          [section as keyof FormData]: {
+            ...sectionData,
+            [field]: {
+              ...(sectionData as { budget: { min: number; max: number } })[field],
+              [subField]: value,
+            },
+          },
+        };
+      } else {
+        return {
+          ...prevFormData,
+          [section as keyof FormData]: {
+            ...sectionData,
+            [field]: value,
+          },
+        };
+      }
     });
-  };
-
-  const addMilestone = () => {
-    setFormData({
-      ...formData,
-      milestones: [
-        ...formData.milestones,
-        { title: "", due_date: "", budget: 0, completed: false },
-      ],
-    });
-  };
-
-  const handleMilestoneChange = (
-    index: number,
-    field: string,
-    value: string | boolean
-  ) => {
-    const updatedMilestones = formData.milestones.map((milestone, i) =>
-      i === index ? { ...milestone, [field]: value } : milestone
-    );
-    setFormData({ ...formData, milestones: updatedMilestones });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // console.log(formData);
-    const client = user.role === "client" ? user._id : null;
-    const vendor = user.role === "vendor" ? user._id : null;
+    const clientID = user.role === "client" ? user._id : null;
     try {
       const response = await fetch("/api/projects/create", {
         method: "POST",
-        body: JSON.stringify({ ...formData, client, vendor }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          projectDetails: { ...formData.projectDetails },
+          companyDetails: { ...formData.companyDetails, clientID },
+        }),
       });
 
       const data = await response.json();
@@ -87,152 +118,234 @@ const AddProject = () => {
     }
   };
 
-  // console.log(formData);
+  if (status === "unauthenticated") router.push("/auth/sign-in");
 
   return (
     <form onSubmit={handleSubmit} className="grid gap-4 p-10 px-80">
       <h2 className="text-3xl">Add Project</h2>
       <label>
-        Project Title<span className="text-red-500">*</span>
+        Project Name<span className="text-red-500">*</span>
         <input
           type="text"
-          name="title"
-          value={formData.title}
+          name="projectDetails.projectName"
+          value={formData.projectDetails.projectName}
           onChange={handleChange}
-          placeholder="Project Title"
+          placeholder="Project Name"
           required
         />
       </label>
       <label>
-        Project Description<span className="text-red-500">*</span>
-        <textarea
-          name="description"
-          value={formData.description}
+        Category<span className="text-red-500">*</span>
+        <input
+          type="text"
+          name="projectDetails.category"
+          value={formData.projectDetails.category}
           onChange={handleChange}
-          placeholder="Project Description"
+          placeholder="Category"
           required
         />
       </label>
       <label>
-        Project Logo
-        <input
-          type="text"
-          name="logo"
-          value={formData.logo}
-          onChange={handleChange}
-          placeholder="Project Logo"
-        />
-      </label>
-      <label>
-        Start Date<span className="text-red-500">*</span>
+        Deadline<span className="text-red-500">*</span>
         <input
           type="date"
-          name="start_date"
-          value={formData.start_date}
+          name="projectDetails.deadline"
+          value={formData.projectDetails.deadline}
           onChange={handleChange}
           required
         />
       </label>
       <label>
-        End Date<span className="text-red-500">*</span>
-        <input
-          type="date"
-          name="end_date"
-          value={formData.end_date}
-          onChange={handleChange}
-        />
-      </label>
-      <label>
-        Technologies (comma-separated)<span className="text-red-500">*</span>
+        Additional Files (comma-separated URLs/IDs)
         <input
           type="text"
-          name="technologies"
-          value={formData.technologies}
+          name="projectDetails.additionalFiles"
+          value={formData.projectDetails.additionalFiles}
           onChange={handleChange}
-          placeholder="Technologies (comma-separated)"
+          placeholder="Additional Files (comma-separated URLs/IDs)"
         />
       </label>
-      {formData.milestones.map((milestone, index) => (
-        <div key={index}>
-          <label>
-            Milestone Title <span className="text-red-500">*</span>
-            <input
-              type="text"
-              value={milestone.title}
-              onChange={(e) =>
-                handleMilestoneChange(index, "title", e.target.value)
-              }
-              placeholder="Milestone Title"
-              required
-            />
-          </label>
-          <label>
-            Due Date <span className="text-red-500">*</span>
-            <input
-              type="date"
-              value={milestone.due_date}
-              onChange={(e) =>
-                handleMilestoneChange(index, "due_date", e.target.value)
-              }
-              required
-            />
-          </label>
-          <br />
-          <label>
-            Budget <span className="text-red-500">*</span>
-            <input
-              type="number"
-              value={milestone.budget}
-              onChange={(e) =>
-                handleMilestoneChange(index, "budget", e.target.value)
-              }
-              placeholder="Budget"
-            />
-          </label>
-          {/* <label>
-            Completed
-            <input
-              type="checkbox"
-              checked={milestone.completed}
-              onChange={(e) =>
-                handleMilestoneChange(index, "completed", e.target.checked)
-              }
-            />
-          </label> */}
-        </div>
-      ))}
-      <button type="button" onClick={addMilestone}>
-        Add Milestone
-      </button>
       <label>
-        Files (comma-separated URLs/IDs)
+        Maintenance Needed
+        <input
+          type="checkbox"
+          name="projectDetails.maintenanceNeeded"
+          checked={formData.projectDetails.maintenanceNeeded}
+          onChange={(e) =>
+            setFormData({
+              ...formData,
+              projectDetails: {
+                ...formData.projectDetails,
+                maintenanceNeeded: e.target.checked,
+              },
+            })
+          }
+        />
+      </label>
+      <label>
+        Description<span className="text-red-500">*</span>
+        <textarea
+          name="projectDetails.description"
+          value={formData.projectDetails.description}
+          onChange={handleChange}
+          placeholder="Description"
+          required
+        />
+      </label>
+      <label>
+        Scope<span className="text-red-500">*</span>
+        <textarea
+          name="projectDetails.scope"
+          value={formData.projectDetails.scope}
+          onChange={handleChange}
+          placeholder="Scope"
+          required
+        />
+      </label>
+      <label>
+        Budget Min<span className="text-red-500">*</span>
+        <input
+          type="number"
+          name="projectDetails.budget.min"
+          value={formData.projectDetails.budget.min}
+          onChange={handleChange}
+          placeholder="Budget Min"
+          required
+        />
+      </label>
+      <label>
+        Budget Max<span className="text-red-500">*</span>
+        <input
+          type="number"
+          name="projectDetails.budget.max"
+          value={formData.projectDetails.budget.max}
+          onChange={handleChange}
+          placeholder="Budget Max"
+          required
+        />
+      </label>
+      <label>
+        Has Vendor
+        <input
+          type="checkbox"
+          name="projectDetails.hasVendor"
+          checked={formData.projectDetails.hasVendor}
+          onChange={(e) =>
+            setFormData({
+              ...formData,
+              projectDetails: {
+                ...formData.projectDetails,
+                hasVendor: e.target.checked,
+              },
+            })
+          }
+        />
+      </label>
+      <label>
+        Official Name<span className="text-red-500">*</span>
         <input
           type="text"
-          name="files"
-          value={formData.files}
+          name="companyDetails.officialName"
+          value={formData.companyDetails.officialName}
           onChange={handleChange}
-          placeholder="Files (comma-separated URLs/IDs)"
+          placeholder="Official Name"
+          required
         />
       </label>
       <label>
-        Project References (comma-separated)
-        <textarea
-          name="project_ref"
-          value={formData.project_ref}
+        Logo
+        <input
+          type="text"
+          name="companyDetails.logo"
+          value={formData.companyDetails.logo}
           onChange={handleChange}
-          placeholder="Project References (comma-separated)"
+          placeholder="Logo"
         />
       </label>
       <label>
-        Notes (comma-separated)
+        About<span className="text-red-500">*</span>
         <textarea
-          name="notes"
-          value={formData.notes}
+          name="companyDetails.about"
+          value={formData.companyDetails.about}
           onChange={handleChange}
-          placeholder="Notes (comma-separated)"
+          placeholder="About"
+          required
+        />
+      </label>
+      <label>
+        Working Locations (comma-separated)<span className="text-red-500">*</span>
+        <input
+          type="text"
+          name="companyDetails.workingLocations"
+          value={formData.companyDetails.workingLocations}
+          onChange={handleChange}
+          placeholder="Working Locations (comma-separated)"
+          required
+        />
+      </label>
+      <label>
+        Contact Numbers (comma-separated)<span className="text-red-500">*</span>
+        <input
+          type="text"
+          name="companyDetails.contactNo"
+          value={formData.companyDetails.contactNo}
+          onChange={handleChange}
+          placeholder="Contact Numbers (comma-separated)"
+          required
+        />
+      </label>
+      <label>
+        Address<span className="text-red-500">*</span>
+        <textarea
+          name="companyDetails.address"
+          value={formData.companyDetails.address}
+          onChange={handleChange}
+          placeholder="Address"
+          required
+        />
+      </label>
+      <label>
+        Company Link
+        <input
+          type="text"
+          name="companyDetails.companyLink"
+          value={formData.companyDetails.companyLink}
+          onChange={handleChange}
+          placeholder="Company Link"
+        />
+      </label>
+      <label>
+        Company Size<span className="text-red-500">*</span>
+        <input
+          type="text"
+          name="companyDetails.size"
+          value={formData.companyDetails.size}
+          onChange={handleChange}
+          placeholder="Company Size"
+          required
         />
       </label>
       <Button type="submit">Add Project</Button>
+      <Button
+        onClick={() => {
+          if (status === "unauthenticated") {
+            router.push("/auth/sign-in");
+          } else {
+            signOut();
+          }
+        }}
+        variant={status === "authenticated" ? "destructive" : "default"}
+        disabled={status === "loading"}
+        title={status === "authenticated" ? "Logout" : "Login"}
+        size="lg"
+        className="text-lg"
+      >
+        {status === "loading"
+          ? "Loading..."
+          : status === "unauthenticated"
+          ? "Login"
+          : "Logout"}
+      </Button>
     </form>
   );
 };
