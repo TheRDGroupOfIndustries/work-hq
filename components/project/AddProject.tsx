@@ -6,6 +6,7 @@ import { signOut, useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { CustomUser } from "@/lib/types";
 import { useRouter } from "next/navigation";
+import {  useProjectContext } from "@/context/ProjectProvider";
 
 interface FormData {
   projectDetails: {
@@ -35,7 +36,7 @@ const AddProject = () => {
   const { data: session, status } = useSession();
   const user = session?.user as CustomUser;
   const router = useRouter();
-
+  const {setSelectedProject} = useProjectContext();
   const [formData, setFormData] = useState<FormData>({
     projectDetails: {
       projectName: "",
@@ -110,6 +111,8 @@ const AddProject = () => {
 
       if (data.success) {
         toast.success("Project created successfully");
+        setSelectedProject(data.project._id);
+        router.push(`/project/dashboard`);
       } else {
         toast.error("Failed to create project");
       }

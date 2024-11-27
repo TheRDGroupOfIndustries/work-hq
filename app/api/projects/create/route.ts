@@ -33,7 +33,7 @@ export const POST = async (request: NextRequest) => {
       { _id: companyDetails.clientID },
       {
         $push: {
-          projects: { _id: savedProject._id, title: projectDetails.projectName },
+          allProjects: savedProject._id,
         },
       }
     );

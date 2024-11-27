@@ -8,6 +8,7 @@ interface ProjectContextType {
   selectedProject: string;
   projectDetails: ProjectValues | null;
   setProject: (id: string) => Promise<void>;
+  setSelectedProject: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export const ProjectContext = createContext<ProjectContextType | undefined>(
@@ -59,7 +60,7 @@ const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({
 
   return (
     <ProjectContext.Provider
-      value={{ selectedProject, projectDetails, setProject }}
+      value={{ selectedProject, projectDetails, setProject,setSelectedProject }}
     >
       {children}
     </ProjectContext.Provider>
