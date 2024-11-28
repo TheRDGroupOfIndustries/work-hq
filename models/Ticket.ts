@@ -11,11 +11,13 @@ export interface TicketDBTypes {
   status: "open" | "close"; // Current status of the ticket
   channelID?: Schema.Types.ObjectId; // Optional reference to chat channel ID
   userID: Schema.Types.ObjectId; // Reference to the user who created the ticket
+  projectID: Schema.Types.ObjectId; // Reference to the project the ticket belongs to
 }
 
 // Define the schema
 const ticketSchema = new Schema<TicketDBTypes>(
   {
+    projectID: { type: Schema.Types.ObjectId, ref: "Project" },
     ticketNo: { type: String, required: true },
     subject: { type: String, required: true },
     issueType: { type: String, required: true },

@@ -81,6 +81,7 @@ import { Schema, model, models } from "mongoose";
 
 // Define the TypeScript interface for the Projects Schema
 export interface ProjectDBTypes {
+  projectID: string;
   projectDetails: {
     projectName: string;
     category: string;
@@ -116,6 +117,7 @@ export interface ProjectDBTypes {
 // Define the Mongoose schema
 const projectSchema = new Schema<ProjectDBTypes>(
   {
+    projectID: { type: String, required: true },
     projectDetails: {
       projectName: { type: String, required: true },
       category: { type: String, required: true },

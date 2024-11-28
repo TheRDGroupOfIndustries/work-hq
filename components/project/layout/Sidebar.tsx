@@ -22,7 +22,7 @@ const Sidebar = ({ sections }: { sections: ProjectSectionValues[] }) => {
             return (
               <Link
                 key={index}
-                href={`/project/${sec.id}`}
+                href={`/project/get/${sec.id}`}
                 className={`flex items-center gap-3 px-2 py-2 text-md font-medium transition-colors hover:text-primary group ${
                   isActive
                     ? "text-primary fill-primary underline underline-offset-8"

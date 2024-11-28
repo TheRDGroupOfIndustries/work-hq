@@ -98,7 +98,7 @@ const AdditionalInfo: React.FC = () => {
 
     const submitInfo = async () => {
       try {
-        const res = await fetch("/api/user/put", {
+        const res = await fetch("/api/user/update", {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({

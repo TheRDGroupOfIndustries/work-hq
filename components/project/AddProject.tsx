@@ -97,7 +97,7 @@ const AddProject = () => {
     e.preventDefault();
     const clientID = user.role === "client" ? user._id : null;
     try {
-      const response = await fetch("/api/projects/create", {
+      const response = await fetch("/api/project/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

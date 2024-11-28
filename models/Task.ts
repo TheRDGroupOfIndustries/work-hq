@@ -1,40 +1,3 @@
-// import { Schema, model, models } from "mongoose";
-
-// export interface ProjectTaskDBTypes {
-//     title: string;
-//     projectId: Schema.Types.ObjectId;
-//     status: string;
-//     assigned_to: Schema.Types.ObjectId;
-// }
-
-// const projectTaskSchema = new Schema<ProjectTaskDBTypes>(
-//   {
-//     title: { type: String, required: true },
-//     // description: { type: String, required: true },
-//     // manager: { type: Schema.Types.ObjectId, ref: "User", required: true },
-//     projectId: { type: Schema.Types.ObjectId, ref: "Project", required: true },
-//     // start_date: { type: Date, required: true },
-//     // end_date: { type: Date, required: false },
-//     status: {
-//       type: String,
-//       required: true,
-//       enum: ["pending", "in_progress", "completed", "on_hold", "cancelled"],
-//       default: "pending",
-//     },
-//     assigned_to: { type: Schema.Types.ObjectId, ref: "User", required: false},
-//     // files: [{ type: String, required: false }], // URL or ID reference
-//   },
-//   { timestamps: true }
-// );
-
-// const ProjectTask =
-//   models &&
-//   (models.ProjectTask ||
-//     model<ProjectTaskDBTypes>("ProjectTask", projectTaskSchema));
-
-// export default ProjectTask;
-
-
 import { Schema, model, models } from "mongoose";
 
 // Define the TypeScript interface
@@ -48,6 +11,7 @@ export interface TaskDBTypes {
   workingSince?: Date; // Start time of active work
   totalHoursSpend?: number; // Total calculated hours excluding breaks or logged-off time
   createdBy: Schema.Types.ObjectId; // Reference to the creator (User ID)
+  projectID: Schema.Types.ObjectId; // Reference to the project (Project ID)
 }
 
 // Define the schema
@@ -66,6 +30,7 @@ const taskSchema = new Schema<TaskDBTypes>(
     workingSince: { type: Date }, // Optional, only recorded when task is in progress
     totalHoursSpend: { type: Number }, // Calculated hours (optional field)
     createdBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    projectID: { type: Schema.Types.ObjectId, ref: "Project", required: true },
   },
   { timestamps: true } // Adds createdAt and updatedAt timestamps automatically
 );
