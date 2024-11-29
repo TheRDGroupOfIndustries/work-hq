@@ -1,14 +1,12 @@
-
-
+import MainContainer from "@/components/reusables/mainContainer";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
-import MainContainer from "@/components/reusables/mainContainer";
+import HoursCountCard from "../../../../components/reusables/hoursCountCard";
+import ProjectReportCard from "../../../../components/reusables/projectReportCard";
 import Deployment from "./components/deployment";
 import Figma from "./components/figma";
 import Headline from "./components/headline";
-import HoursCountCard from "./components/hoursCountCard";
 import MidInformationCard from "./components/midInformationCard";
-import ProjectReportCard from "./components/projectReportCard";
 import ProjectInfo from "./components/projectInfo";
 
 export default async function HomePage() {
@@ -16,23 +14,23 @@ export default async function HomePage() {
   if (!session) redirect("/auth/sign-in");
   return (
     <MainContainer>
-    <Headline />
+      <Headline />
 
-    <div className="w-full flex flex-row gap-4 mt-5">
-      <div className="w-full flex flex-col xl:flex-row gap-10">
-        <ProjectReportCard />
+      <div className="w-full flex flex-row gap-4 mt-5">
+        <div className="w-full flex flex-col xl:flex-row gap-10">
+          <ProjectReportCard />
 
-        <HoursCountCard />
+          <HoursCountCard />
+        </div>
       </div>
-    </div>
 
-    <MidInformationCard />
+      <MidInformationCard />
 
-    <Figma />
+      <Figma />
 
-    <Deployment />
+      <Deployment />
 
-    <ProjectInfo/>
-  </MainContainer>
+      <ProjectInfo />
+    </MainContainer>
   );
 }

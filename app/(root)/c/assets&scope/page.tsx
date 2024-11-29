@@ -1,7 +1,7 @@
 import MainContainer from "@/components/reusables/mainContainer";
 
-import HoursCountCard from "../dashboard/components/hoursCountCard";
-import ProjectReportCard from "../dashboard/components/projectReportCard";
+import HoursCountCard from "../../../../components/reusables/hoursCountCard";
+import ProjectReportCard from "../../../../components/reusables/projectReportCard";
 import FilesList from "./components/filesList";
 import Headline from "./components/headline";
 import ProjectScope from "./components/projectScope";
@@ -19,7 +19,7 @@ export default function AssetsAndScope() {
       </div>
       <ProjectScope />
       <FilesList />
-      <TasksList/>
+      <TasksList />
     </MainContainer>
   );
 }
