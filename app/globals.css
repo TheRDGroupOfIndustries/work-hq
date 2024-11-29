@@ -29,6 +29,12 @@
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
+  
+    --primary-sky-blue: #e4eefe;
+    --primary-blue: #155EEF;
+    --dark-blue : #001D6C;
+    --dark-gray : #344054
+    
   }
   .dark {
     --background: 240 10% 3.9%;
@@ -59,10 +65,10 @@
 }
 @layer base {
   * {
-    @apply border-border;
+    /* @apply border-border; */
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-primary-sky-blue text-foreground;
   }
 }
 @layer utilities {
