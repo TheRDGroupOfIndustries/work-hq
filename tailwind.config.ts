@@ -10,6 +10,10 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        "primary-sky-blue": "var(--primary-sky-blue)",
+        "primary-blue": "var(--primary-blue)",
+        "dark-gray" : 'var(--dark-gray)',
+        "dark-blue" : 'var(--dark-blue)',
         "primary-green": "#2fff00",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
