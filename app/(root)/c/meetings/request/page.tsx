@@ -1,3 +1,5 @@
+"use client";
+
 import ZoomVideo from "@/components/icons/ZoomVideo";
 
 import MainContainer from "@/components/reusables/mainContainer";
@@ -32,7 +34,7 @@ const generateTimeOptions = () => {
     return times;
   };
   
-  export function MeetingsRequest() {
+  export default function MeetingsRequest() {
     const [date, setDate] = useState<Date | undefined>(new Date());
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");

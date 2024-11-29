@@ -20,7 +20,7 @@ export default function RequestMeetingHeadline({handleSubmit}:{handleSubmit:()=>
         <SquareButton
           className="text-[#6A6A6A]"
           onClick={() => {
-            navigate.push('/meetings');
+            navigate.push('/c/meetings/details');
           }}
         >
           Cancel

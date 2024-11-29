@@ -57,7 +57,7 @@ export default function MeetingsDetails() {
           <div className="flex flex-col sm:flex-row gap-4">
             <SquareButton
               onClick={() => {
-                navigate.push("/meetings/request");
+                navigate.push("/c/meetings/request");
               }}
             >
               <Plus color="#155EEF" />

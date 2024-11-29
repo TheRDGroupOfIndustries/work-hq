@@ -96,7 +96,7 @@ const Navbar = () => {
           <Link
             href={"/c/all-projects"}
             className={`h-full  py-5 px-4 ${
-              pathname === "/all-projects"
+              pathname === "/c/all-projects"
                 ? "border-b-primary-blue cursor-pointer border-b-[4px] text-primary-blue"
                 : " text-dark-gray"
             }`}
