@@ -5,7 +5,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium  transition-colors ",
+  "inline-flex items-center justify-center whitespace-nowrap rounded-md select-none text-sm font-medium font-[family-name:var(--font-geist-mono)] transition-colors active:translate-y-[1px] disabled:active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-50",
   {
     variants: {
       variant: {
