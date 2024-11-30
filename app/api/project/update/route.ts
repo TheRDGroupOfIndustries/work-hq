@@ -3,127 +3,57 @@ import connectToMongoDB from "@/utils/db";
 import Project from "@/models/Project";
 
 export const PUT = async (request: NextRequest) => {
-  const {
-    _id,
-    title,
-    description,
-    client,
-    manager,
-    assigned_team,
-    vendor,
-    start_date,
-    end_date,
-    status,
-    technologies,
-    milestones,
-    files,
-    progress,
-    notes,
-    figma_link,
-    figma_iframe_link,
-    github_link,
-    deployed_link,
-  } = await request.json();
-
+  const { _id, ...updateData } = await request.json();
   await connectToMongoDB();
 
   try {
     const existingProject = await Project.findById(_id);
-
     if (!existingProject) {
       return NextResponse.json({
         success: false,
-        error: "Project not found!",
+        error: "Project not found!"
       });
     }
 
     const changedFields = [];
 
-    if (existingProject.title !== title) {
-      existingProject.title = title;
-      changedFields.push("title");
+    // Handle projectDetails updates
+    if (updateData.projectDetails) {
+      Object.keys(updateData.projectDetails).forEach(key => {
+        if (JSON.stringify(existingProject.projectDetails[key]) !== 
+            JSON.stringify(updateData.projectDetails[key])) {
+          existingProject.projectDetails[key] = updateData.projectDetails[key];
+          changedFields.push(`projectDetails.${key}`);
+        }
+      });
     }
-    if (existingProject.description !== description) {
-      existingProject.description = description;
-      changedFields.push("description");
+
+    // Handle companyDetails updates
+    if (updateData.companyDetails) {
+      Object.keys(updateData.companyDetails).forEach(key => {
+        if (JSON.stringify(existingProject.companyDetails[key]) !== 
+            JSON.stringify(updateData.companyDetails[key])) {
+          existingProject.companyDetails[key] = updateData.companyDetails[key];
+          changedFields.push(`companyDetails.${key}`);
+        }
+      });
     }
-    if (existingProject.client.toString() !== client) {
-      existingProject.client = client;
-      changedFields.push("client");
+
+    // Handle developmentDetails updates
+    if (updateData.developmentDetails) {
+      Object.keys(updateData.developmentDetails).forEach(key => {
+        if (JSON.stringify(existingProject.developmentDetails[key]) !== 
+            JSON.stringify(updateData.developmentDetails[key])) {
+          existingProject.developmentDetails[key] = updateData.developmentDetails[key];
+          changedFields.push(`developmentDetails.${key}`);
+        }
+      });
     }
-    if (existingProject.manager.toString() !== manager) {
-      existingProject.manager = manager;
-      changedFields.push("manager");
-    }
-    if (
-      JSON.stringify(existingProject.assigned_team) !==
-      JSON.stringify(assigned_team)
-    ) {
-      existingProject.assigned_team = assigned_team;
-      changedFields.push("assigned_team");
-    }
-    if (existingProject.vendor?.toString() !== vendor) {
-      existingProject.vendor = vendor;
-      changedFields.push("vendor");
-    }
-    if (
-      existingProject.start_date.toISOString() !==
-      new Date(start_date).toISOString()
-    ) {
-      existingProject.start_date = start_date;
-      changedFields.push("start_date");
-    }
-    if (
-      existingProject.end_date?.toISOString() !==
-      new Date(end_date).toISOString()
-    ) {
-      existingProject.end_date = end_date;
-      changedFields.push("end_date");
-    }
-    if (existingProject.status !== status) {
-      existingProject.status = status;
-      changedFields.push("status");
-    }
-    if (
-      JSON.stringify(existingProject.technologies) !==
-      JSON.stringify(technologies)
-    ) {
-      existingProject.technologies = technologies;
-      changedFields.push("technologies");
-    }
-    if (
-      JSON.stringify(existingProject.milestones) !== JSON.stringify(milestones)
-    ) {
-      existingProject.milestones = milestones;
-      changedFields.push("milestones");
-    }
-    if (JSON.stringify(existingProject.files) !== JSON.stringify(files)) {
-      existingProject.files = files;
-      changedFields.push("files");
-    }
-    if (existingProject.progress !== progress) {
-      existingProject.progress = progress;
-      changedFields.push("progress");
-    }
-    if (JSON.stringify(existingProject.notes) !== JSON.stringify(notes)) {
-      existingProject.notes = notes;
-      changedFields.push("notes");
-    }
-    if (existingProject.figma_link !== figma_link) {
-      existingProject.figma_link = figma_link;
-      changedFields.push("figma_link");
-    }
-    if (existingProject.figma_iframe_link !== figma_iframe_link) {
-      existingProject.figma_iframe_link = figma_iframe_link;
-      changedFields.push("figma_iframe_link");
-    }
-    if (existingProject.github_link !== github_link) {
-      existingProject.github_link = github_link;
-      changedFields.push("github_link");
-    }
-    if (existingProject.deployed_link !== deployed_link) {
-      existingProject.deployed_link = deployed_link;
-      changedFields.push("deployed_link");
+
+    // Handle projectID update
+    if (updateData.projectID && existingProject.projectID !== updateData.projectID) {
+      existingProject.projectID = updateData.projectID;
+      changedFields.push('projectID');
     }
 
     const updatedProject = await existingProject.save();
@@ -133,14 +63,14 @@ export const PUT = async (request: NextRequest) => {
       success: true,
       message: "Project updated successfully!",
       project: updatedProject,
-      updatedFields: changedFields,
+      updatedFields: changedFields
     });
   } catch (error) {
     console.log(error);
     return NextResponse.json({
       status: 500,
       success: false,
-      error: "Something went wrong!",
+      error: "Something went wrong!"
     });
   }
 };

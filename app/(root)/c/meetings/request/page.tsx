@@ -1,3 +1,4 @@
+"use client";
 import ZoomVideo from "@/components/icons/ZoomVideo";
 
 import MainContainer from "@/components/reusables/mainContainer";

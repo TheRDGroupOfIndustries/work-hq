@@ -19,12 +19,15 @@ export interface UserDBTypes {
 
   // Developer-specific fields
   workStatus?: "loggedIn" | "loggedOut" | "onBreak";
-  workingHoursRanges?: { startTime: string; endTime: string }[]; // Working hours array
+  workingHoursRanges?: { 
+    date:Date;
+    timeRange: {startTime: string; endTime: string}[] 
+  }[]; // Working hours array
   joiningDate?: Date;
   position?: string[]; // Developer positions
   myProjects?: Schema.Types.ObjectId[]; // Reference to projects
   totalSpendHours?: { date: Date; totalHours: number; loggedInTime: number }[];
-  performance?: number; // Calculated dynamically
+  performance?: { month: number; year: number; performance: number };
 
   // Vendor-specific fields
   vendorBasedProjects?: Schema.Types.ObjectId[]; // Fetched from Projects schema
@@ -58,7 +61,12 @@ const userSchema = new Schema<UserDBTypes>(
 
     // Developer fields
     workStatus: { type: String, enum: ["loggedIn", "loggedOut", "onBreak"] },
-    workingHoursRanges: [{ startTime: String, endTime: String }],
+    workingHoursRanges: [
+      {
+        date: { type: Date },
+        timeRange: [{ startTime: String, endTime: String }],
+      },
+    ],
     joiningDate: { type: Date },
     position: [{ type: String }],
     myProjects: [{ type: Schema.Types.ObjectId, ref: "Project" }],
@@ -69,7 +77,7 @@ const userSchema = new Schema<UserDBTypes>(
         loggedInTime: { type: Number },
       },
     ],
-    performance: { type: Number },
+    performance: { month: { type: Number }, year: { type: Number }, performance: { type: Number } },
 
     // Vendor-based project references
     vendorBasedProjects: [{ type: Schema.Types.ObjectId, ref: "Project" }],

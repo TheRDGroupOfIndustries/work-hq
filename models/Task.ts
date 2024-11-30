@@ -4,9 +4,9 @@ import { Schema, model, models } from "mongoose";
 export interface TaskDBTypes {
   taskNo: number; // Auto-incremented task number (backend-managed)
   issueSubject: string; // Subject or description of the task
-  estimatedTime: number; // Estimated time in minutes
-  assignedTo: Schema.Types.ObjectId; // Reference to developer (User ID)
-  status: "Completed" | "pending" | "inProgress" | "refactoring"; // Task status
+  estimatedTime?: number; // Estimated time in minutes
+  assignedTo?: Schema.Types.ObjectId; // Reference to developer (User ID)
+  status: "completed" | "pending" | "inProgress" | "refactoring"; // Task status
   createdAt: Date; // Creation date of the task
   workingSince?: Date; // Start time of active work
   totalHoursSpend?: number; // Total calculated hours excluding breaks or logged-off time
@@ -19,12 +19,12 @@ const taskSchema = new Schema<TaskDBTypes>(
   {
     taskNo: { type: Number, required: true }, // Auto-incremented by backend
     issueSubject: { type: String, required: true },
-    estimatedTime: { type: Number, required: true },
-    assignedTo: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    estimatedTime: { type: Number, required: false },
+    assignedTo: { type: Schema.Types.ObjectId, ref: "User", required: false },
     status: {
       type: String,
       required: true,
-      enum: ["Completed", "pending", "inProgress", "refactoring"],
+      enum: ["completed", "pending", "inProgress", "refactoring"],
     },
     createdAt: { type: Date, required: true, default: Date.now },
     workingSince: { type: Date }, // Optional, only recorded when task is in progress
