@@ -1,33 +1,48 @@
 "use client";
 
 import { signIn, useSession } from "next-auth/react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { Button } from "../ui/button";
 import { FcGoogle } from "react-icons/fc";
 import { useEffect } from "react";
 import { FaGithub, FaLinkedin } from "react-icons/fa";
+import { authFormPages } from "@/lib/sections/authFormPages";
+import { useDispatch, useSelector } from "react-redux";
+import { setSignUpRole } from "@/redux/slices/authSlice";
+import Cookies from "js-cookie";
+import { RootState } from "@/redux/rootReducer";
 
 const Auth: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const pathname = usePathname();
-  const router = useRouter();
-  const isLogin = pathname === "/auth/sign-in";
-  const isRegister = pathname === "/auth/sign-up";
-  const isForgetPassword = pathname === "/auth/forget-password";
-  const isAdditionalStep = pathname === "/auth/additional-step";
-  const isDevSignUp = pathname === "/auth/dev-sign-up";
-  const oAuth = isLogin || isRegister || isDevSignUp;
+  // const router = useRouter();
   const { status } = useSession();
 
-  useEffect(() => {
-    // Redirect if authenticated
-    // if (status === "authenticated") {
-    //   router.replace("/");
-    // }
-  }, [status, router]);
+  const dispatch = useDispatch();
+  const SignUpRole = useSelector((state: RootState)=> state.auth.signUpRole);
+
+  useEffect(()=>{
+    if(!SignUpRole){
+    const signUpRoleCookie = Cookies.get("SignUpRole");
+    dispatch(setSignUpRole(signUpRoleCookie? signUpRoleCookie : "client"));
+    }
+  },[dispatch, SignUpRole])
+
+  // Find the current form page based on the pathname
+  const currentPage = authFormPages.find(page => pathname.includes(page.href));
+
+  // Default header if no match is found
+  const header = currentPage ? currentPage.head : "Authentication";
+
+  // Determine the type for conditional rendering
+  const type = currentPage ? currentPage.type : null;
 
   // Function to handle OAuth login with custom query parameters
   const handleOAuthSignIn = (provider: string) => {
+    if (currentPage) {
+      dispatch(setSignUpRole(currentPage.role));
+      Cookies.set("SignUpRole", currentPage.role ? currentPage.role : "null");
+    }
     signIn(provider);
   };
 
@@ -35,53 +50,35 @@ const Auth: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     <div className="w-full h-screen select-none flex-center flex-col">
       <div className="w-96 h-fit animate-slide-up p-6 rounded-lg border border-zinc-300 dark:border-zinc-800/50 border-opacity-30 shadow-md dark:shadow-muted hover:shadow-lg ease-in-out duration-300 overflow-hidden">
         <h1 className="text-2xl font-bold text-center mb-4 py-1 overflow-hidden">
-          {isLogin ? (
-            <span className="animate-slide-up">Log in</span>
-          ) : isRegister ? (
-            <span className="animate-slide-down">Sign Up</span>
-          ) : isForgetPassword ? (
-            <span className="animate-slide-down">Forget Password</span>
-          ) : isAdditionalStep ? (
-            <span className="animate-slide-down">Additional Step</span>
-          ) : isDevSignUp ? (
-            <span className="animate-slide-down">Developer Sign Up</span>
-          ) : (
-            <span className="animate-slide-down">Reset Password</span>
-          )}
+          {header}
         </h1>
 
         {children}
 
         <div className="text-center mt-6">
-          <Link
-            href={isLogin ? "/auth/sign-up" : "/auth/sign-in"}
-            className="group"
-          >
-            {isLogin ? (
-              <>
-                Don{"'"}t have an account?{" "}
-                <span className="group-hover:text-primary-green group-hover:underline underline-offset-8 ease-in-out duration-300">
-                  Sign Up
-                </span>
-              </>
-            ) : isRegister ? (
-              <>
-                Already have an account?{" "}
-                <span className="group-hover:text-primary-green group-hover:underline underline-offset-8 ease-in-out duration-300">
-                  Log in
-                </span>
-              </>
-            ) : (
-              <>
-                Remember password?{" "}
-                <span className="group-hover:text-primary-green group-hover:underline underline-offset-8 ease-in-out duration-300">
-                  Log in
-                </span>
-              </>
-            )}
-          </Link>
+          {type === "signIn" ? (
+            <Link
+              href="/auth/sign-up"
+              className="group"
+            >
+              Don{"'"}t have an account?{" "}
+              <span className="group-hover:text-primary-green group-hover:underline underline-offset-8 ease-in-out duration-300">
+                Sign Up
+              </span>
+            </Link>
+          ) : type === "signUp" ? (
+            <Link
+              href="/auth/sign-in"
+              className="group"
+            >
+              Already have an account?{" "}
+              <span className="group-hover:text-primary-green group-hover:underline underline-offset-8 ease-in-out duration-300">
+                Log in
+              </span>
+            </Link>
+          ) : null}
         </div>
-        {oAuth && (
+        {(type === "signIn" || type === "signUp") && (
           <div className="w-full flex-center flex-col gap-2 mt-4 animate-fade-in">
             <div className="flex-center gap-1">
               <span className="w-36 h-[1px] bg-[#8b8d93]"></span>
@@ -125,3 +122,4 @@ const Auth: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 };
 
 export default Auth;
+

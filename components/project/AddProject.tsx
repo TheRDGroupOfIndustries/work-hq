@@ -121,7 +121,7 @@ const AddProject = () => {
     }
   };
 
-  if (status === "unauthenticated") router.push("/auth/sign-in");
+  if (status === "unauthenticated") router.push("/auth/c-sign-in");
 
   return (
     <form onSubmit={handleSubmit} className="grid gap-4 p-10 px-80">
@@ -332,7 +332,7 @@ const AddProject = () => {
       <Button
         onClick={() => {
           if (status === "unauthenticated") {
-            router.push("/auth/sign-in");
+            router.push("/auth/c-sign-in");
           } else {
             signOut();
           }

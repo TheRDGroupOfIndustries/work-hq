@@ -13,7 +13,7 @@ import { dashboardProjectReport, dashbordHoursCount, ROLE } from "@/tempData";
 
 export default async function HomePage() {
   const session = await getServerSession();
-  if (!session) redirect("/auth/sign-in");
+  if (!session) redirect("/auth/c-sign-in");
   return (
     <MainContainer role={ROLE} >
       <Headline role={ROLE} />

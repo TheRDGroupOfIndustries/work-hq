@@ -2,15 +2,23 @@ import { authFormPages } from "@/lib/sections/authFormPages";
 
 export default async function AuthFormPage({
   params,
+  children,
 }: {
   params: { form: string };
+  children: React.ReactNode;
 }) {
-  // const session = await getServerSession();
-  // console.log(session);
-  // if (session) redirect("/");
+  const currentPage = authFormPages.find(page => params.form === page.id);
 
-  return authFormPages.map(
-    (page) => params.form === page.id && <page.sectionNode key={page.id} />
+  return (
+    <>
+      {currentPage ? (
+        <>
+          <currentPage.sectionNode key={currentPage.id} />
+          {children}
+        </>
+      ) : (
+        <div>Page not found</div>
+      )}
+    </>
   );
-  
 }

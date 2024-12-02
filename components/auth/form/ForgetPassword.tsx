@@ -61,7 +61,7 @@ const ForgetPassword = () => {
       if (res.status === 200) {
         setDisableBtn(true);
         toast.success("Check your e-mail!");
-        return router.push("/auth/sign-in");
+        return router.push("/auth/c-sign-in");
       }
     } catch (error) {
       console.log("Error", error);

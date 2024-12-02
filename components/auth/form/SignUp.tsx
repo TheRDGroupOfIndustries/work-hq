@@ -174,7 +174,7 @@ const [emailError, setEmailError] = useState("");
         // User already exists, so redirect
         setSendingOtp(false);
         toast.error("User already exists!");
-        router.push("/auth/sign-in");
+        router.push("/auth/c-sign-in");
       }
     } catch (error) {
       setSendingOtp(false);
@@ -235,7 +235,7 @@ const [emailError, setEmailError] = useState("");
 
         if (res.status === 200) {
           setSuccess(true);
-          router.push("/auth/sign-in");
+          router.push("/auth/c-sign-in");
           return "Registered successfully!";
         } else {
           setSubmitting(false);

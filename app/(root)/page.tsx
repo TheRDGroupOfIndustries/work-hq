@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 
 export default async function HomePage() {
   const session = await getServerSession();
-  if (!session) redirect("/auth/sign-in");
+  if (!session) redirect("/auth/c-sign-in");
   return (
     <main>
       <Home />

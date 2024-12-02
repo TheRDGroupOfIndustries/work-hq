@@ -5,8 +5,6 @@ import { ThemeProvider as NextThemesProvider } from "next-themes";
 import AuthSessionProvider from "@/context/SessionProvider";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
-import { store } from "@/redux/store";
-import { Provider } from "react-redux";
 
 const geistSans = localFont({
   src: "../fonts/GeistVF.woff",

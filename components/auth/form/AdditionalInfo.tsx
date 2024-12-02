@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import InputField from "@/components/ui/InputField"; // Adjust the import path as necessary
 import { useSession } from "next-auth/react";
 import { CustomUser } from "@/lib/types"; // Adjust the import path as necessary
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/rootReducer";
 
 export const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 export const phonePattern = /^\d{10}$/;
@@ -34,7 +36,9 @@ const AdditionalInfo: React.FC = () => {
   const [disableBtn, setDisableBtn] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
+  const selector = useSelector((state: RootState) => state.auth);
 
+  const signUpRole = selector.signUpRole;
   const emailInputRef = useRef<HTMLInputElement>(null);
   const phoneInputRef = useRef<HTMLInputElement>(null);
   const passwordInputRef = useRef<HTMLInputElement>(null);
@@ -108,6 +112,7 @@ const AdditionalInfo: React.FC = () => {
             phone: phone || undefined,
             password: password || undefined,
             loginStep: 1,
+            role: signUpRole, // Include the role from the cookie
           }),
         });
 
@@ -119,10 +124,9 @@ const AdditionalInfo: React.FC = () => {
 
         setSuccess(true);
         console.log("Additional info submitted:", data.message);
-        // router.push("/add-project");
-        if(user?.role === "client") {
+        if(signUpRole === "client") {
           router.push("/add-project");
-        } else if(user?.role === "developer") {
+        } else if(signUpRole === "developer") {
           router.push("/wakaTime/auth");
         } else {
           router.push("/dashboard");
@@ -154,6 +158,7 @@ const AdditionalInfo: React.FC = () => {
 
   return (
     <>
+    <div className="w-full mb-4 text-center">Additional Information needed for {signUpRole}</div>
       <form onSubmit={handleSubmit} className="animate-fade-in">
         <InputField
           type="text"

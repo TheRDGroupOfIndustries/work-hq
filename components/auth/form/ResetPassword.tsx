@@ -104,7 +104,7 @@ export default function ResetPassword({
       }
       if (res.status === 200) {
         toast.success("Your password has been rested successfully!");
-        return router.push("/auth/sign-in");
+        return router.push("/auth/c-sign-in");
       }
     } catch (error) {
       toast.error("Something went wrong!");

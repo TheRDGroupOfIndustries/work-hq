@@ -1,14 +1,17 @@
-import type { Metadata } from "next";
+"use client";
 import Auth from "@/components/auth/Auth";
-
-export const metadata: Metadata = {
-  title: "Work HQ - Auth",
-};
+import store from "@/redux/store";
+import { Provider } from "react-redux";
 
 export default function AuthLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return <Auth>{children}</Auth>;
+  
+  return (
+  <Provider store={store}>
+    <Auth>{children}</Auth>
+  </Provider>
+  );
 }

@@ -33,30 +33,6 @@ const SignIn: React.FC = () => {
       router.replace("/");
     }
   }, [router, session]);
-  // const handleEmailOrPhone = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   let inputValue = e.target.value;
-  //   setEmailOrPhone(inputValue);
-  //   setEmail("");
-
-  //   if (emailPattern.test(inputValue)) {
-  //     setIsEmail(true);
-  //     setEmail(inputValue);
-  //     toast.success("Valid e-mail");
-  //     setDisableBtn(false);
-  //   } else {
-  //     setIsEmail(false);
-
-  //     if (/^\d+$/.test(inputValue)) {
-  //       inputValue = inputValue.slice(0, 10);
-  //       setEmailOrPhone(inputValue);
-  //       if (inputValue.length === 10) toast.success("Valid phone number");
-
-  //       setDisableBtn(inputValue.length !== 10);
-  //     } else {
-  //       setDisableBtn(true);
-  //     }
-  //   }
-  // };
 
   const handleEmailOrPhone = (e: React.ChangeEvent<HTMLInputElement>) => {
     let inputValue = e.target.value;

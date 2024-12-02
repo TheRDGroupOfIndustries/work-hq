@@ -141,6 +141,6 @@ export const authOptions: NextAuthOptions = {
     },
   },
   pages: {
-    signIn: "/auth/sign-in",
+    signIn: "/auth/c-sign-in",
   },
 };

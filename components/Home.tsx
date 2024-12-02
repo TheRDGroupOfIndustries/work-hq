@@ -8,12 +8,25 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { useEffect} from "react";
 import { CustomUser } from "@/lib/types";
+import { useDispatch, useSelector } from "react-redux";
+import { setSignUpRole } from "@/redux/slices/authSlice";
+import Cookies from "js-cookie";
+import { RootState } from "@/redux/rootReducer";
 
 export default function Home() {
   const { data: session, status } = useSession();
   const user = session?.user as CustomUser;
   const router = useRouter();
-  // const prevSessionRef = useRef(session);
+  const dispatch = useDispatch();
+  
+  const SignUpRole = useSelector((state: RootState)=> state.auth.signUpRole);
+
+  useEffect(()=>{
+    if(!SignUpRole){
+    const signUpRoleCookie = Cookies.get("SignUpRole");
+    dispatch(setSignUpRole(signUpRoleCookie? signUpRoleCookie : "client"));
+    }
+  },[dispatch, SignUpRole])
 
   useEffect(() => {
     // if (prevSessionRef.current !== session) {
@@ -22,21 +35,25 @@ export default function Home() {
     // }
   }, [session]);
 useEffect(() => {
+  console.log("Sign Up Role", SignUpRole);
+  if(!SignUpRole || SignUpRole === "null"){
+    return router.replace("/auth/c-sign-in");
+  }
   if (status === "unauthenticated") {
-    router.replace("/auth/sign-in");
+    router.replace("/auth/c-sign-in");
   } else if (user?.loginStep === 0) {
     router.replace("/auth/additional-step");
   } else if (user?.loginStep === 1) {
-    if (user?.allProjects?.length === 0 && user?.role === "client") {
+    if (user?.allProjects?.length === 0 && SignUpRole === "client") {
       router.replace("/add-project");
-    } else if (user?.role === "developer" && !user?.wakaTime?.access_token) {
+    } else if (SignUpRole === "developer" && !user?.wakaTime?.access_token) {
       router.replace("/wakaTime/auth");
     } else {
-      alert("Invalid user role");
-      router.replace("/");
+      // alert("Invalid user role");
+      // router.replace("/");
     }
   }
-}, [status, user, router]);
+}, [status, user, router, SignUpRole]);
 
   return (
     <main className="w-full h-screen relative select-none flex-center flex-col gap-4 overflow-hidden">
@@ -97,7 +114,7 @@ useEffect(() => {
           <Button
             onClick={() => {
               if (status === "unauthenticated") {
-                router.push("/auth/sign-in");
+                router.push("/auth/c-sign-in");
               } else {
                 signOut();
               }
