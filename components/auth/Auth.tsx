@@ -15,14 +15,21 @@ const Auth: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const isRegister = pathname === "/auth/sign-up";
   const isForgetPassword = pathname === "/auth/forget-password";
   const isAdditionalStep = pathname === "/auth/additional-step";
-  const oAuth = isLogin || isRegister;
+  const isDevSignUp = pathname === "/auth/dev-sign-up";
+  const oAuth = isLogin || isRegister || isDevSignUp;
   const { status } = useSession();
 
   useEffect(() => {
+    // Redirect if authenticated
     // if (status === "authenticated") {
     //   router.replace("/");
     // }
   }, [status, router]);
+
+  // Function to handle OAuth login with custom query parameters
+  const handleOAuthSignIn = (provider: string) => {
+    signIn(provider);
+  };
 
   return (
     <div className="w-full h-screen select-none flex-center flex-col">
@@ -36,8 +43,9 @@ const Auth: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             <span className="animate-slide-down">Forget Password</span>
           ) : isAdditionalStep ? (
             <span className="animate-slide-down">Additional Step</span>
-          )
-           : (
+          ) : isDevSignUp ? (
+            <span className="animate-slide-down">Developer Sign Up</span>
+          ) : (
             <span className="animate-slide-down">Reset Password</span>
           )}
         </h1>
@@ -82,34 +90,31 @@ const Auth: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             </div>
             <div className="w-full flex-between gap-2 px-10 animate-slide-up">
               <Button
-                onClick={() => signIn("google")}
+                onClick={() => handleOAuthSignIn("google")}
                 disabled={status === "loading"}
-                title={status === "loading" ? "Loggin in..." : "Login"}
+                title={status === "loading" ? "Logging in..." : "Login"}
                 size="icon"
                 className="text-md"
               >
                 <FcGoogle size={20} />
-                {/* {status === "loading" ? "Loading..." : "Login"} */}
               </Button>
               <Button
-                onClick={() => signIn("github")}
+                onClick={() => handleOAuthSignIn("github")}
                 disabled={status === "loading"}
-                title={status === "loading" ? "Loggin in..." : "Login"}
+                title={status === "loading" ? "Logging in..." : "Login"}
                 size="icon"
                 className="text-md"
               >
                 <FaGithub size={20} />
-                {/* {status === "loading" ? "Loading..." : "Login"} */}
               </Button>
               <Button
-                onClick={() => signIn("linkedin")}
+                onClick={() => handleOAuthSignIn("linkedin")}
                 disabled={status === "loading"}
-                title={status === "loading" ? "Loggin in..." : "Login"}
+                title={status === "loading" ? "Logging in..." : "Login"}
                 size="icon"
                 className="text-md"
               >
                 <FaLinkedin size={20} />
-                {/* {status === "loading" ? "Loading..." : "Login"} */}
               </Button>
             </div>
           </div>

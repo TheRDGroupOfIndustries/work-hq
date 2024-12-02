@@ -119,7 +119,14 @@ const AdditionalInfo: React.FC = () => {
 
         setSuccess(true);
         console.log("Additional info submitted:", data.message);
-        router.push("/add-project");
+        // router.push("/add-project");
+        if(user?.role === "client") {
+          router.push("/add-project");
+        } else if(user?.role === "developer") {
+          router.push("/wakaTime/auth");
+        } else {
+          router.push("/dashboard");
+        }
         return data.message;
       } catch (error) {
         console.log("Error submitting additional info:", error);

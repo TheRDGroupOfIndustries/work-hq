@@ -14,8 +14,9 @@ export const POST = async (request: NextRequest) => {
     isEmail,
     otp,
     checkOtpCode,
+    role = "client",
   } = await request.json();
-
+  console.log("role: ", role);
   // console.log(firstName,lastName,email,password,phone,isEmail,otp,checkOtpCode);
 
   await connectToMongoDB();
@@ -96,6 +97,7 @@ export const POST = async (request: NextRequest) => {
           loginStep: 0,
           password: hashPassword,
           auth_integrated: "email-password",
+          role,
         });
       } else {
         return new NextResponse(
@@ -115,6 +117,7 @@ export const POST = async (request: NextRequest) => {
           loginStep: 0,
           password: hashPassword,
           auth_integrated: "phone-password",
+          role,
         });
       } else {
         return new NextResponse(

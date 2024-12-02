@@ -81,7 +81,7 @@ export const authOptions: NextAuthOptions = {
         console.log("Credentials provider sign-in");
         return true;
       }
-
+      // console.log("Current url : ", window.location.href);
       if (
         account?.provider &&
         ["google", "github", "linkedin"].includes(account.provider)

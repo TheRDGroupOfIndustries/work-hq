@@ -4,11 +4,17 @@ export interface UserDBTypes {
   username?: string; // Uniquely generated
   firstName: string;
   lastName?: string;
+  wakaTime?:{
+    user_id: string;
+    access_token: string;
+    refresh_token: string;
+    expires_at: Date;
+  }
   profileImage?: string;
   authIntegrated?: string[]; // Auth providers integrated
   email: string;
   phone: string;
-  loginStep?: [0, 1, 3]; // 0: Registration using phone or email, 1: userName, password & additonal info , 3: Create first project
+  loginStep?: number; // 0: Registration using phone or email, 1: userName, password & additonal info , 3: Create first project
   role: "client" | "vendorClient" | "developer" | "vendor" | "manager" | "ceo"; // Role enum
   password?: string;
 
@@ -38,6 +44,12 @@ export interface UserDBTypes {
 
 const userSchema = new Schema<UserDBTypes>(
   {
+    wakaTime: {
+      user_id: { type: String, required: false },
+      access_token: { type: String, required: false },
+      refresh_token: { type: String, required: false },
+      expires_at: { type: Date, required: false },
+    },
     username: { type: String, required: false},
     profileImage: { type: String, required: false },
     authIntegrated : [{ type: String, required: false }],

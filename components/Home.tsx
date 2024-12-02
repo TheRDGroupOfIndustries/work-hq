@@ -4,13 +4,14 @@ import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { CustomUser } from "@/lib/types";
+// import { CustomUser } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { useEffect} from "react";
+import { UserDBTypes } from "@/models/User";
 
 export default function Home() {
   const { data: session, status } = useSession();
-  const user = session?.user as CustomUser;
+  const user = session?.user as UserDBTypes;
   const router = useRouter();
   // const prevSessionRef = useRef(session);
 
@@ -20,16 +21,21 @@ export default function Home() {
     //   prevSessionRef.current = session;
     // }
   }, [session]);
-
-  useEffect(() => {
-    if (status === "unauthenticated") {
-      router.replace("/auth/sign-in");
-    } else if (user?.loginStep === 0) {
-      router.replace("/auth/additional-step");
-    } else if(user?.loginStep === 1 && user?.allProjects?.length === 0) {
+useEffect(() => {
+  if (status === "unauthenticated") {
+    router.replace("/auth/sign-in");
+  } else if (user?.loginStep === 0) {
+    router.replace("/auth/additional-step");
+  } else if (user?.loginStep === 1) {
+    if (user?.allProjects?.length === 0 && user?.role === "client") {
+      router.replace("/add-project");
+    } else if (user?.role === "developer" && !user?.wakaTime?.access_token) {
+      router.replace("/wakaTime/auth");
+    } else {
       router.replace("/add-project");
     }
-  }, [status, user, router]);
+  }
+}, [status, user, router]);
 
   return (
     <main className="w-full h-screen relative select-none flex-center flex-col gap-4 overflow-hidden">
@@ -54,7 +60,7 @@ export default function Home() {
                 <div className="w-10 h-10 rounded-full overflow-hidden">
                   <Image
                     src={
-                      user?.profile_image ?? user?.image ?? "/assets/user.png"
+                      user?.profileImage ?? user?.profileImage ?? "/assets/user.png"
                     }
                     alt="Profile Image"
                     width="100"
@@ -64,7 +70,7 @@ export default function Home() {
                 </div>
                 <div className="block w-fit h-fit space-y-1">
                   <h4 className="line-clamp-1">
-                    {user?.firstName ?? user?.name ?? "user name"}
+                    {user?.firstName ?? user?.firstName ?? "user name"}
                   </h4>
                   <h6 className="text-xs line-clamp-1">{user?.role}</h6>
                 </div>
