@@ -7,11 +7,11 @@ import Image from "next/image";
 // import { CustomUser } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { useEffect} from "react";
-import { UserDBTypes } from "@/models/User";
+import { CustomUser } from "@/lib/types";
 
 export default function Home() {
   const { data: session, status } = useSession();
-  const user = session?.user as UserDBTypes;
+  const user = session?.user as CustomUser;
   const router = useRouter();
   // const prevSessionRef = useRef(session);
 
@@ -32,7 +32,8 @@ useEffect(() => {
     } else if (user?.role === "developer" && !user?.wakaTime?.access_token) {
       router.replace("/wakaTime/auth");
     } else {
-      router.replace("/add-project");
+      alert("Invalid user role");
+      router.replace("/");
     }
   }
 }, [status, user, router]);

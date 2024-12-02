@@ -2,14 +2,22 @@ import { User as NextAuthUser } from "next-auth";
 
 export interface CustomUser extends NextAuthUser {
   _id: string;
-  username: string;
+  username?: string; // Uniquely generated
   firstName: string;
   lastName?: string;
-  loginStep: number; // 0: Registration using phone or email, 1: userName, password & additonal info , 3: Create first project
+  wakaTime?:{
+    user_id: string;
+    access_token: string;
+    refresh_token: string;
+    expires_at: Date;
+  }
+  profileImage?: string;
+  authIntegrated?: string[]; // Auth providers integrated
   email: string;
   phone: string;
-  role: "client" | "vendorClient" | "developer" | "vendor" | "manager" | "ceo";
-  password: string;
+  loginStep?: number; // 0: Registration using phone or email, 1: userName, password & additonal info , 3: Create first project
+  role: "client" | "vendorClient" | "developer" | "vendor" | "manager" | "ceo"; // Role enum
+  password?: string;
 
   // Fields common to some roles
   clients?: string[]; // Applicable for vendors managing clients
@@ -18,33 +26,18 @@ export interface CustomUser extends NextAuthUser {
 
   // Developer-specific fields
   workStatus?: "loggedIn" | "loggedOut" | "onBreak";
-  workingHoursRanges?: { startTime: string; endTime: string }[]; // Working hours array
+  workingHoursRanges?: { 
+    date:Date;
+    timeRange: {startTime: string; endTime: string}[] 
+  }[]; // Working hours array
   joiningDate?: Date;
   position?: string[]; // Developer positions
   myProjects?: string[]; // Reference to projects
   totalSpendHours?: { date: Date; totalHours: number; loggedInTime: number }[];
-  performance?: number; // Calculated dynamically
+  performance?: { month: number; year: number; performance: number };
 
   // Vendor-specific fields
-  vendorBasedProjects?: string[]; // Fetched from Projects schema
-
-  // Fields for managers and CEOs (minimal role-specific fields)
-  // No additional fields for these roles at the moment
-
-  // Additional fields
-  profile_image: string;
-  auth_integrated: string[];
-  // projects?: { _id: string; title: string }[];
-
-  resetPasswordToken?: string;
-  resetPasswordTokenExpiry?: Date;
-
-  company_name?: string;
-  organization_details?: string;
-  department?: string;
-  website?: string;
-  address?: string;
-  preferred_communication?: string[];
+  vendorBasedProjects?: string[];
 }
 
 // project types
