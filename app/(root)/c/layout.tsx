@@ -10,10 +10,7 @@ export default async function RootLayout({
   return (
     <>
       <Navbar role={ROLE} />
-      <div className=" min-h-[calc(100vh-80px)] h-full   flex flex-row">
-        {/* <DesktopSidebar role={ROLE} /> */}
-        {children}
-      </div>
+      {children}
     </>
   );
 }
