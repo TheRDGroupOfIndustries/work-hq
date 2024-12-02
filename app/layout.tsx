@@ -4,8 +4,6 @@ import localFont from "next/font/local";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import AuthSessionProvider from "@/context/SessionProvider";
 import { Toaster } from "@/components/ui/sonner";
-// import connectToMongoDB from "@/utils/db";
-import ThemeToggle from "@/components/ui/ThemeToggle";
 import "./globals.css";
 
 const geistSans = localFont({
@@ -43,7 +41,6 @@ export default async function RootLayout({
             enableSystem
           >
             {children}
-            <ThemeToggle />
             <Toaster />
           </NextThemesProvider>
         </AuthSessionProvider>

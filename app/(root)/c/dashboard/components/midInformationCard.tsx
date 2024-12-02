@@ -1,7 +1,7 @@
 import Deadline from "@/components/icons/Deadline";
 import ProjectCompletion from "@/components/icons/ProjectCompletion";
 import WorkingTeamCount from "@/components/icons/WorkingTeamCount";
-import Container from "@/components/reusables/Container";
+import Container from "@/components/reusables/wrapper/Container";
 
 const midCardData = [
   {
@@ -26,7 +26,7 @@ export default function MidInformationCard() {
   return (
     <>
       <Container className=" hidden md:block   ">
-        <div className="w-full  h-[150px] flex flex-row items-center text-nowrap">
+        <div className="w-full  h-[130px] flex flex-row items-center text-nowrap">
           <div className="w-full h-full flex flex-col items-center justify-center gap-4 ">
             <h4 className="text-lg uppercase font-semibold">
               {midCardData[0].title}

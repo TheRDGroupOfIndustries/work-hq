@@ -12,9 +12,12 @@ const config: Config = {
       colors: {
         "primary-sky-blue": "var(--primary-sky-blue)",
         "primary-blue": "var(--primary-blue)",
+        "primary-vendor": "var(--primary-vendor)",
         "dark-gray" : 'var(--dark-gray)',
         "dark-blue" : 'var(--dark-blue)',
+        "light-gray" : 'var(--light-gray)',
         "primary-green": "#2fff00",
+        "vendor-dark" : "var(--vendor-dark)",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         card: {
