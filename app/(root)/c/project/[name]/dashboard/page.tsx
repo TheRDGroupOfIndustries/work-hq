@@ -1,8 +1,8 @@
 import MainContainer from "@/components/reusables/wrapper/mainContainer";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
-import HoursCountCard from "../../../../components/reusables/components/hoursCountCard";
-import ProjectReportCard from "../../../../components/reusables/components/projectReportCard";
+import HoursCountCard from "@/components/reusables/components/hoursCountCard";
+import ProjectReportCard from "@/components/reusables/components/projectReportCard";
 import Deployment from "./components/deployment";
 import Figma from "./components/figma";
 import Headline from "./components/headline";

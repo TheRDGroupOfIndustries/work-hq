@@ -19,6 +19,7 @@
     "@radix-ui/react-select": "^2.1.2",
     "@radix-ui/react-slot": "^1.1.0",
     "@radix-ui/react-tabs": "^1.1.1",
+    "@reduxjs/toolkit": "^2.4.0",
     "@stream-io/video-react-sdk": "^1.7.27",
     "bcryptjs": "^2.4.3",
     "class-variance-authority": "^0.7.0",
