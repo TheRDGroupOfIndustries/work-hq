@@ -1,17 +1,16 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-// import { useSession } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 import { useProjectContext } from '@/context/ProjectProvider';
 import { streamVideo } from '@/lib/stream-video';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import SquareButton from "@/components/reusables/wrapper/squareButton";
-import Container from "@/components/reusables/wrapper/Container";
-import MainContainer from "@/components/reusables/wrapper/mainContainer";
+import SquareButton from "@/components/reusables/squareButton";
+import Container from "@/components/reusables/Container";
+import MainContainer from "@/components/reusables/mainContainer";
 import { ChevronDown, Plus } from 'lucide-react';
 import { useRouter } from "next/navigation";
 import ZoomVideo from "@/components/icons/ZoomVideo";
-import { ROLE } from '@/tempData';
 
 interface Meeting {
   _id: string;
@@ -25,7 +24,7 @@ interface Meeting {
 }
 
 export default function MeetingsDetails() {
-  // const { data: session } = useSession();
+  const { data: session } = useSession();
   const { selectedProject } = useProjectContext();
   const [meetings, setMeetings] = useState<Meeting[]>([]);
   const navigate = useRouter();
@@ -52,7 +51,7 @@ export default function MeetingsDetails() {
   };
 
   return (
-    <MainContainer role={ROLE}>
+    <MainContainer>
       <div className="w-full flex flex-row items-center justify-between">
         <div className="flex flex-col gap-1">
           <h1 className="text-3xl font-semibold">Meetings detail</h1>

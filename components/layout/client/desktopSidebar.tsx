@@ -50,7 +50,6 @@ export default function DesktopSidebar({ role }: { role: Role }) {
       link: "/c/helpdesk",
     },
   ];
-  
   return (
     <div
       className={`sticky    left-0 top-[70px] hidden  lg:w-[250px] h-[calc(100vh-70px)]  p-4 overflow-auto md:flex flex-col 
