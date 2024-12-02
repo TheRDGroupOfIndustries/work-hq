@@ -12,6 +12,7 @@ import { ChevronDown, Plus } from 'lucide-react';
 import { useRouter } from "next/navigation";
 import ZoomVideo from "@/components/icons/ZoomVideo";
 import { ROLE } from '@/tempData';
+import Headline from './components/headline';
 
 interface Meeting {
   _id: string;
@@ -61,20 +62,9 @@ export default function MeetingsDetails() {
           </p>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-4">
-          <SquareButton
-            onClick={() => {
-              navigate.push("/meetings/request");
-            }}
-          >
-            <Plus color="#155EEF" />
-            Request Meeting
-          </SquareButton>
+        <Headline/>
 
-          <SquareButton className="text-[#6A6A6A] w-fit self-end">
-            7 days <ChevronDown color="#6A6A6A" />
-          </SquareButton>
-        </div>
+        
       </div>
 
       <Container className="p-0 sm:p-0 md:p-0 lg:p-0">
