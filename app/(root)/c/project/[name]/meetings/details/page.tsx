@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation";
 import ZoomVideo from "@/components/icons/ZoomVideo";
 import { ROLE } from '@/tempData';
 import Headline from './components/headline';
+import { VENDOR } from '@/types';
 
 interface Meeting {
   _id: string;
@@ -62,12 +63,32 @@ export default function MeetingsDetails() {
 
       <Container className="p-0 sm:p-0 md:p-0 lg:p-0">
         <Tabs defaultValue="allMetting" className="">
-          <TabsList className="flex rounded-none h-[65px] shadow-[3px_3px_10px_0px_#789BD399_inset,-5px_-5px_15px_0px_#FFFFFF] rounded-t-xl flex-row items-center justify-around w-full bg-transparent font-semibold text-black px-0 my-">
-            <TabsTrigger value="allMetting">All Meetings</TabsTrigger>
-            <TabsTrigger value="pending">Pending</TabsTrigger>
-            <TabsTrigger value="requested">Requested</TabsTrigger>
-            <TabsTrigger value="attened">Attended</TabsTrigger>
-            <TabsTrigger value="overdue">Overdue</TabsTrigger>
+          <TabsList className="flex rounded-none h-[65px] shadow-[3px_3px_10px_0px_#789BD399_inset,-5px_-5px_15px_0px_#FFFFFF] rounded-t-xl flex-row items-center justify-around w-full bg-transparent font-semibold text-black px-0 ">
+            <TabsTrigger className={`${
+                ROLE === VENDOR
+                  ? "data-[state=active]:border-vendor-dark"
+                  : "data-[state=active]:border-primary-blue"
+              } `} value="allMetting">All Meetings</TabsTrigger>
+            <TabsTrigger className={`${
+                ROLE === VENDOR
+                  ? "data-[state=active]:border-vendor-dark"
+                  : "data-[state=active]:border-primary-blue"
+              } `} value="pending">Pending</TabsTrigger>
+            <TabsTrigger className={`${
+                ROLE === VENDOR
+                  ? "data-[state=active]:border-vendor-dark"
+                  : "data-[state=active]:border-primary-blue"
+              } `} value="requested">Requested</TabsTrigger>
+            <TabsTrigger className={`${
+                ROLE === VENDOR
+                  ? "data-[state=active]:border-vendor-dark"
+                  : "data-[state=active]:border-primary-blue"
+              } `} value="attened">Attended</TabsTrigger>
+            <TabsTrigger className={`${
+                ROLE === VENDOR
+                  ? "data-[state=active]:border-vendor-dark"
+                  : "data-[state=active]:border-primary-blue"
+              } `} value="overdue">Overdue</TabsTrigger>
           </TabsList>
           <TabsContent value="allMetting">
             <div className="w-full h-full flex flex-col">

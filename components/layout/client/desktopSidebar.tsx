@@ -17,37 +17,37 @@ export default function DesktopSidebar({ role }: { role: Role }) {
       id: "1",
       title: "Dashboard",
       Icon: ChartNoAxesColumn,
-      link: "/c/dashboard",
+      link: "/c/project/something/dashboard",
     },
     {
       id: "2",
       title: "Assets & Scope",
       Icon: AssetsAndScope,
-      link: "/c/assets&scope",
+      link: "/c/project/something/assets&scope",
     },
     {
       id: "3",
       title: "Meetings",
       Icon: Meeting,
-      link: "/c/meetings/details",
+      link: "/c/project/something/meetings/details",
     },
     {
       id: "4",
       title: "Chats",
       Icon: Chats,
-      link: "/c/chats",
+      link: "/c/project/something/chats",
     },
     {
       id: "5",
       title: "Payments",
       Icon: AssetsAndScope,
-      link: "/c/payments",
+      link: "/c/project/something/payments",
     },
     {
       id: "6",
       title: "Helpdesk",
       Icon: Helpdesk,
-      link: "/c/helpdesk",
+      link: "/c/project/something/helpdesk",
     },
   ];
   return (

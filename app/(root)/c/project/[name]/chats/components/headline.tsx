@@ -1,30 +1,28 @@
 "use client";
+import WrHeadline from "@/components/reusables/wrapper/Headline";
 import SquareButton from "@/components/reusables/wrapper/squareButton";
+import { Role, VENDOR } from "@/types";
 import { Plus } from "lucide-react";
-
 export default function Headline({
+  role,
   setIsAddChatOpen,
 }: {
+  role: Role;
   setIsAddChatOpen: (value: boolean) => void;
 }) {
   return (
-    <div className=" w-full  flex flex-row items-center justify-between">
-      <div className="flex flex-col gap-1">
-        {/* headline */}
-        <h1 className="text-3xl font-semibold">Chats</h1>
-        <p className="text-[#6A6A6A] text-base font-normal">
-          {"Project / chats"}
-        </p>
-      </div>
-
+    <WrHeadline title="Chats">
       <SquareButton
+        role={role}
         onClick={() => {
           setIsAddChatOpen(true);
         }}
       >
-        <Plus color="#155EEF" />
+        <Plus
+          color={role === VENDOR ? "var(--vendor-dark)" : "var(--primary-blue)"}
+        />
         Add Chat
       </SquareButton>
-    </div>
+    </WrHeadline>
   );
 }
