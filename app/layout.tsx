@@ -36,7 +36,7 @@ export default async function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Provider store={store}>
+        {/* <Provider store={store}> */}
         <AuthSessionProvider session={session}>
           <NextThemesProvider
             attribute="class"
@@ -47,7 +47,7 @@ export default async function RootLayout({
             <Toaster />
           </NextThemesProvider>
         </AuthSessionProvider>
-        </Provider>
+        {/* </Provider> */}
       </body>
     </html>
   );
