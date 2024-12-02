@@ -1,17 +1,17 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-// import { useSession } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 import { useProjectContext } from '@/context/ProjectProvider';
 import { streamVideo } from '@/lib/stream-video';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import SquareButton from "@/components/reusables/wrapper/squareButton";
 import Container from "@/components/reusables/wrapper/Container";
 import MainContainer from "@/components/reusables/wrapper/mainContainer";
-import { ChevronDown, Plus } from 'lucide-react';
 import { useRouter } from "next/navigation";
 import ZoomVideo from "@/components/icons/ZoomVideo";
 import { ROLE } from '@/tempData';
+import Headline from './components/headline';
 
 interface Meeting {
   _id: string;
@@ -25,7 +25,7 @@ interface Meeting {
 }
 
 export default function MeetingsDetails() {
-  // const { data: session } = useSession();
+  const { data: session } = useSession();
   const { selectedProject } = useProjectContext();
   const [meetings, setMeetings] = useState<Meeting[]>([]);
   const navigate = useRouter();
@@ -53,30 +53,7 @@ export default function MeetingsDetails() {
 
   return (
     <MainContainer role={ROLE}>
-      <div className="w-full flex flex-row items-center justify-between">
-        <div className="flex flex-col gap-1">
-          <h1 className="text-3xl font-semibold">Meetings detail</h1>
-          <p className="text-[#6A6A6A] text-base font-normal">
-            {"Project / meetings"}
-          </p>
-        </div>
-
-        <div className="flex flex-col sm:flex-row gap-4">
-          <SquareButton
-            onClick={() => {
-              navigate.push("/meetings/request");
-            }}
-          >
-            <Plus color="#155EEF" />
-            Request Meeting
-          </SquareButton>
-
-          <SquareButton className="text-[#6A6A6A] w-fit self-end">
-            7 days <ChevronDown color="#6A6A6A" />
-          </SquareButton>
-        </div>
-      </div>
-
+      <Headline />
       <Container className="p-0 sm:p-0 md:p-0 lg:p-0">
         <Tabs defaultValue="allMetting" className="">
           <TabsList className="flex rounded-none h-[65px] shadow-[3px_3px_10px_0px_#789BD399_inset,-5px_-5px_15px_0px_#FFFFFF] rounded-t-xl flex-row items-center justify-around w-full bg-transparent text-base font-semibold text-black px-0 my-">

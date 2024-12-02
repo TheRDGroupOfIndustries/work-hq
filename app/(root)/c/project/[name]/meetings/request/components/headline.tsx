@@ -1,14 +1,19 @@
 "use client";
 import SquareButton from "@/components/reusables/wrapper/squareButton";
 import { Plus } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
-export default function RequestMeetingHeadline({
+export default function Headline({
   handleSubmit,
 }: {
   handleSubmit: () => void;
 }) {
-  const navigate = useRouter();
+  const pathname = usePathname();
+  const router = useRouter()
+  const handleNavigation = () => {
+    const updatedPath = pathname.replace("request","details"); 
+    router.push(updatedPath); 
+  };
   return (
     <div className=" w-full my-4  flex flex-row items-center justify-between">
       <div className="flex flex-col gap-1">
@@ -22,9 +27,7 @@ export default function RequestMeetingHeadline({
       <div className="flex flex-row gap-4">
         <SquareButton
           className="text-[#6A6A6A]"
-          onClick={() => {
-            navigate.push("/c/meetings/details");
-          }}
+          onClick={() => handleNavigation()}
         >
           Cancel
         </SquareButton>
