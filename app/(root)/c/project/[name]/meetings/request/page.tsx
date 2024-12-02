@@ -1,12 +1,11 @@
 "use client";
 import ZoomVideo from "@/components/icons/ZoomVideo";
 
-import MainContainer from "@/components/reusables/mainContainer";
+import MainContainer from "@/components/reusables/wrapper/mainContainer";
 import { useCallback, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useProjectContext } from '@/context/ProjectProvider';
 import { streamVideo } from '@/lib/stream-video';
-import RequestMeetingHeadline from './components/requestMeetingHeadline';
 import { Calendar } from "@/components/ui/calendar";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -18,6 +17,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import Headline from "./components/headline";
+import { ROLE } from "@/tempData";
 
 
 
@@ -120,8 +121,8 @@ export default function MeetingsRequest() {
     setEndTime("");
   };
   return (
-    <MainContainer>
-      <RequestMeetingHeadline handleSubmit={handleSubmit} />
+    <MainContainer role={ROLE}>
+      <Headline handleSubmit={handleSubmit} />
 
       <div className="w-full  flex flex-row gap-5">
         <div className="w-1/2  flex flex-col gap-7 rounded-3xl shadow-[5px_5px_20px_0px_#7BA9EF99,-5px_-5px_20px_0px_#FFFFFF,5px_5px_20px_0px_#7BA9EF99_inset,-5px_-5px_20px_0px_#FFFFFF_inset] p-6">

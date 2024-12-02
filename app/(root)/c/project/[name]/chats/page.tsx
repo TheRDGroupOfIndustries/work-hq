@@ -2,11 +2,12 @@
 import MainContainer from "@/components/reusables/wrapper/mainContainer";
 import { useState } from "react";
 import Headline from "./components/headline";
+import { ROLE } from "@/tempData";
 
 export default function Chats() {
   const [isAddChatOpen, setIsAddChatOpen] = useState(false);
   return (
-    <MainContainer>
+    <MainContainer role={ROLE}>
       {isAddChatOpen && <AddChat setIsAddChatOpen={setIsAddChatOpen} />}
 
       <Headline setIsAddChatOpen={setIsAddChatOpen} />
