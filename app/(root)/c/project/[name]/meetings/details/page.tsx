@@ -55,13 +55,6 @@ export default function MeetingsDetails() {
   return (
     <MainContainer role={ROLE}>
       <div className="w-full flex flex-row items-center justify-between">
-        <div className="flex flex-col gap-1">
-          <h1 className="text-3xl font-semibold">Meetings detail</h1>
-          <p className="text-[#6A6A6A] text-base font-normal">
-            {"Project / meetings"}
-          </p>
-        </div>
-
         <Headline/>
 
         
@@ -69,7 +62,7 @@ export default function MeetingsDetails() {
 
       <Container className="p-0 sm:p-0 md:p-0 lg:p-0">
         <Tabs defaultValue="allMetting" className="">
-          <TabsList className="flex rounded-none h-[65px] shadow-[3px_3px_10px_0px_#789BD399_inset,-5px_-5px_15px_0px_#FFFFFF] rounded-t-xl flex-row items-center justify-around w-full bg-transparent text-base font-semibold text-black px-0 my-">
+          <TabsList className="flex rounded-none h-[65px] shadow-[3px_3px_10px_0px_#789BD399_inset,-5px_-5px_15px_0px_#FFFFFF] rounded-t-xl flex-row items-center justify-around w-full bg-transparent font-semibold text-black px-0 my-">
             <TabsTrigger value="allMetting">All Meetings</TabsTrigger>
             <TabsTrigger value="pending">Pending</TabsTrigger>
             <TabsTrigger value="requested">Requested</TabsTrigger>
