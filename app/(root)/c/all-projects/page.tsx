@@ -1,11 +1,10 @@
-import MainContainer from "@/components/reusables/mainContainer";
+import MainContainer from "@/components/reusables/wrapper/mainContainer";
 import Headline from "./components/headline";
-
 
 export default function AllProjects() {
   return (
     <MainContainer>
-        <Headline/>
+      <Headline />
     </MainContainer>
-  )
+  );
 }

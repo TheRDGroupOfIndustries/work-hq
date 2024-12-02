@@ -1,11 +1,14 @@
-"use client"
-import SquareButton from "@/components/reusables/squareButton";
+"use client";
+import SquareButton from "@/components/reusables/wrapper/squareButton";
 import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-
-export default function RequestMeetingHeadline({handleSubmit}:{handleSubmit:()=>void}) {
-  const navigate = useRouter()
+export default function RequestMeetingHeadline({
+  handleSubmit,
+}: {
+  handleSubmit: () => void;
+}) {
+  const navigate = useRouter();
   return (
     <div className=" w-full my-4  flex flex-row items-center justify-between">
       <div className="flex flex-col gap-1">
@@ -20,7 +23,7 @@ export default function RequestMeetingHeadline({handleSubmit}:{handleSubmit:()=>
         <SquareButton
           className="text-[#6A6A6A]"
           onClick={() => {
-            navigate.push('/meetings');
+            navigate.push("/c/meetings/details");
           }}
         >
           Cancel

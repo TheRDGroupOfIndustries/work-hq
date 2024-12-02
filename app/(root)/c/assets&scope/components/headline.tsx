@@ -1,25 +1,23 @@
-"use client"
-import SquareButton from '@/components/reusables/squareButton'
-import { Plus } from 'lucide-react'
+"use client";
+import WrHeadline from "@/components/reusables/wrapper/Headline";
+import SquareButton from "@/components/reusables/wrapper/squareButton";
+import { Role, VENDOR } from "@/types";
+import { Plus } from "lucide-react";
 
-export default function Headline() {
+export default function Headline({ role }: { role: Role }) {
   return (
-    <div className=" w-full my-4  flex flex-row items-center justify-between">
-        <div className="flex flex-col gap-1">
-          {/* headline */}
-          <h1 className="text-3xl font-semibold">Assets & Scope</h1>
-          <p className="text-[#6A6A6A] text-base font-normal">
-            {"Project / Assets & Scope"}
-          </p>
-        </div>
-
-        
-
-        <SquareButton onClick={()=>{console.log("Export Report")}}>
-          <Plus color="#155EEF" />
-          Export Scope
-        </SquareButton>
-
-      </div>
-  )
+    <WrHeadline title="Assets & Scope">
+      <SquareButton
+        role={role}
+        onClick={() => {
+          console.log("Export Report");
+        }}
+      >
+        <Plus
+          color={role === VENDOR ? "var(--vendor-dark)" : "var(--primary-blue)"}
+        />
+        Export Scope
+      </SquareButton>
+    </WrHeadline>
+  );
 }

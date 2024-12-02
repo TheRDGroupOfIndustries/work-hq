@@ -1,10 +1,10 @@
-import MainContainer from '@/components/reusables/mainContainer'
-import Headline from './components/headline'
+import MainContainer from "@/components/reusables/wrapper/mainContainer";
+import Headline from "./components/headline";
 
 export default function Helpdesk() {
   return (
     <MainContainer>
-      <Headline/>
+      <Headline />
     </MainContainer>
-  )
+  );
 }
