@@ -32,9 +32,26 @@
   
     --primary-sky-blue: #e4eefe;
     --primary-blue: #155EEF;
+    --primary-vendor: #EFF0F1;
     --dark-blue : #001D6C;
-    --dark-gray : #344054
-    
+    --dark-gray : #344054;
+    --light-gray : #6A6A6A;
+    --vendor-dark : #360227;
+
+
+
+    /* Project Report Chart Color */
+    --pie-chart-color-1: #4A3AFF;
+    --pie-chart-color-2: #2D5BFF;
+    --pie-chart-color-3: #93AAFD;
+    --pie-chart-color-4: #C6D2FD;
+
+    --vendor-pie-chart-color-1: #7E065C;
+    --vendor-pie-chart-color-2: #BE198F;
+    --vendor-pie-chart-color-3: #F65BCA;
+    --vendor-pie-chart-color-4: #FFB7EA;
+
+
   }
   .dark {
     --background: 240 10% 3.9%;
@@ -64,9 +81,9 @@
   }
 }
 @layer base {
-  * {
-    /* @apply border-border; */
-  }
+  /* * {
+    @apply border-border;
+  } */
   body {
     @apply bg-primary-sky-blue text-foreground;
   }
@@ -104,6 +121,10 @@
   }
   .br {
     @apply border border-[red];
+  }
+
+  .text-desktop {
+    @apply text-base;
   }
 }
 

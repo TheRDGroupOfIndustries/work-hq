@@ -1,7 +1,7 @@
 import Logout from "@/components/icons/logout";
-import Container from "@/components/reusables/Container";
-import MainContainer from "@/components/reusables/mainContainer";
-import SquareButton from "@/components/reusables/squareButton";
+import Container from "@/components/reusables/wrapper/Container";
+import MainContainer from "@/components/reusables/wrapper/mainContainer";
+import SquareButton from "@/components/reusables/wrapper/squareButton";
 import { Label } from "@/components/ui/label";
 import { Mail, MessageCircleMore, Phone, SquarePen } from "lucide-react";
 import Headline from "./components/headline";
@@ -29,13 +29,12 @@ export default function Profile() {
             </div>
           </div>
 
-          <SquareButton className="w-fit self-end sm:self-center" >
+          <SquareButton className="w-fit self-end sm:self-center">
             <SquarePen color="#155EEF" /> Edit Profile
           </SquareButton>
         </div>
 
         <div className=" mt-8 w-full grid grid-cols-1 md:grid-cols-[1fr_2px_1fr] lg:grid-cols-[1fr_2px_1fr_2px_1fr] gap-4 ">
-
           <div className="flex flex-row items-center gap-3 justify-between  w-full  ">
             <div className="flex flex-col">
               <h1 className="text-2xl font-normal text-gray-800">
@@ -48,7 +47,6 @@ export default function Profile() {
             </div>
             <h1 className="text-4xl font-normal text-gray-900">05</h1>
           </div>
-
 
           <div className=" flex flex-row items-center ">
             <div className=" h-[80%] w-[1px] bg-gray-500"></div>
@@ -83,9 +81,6 @@ export default function Profile() {
             </div>
             <h1 className="text-4xl font-normal text-gray-900">05</h1>
           </div>
-
-
-          
         </div>
 
         <div className="my-8 w-full grid grid-cols-1 md:grid-cols-2 gap-5">

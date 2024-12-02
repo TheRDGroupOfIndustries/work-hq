@@ -1,5 +1,6 @@
-import DesktopSidebar from "@/components/layout/client/desktopSidebar";
+// import DesktopSidebar from "@/components/layout/client/desktopSidebar";
 import Navbar from "@/components/layout/client/nevbar";
+import { ROLE } from "@/tempData";
 
 export default async function RootLayout({
   children,
@@ -8,9 +9,9 @@ export default async function RootLayout({
 }>) {
   return (
     <>
-      <Navbar />
+      <Navbar role={ROLE} />
       <div className=" min-h-[calc(100vh-80px)] h-full   flex flex-row">
-        <DesktopSidebar />
+        {/* <DesktopSidebar role={ROLE} /> */}
         {children}
       </div>
     </>
