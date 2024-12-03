@@ -1,22 +1,97 @@
+import SquareButton from "@/components/reusables/wrapper/squareButton";
+import { DialogClose } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Plus } from "lucide-react";
 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { useState } from "react";
+import { Textarea } from "@/components/ui/textarea";
 
-export default function RaiseTicket({
-    setIsRaiseTicketOpen,
-}: {
-    setIsRaiseTicketOpen: (value: boolean) => void;
-}) {
+export default function RaiseTicket() {
+  const [issueType, setIssueType] = useState<string>("")
+  const [priority, setPriority] = useState<string>("")
   return (
     <div
-      onClick={() => setIsRaiseTicketOpen(false)}
-      className="z-5 absolute flex items-center justify-center  right-0 bottom-0 left-0 h-[calc(100vh-70px)] w-full bg-black/30"
+      onClick={(e) => e.stopPropagation()}
+      className="z-10 w-[733px] m-4  bg-primary-sky-blue flex flex-col gap-6 rounded-3xl   p-5 lg:p-6 "
     >
-      <div
-        onClick={(e) => e.stopPropagation()}
-        className="z-10 w-[733px] m-4  bg-background flex flex-col gap-6 rounded-3xl   p-5 lg:p-6 "
-      >
-        <h1 className="text-2xl font-semibold text-dark-gray">Raise A Ticket</h1>
+      <h1 className="text-2xl font-semibold text-dark-gray">Raise A Ticket</h1>
+
+      <div className="flex flex-col gap-3">
+        <div className="w-full flex flex-col gap-3">
+          <Label className="text-base font-medium text-gray-800">
+            Ticket Subject
+          </Label>
+          <input
+            type="text"
+            placeholder="E.g. 0192892939"
+            className="w-full text-base h-[40px] outline-none shadow-[3px_3px_3px_0px_#789BD399,-3px_-3px_5px_0px_#FFFFFF] bg-transparent rounded-lg px-4"
+            required
+          />
+        </div>
+        <div className="w-full flex flex-col gap-3">
+          <Label className="text-base font-medium text-gray-800">
+            Issue Type
+          </Label>
+          <Select value={issueType} onValueChange={setIssueType}>
+            <SelectTrigger className="w-full bg-primary-sky-blue">
+              
+
+              <SelectValue placeholder="Issue Type" />
+        
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="Project Issue">Project Issue</SelectItem>
+              <SelectItem value="Payment Issue">Payment Issue</SelectItem>
+              <SelectItem value="App Issue">App Issue</SelectItem>
+              <SelectItem value="Bug Issue">Bug Issue</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="w-full flex flex-col gap-3">
+          <Label className="text-base font-medium text-gray-800">
+            Issue Message
+          </Label>
+          <Textarea
+                required
+                rows={6}
+                placeholder="Meeting Description"
+                className="w-full resize-none border-0 p-3 focus-visible:ring-0 h-[40px] outline-none shadow-[3px_3px_10px_0px_#789BD399,-3px_-3px_10px_0px_#FFFFFF] bg-transparent rounded-lg px-4"
+              />
+        </div>
+        <div className="w-full flex flex-col gap-3">
+          <Label className="text-base font-medium text-gray-800">
+            Poject Priority
+          </Label>
+          <Select value={priority} onValueChange={setPriority}>
+          <SelectTrigger className="w-full bg-primary-sky-blue">
+            <SelectValue placeholder=" Priority Level" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="Low">Low</SelectItem>
+            <SelectItem value="Medium">Medium</SelectItem>
+            <SelectItem value="High">High</SelectItem>
+          </SelectContent>
+        </Select>
+        </div>
+      </div>
+      <div className="flex flex-row gap-2 justify-end">
+        <DialogClose asChild>
+          <SquareButton className="text-[#6A6A6A] w-fit self-end">
+            Cancel
+          </SquareButton>
+        </DialogClose>
+        <button className="flex flex-row items-center py-3 px-5 gap-2 shadow-[3px_3px_10px_0px_#789BD399,5px_5px_15px_0px_#00000099_inset,-3px_-3px_10px_0px_#FFFFFF] rounded-xl text-[#ffffff]  text-nowrap bg-primary-blue">
+          <Plus color="#ffffff" />
+          Raise Ticket
+        </button>
       </div>
     </div>
   );
 }
-
