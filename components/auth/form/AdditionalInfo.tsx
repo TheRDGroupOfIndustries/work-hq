@@ -125,7 +125,7 @@ const AdditionalInfo: React.FC = () => {
         setSuccess(true);
         console.log("Additional info submitted:", data.message);
         if(signUpRole === "client") {
-          router.push("/add-project");
+          router.push("/c/add-project");
         } else if(signUpRole === "developer") {
           router.push("/wakaTime/auth");
         } else {
@@ -152,7 +152,7 @@ const AdditionalInfo: React.FC = () => {
 
   useEffect(() => {
     if (user?.loginStep === 1) {
-      router.push("/add-project");
+      router.push("/c/add-project");
     }
   }, [user?.loginStep, router]);
 

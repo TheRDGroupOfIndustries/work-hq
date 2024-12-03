@@ -14,7 +14,12 @@ export const POST = async (request: NextRequest) => {
   await connectToMongoDB();
 
   try {
-    const projectId = nanoid(8); // Generate a unique 8-digit alphanumeric project ID
+    let projectId = nanoid(8); // Generate a unique 8-digit alphanumeric project ID
+
+    while (await Project.findOne({ projectID: projectId })) {
+      projectId = nanoid(8);
+    } 
+
 
     const project = new Project({
       projectID: projectId,

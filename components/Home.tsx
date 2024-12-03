@@ -45,7 +45,7 @@ useEffect(() => {
     router.replace("/auth/additional-step");
   } else if (user?.loginStep === 1) {
     if (user?.allProjects?.length === 0 && SignUpRole === "client") {
-      router.replace("/add-project");
+      router.replace("/c/add-project");
     } else if (SignUpRole === "developer" && !user?.wakaTime?.access_token) {
       router.replace("/wakaTime/auth");
     } else {
@@ -95,7 +95,7 @@ useEffect(() => {
               </div>
               {user?.allProjects?.length && user?.allProjects?.length > 0 ? (
                 <Link
-                  href="/project/dashboard"
+                  href="/c/project/something/dashboard"
                   className="mt-4 animate-slide-up"
                 >
                   <Button type="button" size="lg" variant="outline">
@@ -103,7 +103,7 @@ useEffect(() => {
                   </Button>
                 </Link>
               ) : (
-                <Link href="/add-project" className="mt-4 animate-slide-up">
+                <Link href="/c/add-project" className="mt-4 animate-slide-up">
                   <Button type="button" size="lg" variant="outline">
                     Add Project
                   </Button>
