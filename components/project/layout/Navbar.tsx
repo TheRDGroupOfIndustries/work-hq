@@ -57,7 +57,7 @@
 //             ))}
 //           </select>
 //         </div>
-//         <Link href="/add-project">
+//         <Link href="/c/add-project">
 //           <Button className="animate-slide-down">Add Project</Button>
 //         </Link>
 //       </div>

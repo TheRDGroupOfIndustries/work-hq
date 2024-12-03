@@ -109,7 +109,7 @@ const AddProject = () => {
       if (data.success) {
         toast.success("Project created successfully");
         setSelectedProject(data.project._id);
-        router.push(`/project/dashboard`);
+        router.push(`/c/project/something/dashboard`);
       } else {
         toast.error("Failed to create project");
       }

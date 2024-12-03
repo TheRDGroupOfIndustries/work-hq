@@ -34,27 +34,26 @@ export default function Home() {
     //   prevSessionRef.current = session;
     // }
   }, [session]);
-
-  useEffect(() => {
-    // console.log("Sign Up Role", SignUpRole);
-    if (!SignUpRole || SignUpRole === "null") {
-      return router.replace("/auth/c-sign-in");
+useEffect(() => {
+  console.log("Sign Up Role", SignUpRole);
+  if(!SignUpRole || SignUpRole === "null"){
+    return router.replace("/auth/c-sign-in");
+  }
+  if (status === "unauthenticated") {
+    router.replace("/auth/c-sign-in");
+  } else if (user?.loginStep === 0) {
+    router.replace("/auth/additional-step");
+  } else if (user?.loginStep === 1) {
+    if (user?.allProjects?.length === 0 && SignUpRole === "client") {
+      router.replace("/c/add-project");
+    } else if (SignUpRole === "developer" && !user?.wakaTime?.access_token) {
+      router.replace("/wakaTime/auth");
+    } else {
+      // alert("Invalid user role");
+      // router.replace("/");
     }
-    if (status === "unauthenticated") {
-      router.replace("/auth/c-sign-in");
-    } else if (user?.loginStep === 0) {
-      router.replace("/auth/additional-step");
-    } else if (user?.loginStep === 1) {
-      if (user?.allProjects?.length === 0 && SignUpRole === "client") {
-        router.replace("/add-project");
-      } else if (SignUpRole === "developer" && !user?.wakaTime?.access_token) {
-        router.replace("/wakaTime/auth");
-      } else {
-        // alert("Invalid user role");
-        // router.replace("/");
-      }
-    }
-  }, [status, user, router, SignUpRole]);
+  }
+}, [status, user, router, SignUpRole]);
 
   return (
     <main className="w-full h-screen relative select-none flex-center flex-col gap-4 overflow-hidden">
@@ -97,13 +96,16 @@ export default function Home() {
                 </div>
               </div>
               {user?.allProjects?.length && user?.allProjects?.length > 0 ? (
-                <Link href="/c/all-projects" className="mt-4 animate-slide-up">
+                <Link
+                  href="/c/project/something/dashboard"
+                  className="mt-4 animate-slide-up"
+                >
                   <Button type="button" size="lg" variant="outline">
                     Dashboard
                   </Button>
                 </Link>
               ) : (
-                <Link href="/add-project" className="mt-4 animate-slide-up">
+                <Link href="/c/add-project" className="mt-4 animate-slide-up">
                   <Button type="button" size="lg" variant="outline">
                     Add Project
                   </Button>
