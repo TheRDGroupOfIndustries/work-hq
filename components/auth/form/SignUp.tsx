@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { emailPattern, passwordPattern } from "./SignIn";
 import { useSession } from "next-auth/react";
+import InputField from "@/components/ui/InputField"; // Import InputField
 
 const SignUp: React.FC = () => {
   const router = useRouter();
@@ -20,8 +21,8 @@ const SignUp: React.FC = () => {
   const [showPass, setShowPass] = useState("password");
   const [showConfirmPass, setShowConfirmPass] = useState("password");
   const [passwordError, setPasswordError] = useState("");
-  const [ confirmPasswordError, setConfirmPasswordError] = useState("");
-const [emailError, setEmailError] = useState("");
+  const [confirmPasswordError, setConfirmPasswordError] = useState("");
+  const [emailError, setEmailError] = useState("");
   const [otp, setOtp] = useState("");
   const [checkOtpCode, setCheckOtpCode] = useState("");
 
@@ -38,11 +39,13 @@ const [emailError, setEmailError] = useState("");
   const passwordInputRef = useRef<HTMLInputElement>(null);
   const confirmPasswordInputRef = useRef<HTMLInputElement>(null);
   const { data: session } = useSession();
+
   useEffect(() => {
     if (session?.user) {
       router.replace("/");
     }
   }, [router, session]);
+
   const handleEmailOrPhone = (e: React.ChangeEvent<HTMLInputElement>) => {
     let inputValue = e.target.value;
     setEmailOrPhone(inputValue);
@@ -54,7 +57,7 @@ const [emailError, setEmailError] = useState("");
       setEmail(inputValue);
       setEmailError("");
       setDisableBtn(false);
-    } else if(inputValue.length === 10 && /^\d+$/.test(inputValue)) {
+    } else if (inputValue.length === 10 && /^\d+$/.test(inputValue)) {
       console.log("Valid phone number");
       if (/^\d+$/.test(inputValue)) {
         inputValue = inputValue.slice(0, 10);
@@ -63,12 +66,11 @@ const [emailError, setEmailError] = useState("");
           setEmailError("");
           toast.success("Valid phone number");
         }
-
         setDisableBtn(inputValue.length !== 10);
       } else {
         setDisableBtn(true);
       }
-    } else{
+    } else {
       setDisableBtn(true);
       setEmail("");
       setEmailError("Invalid email or phone number");
@@ -78,7 +80,7 @@ const [emailError, setEmailError] = useState("");
   const handlePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
     setPassword(inputValue);
-  
+
     if (inputValue.trim() === "") {
       setPasswordError("Password is required.");
       setDisableBtn(true);
@@ -111,37 +113,26 @@ const [emailError, setEmailError] = useState("");
 
     if (cpswd !== password) {
       setDisableBtn(true);
-      // toast.error("Mismatch password!");
-      setConfirmPasswordError("Passwords does not match!");
+      setConfirmPasswordError("Passwords do not match!");
     } else {
       setDisableBtn(false);
-      // toast.success("Password matched!");
       setConfirmPasswordError("");
     }
     setConfirmPassword(cpswd);
   };
 
-   const handleGetOtp = async (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleGetOtp = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-  
-    if (
-      !firstName ||
-      !lastName ||
-      !emailOrPhone ||
-      !password ||
-      !confirmPassword
-    ) {
-      // console.log(firstName, lastName, emailOrPhone, password, confirmPassword);
-  
+
+    if (!firstName || !lastName || !emailOrPhone || !password || !confirmPassword) {
       return toast.error("Please fill all the fields!");
     }
     if (password !== confirmPassword) {
       return toast.error("Passwords do not match!");
     }
-  
+
     setSendingOtp(true);
-    // console.log("send otp");
-  
+
     try {
       const res = await fetch("/api/auth/register", {
         method: "POST",
@@ -157,11 +148,9 @@ const [emailError, setEmailError] = useState("");
           checkOtpCode,
         }),
       });
-  
+
       const data = await res.json();
-      console.log("res1: ", res);
-      console.log("data1: ", data);
-  
+
       if (res.status === 400) {
         setSendingOtp(false);
         toast.error(`${email} is already registered!`);
@@ -171,7 +160,6 @@ const [emailError, setEmailError] = useState("");
         setOtpSuccess(true);
         toast.success(`OTP has been sent to your ${email}, check your email!`);
       } else if (res.status === 200) {
-        // User already exists, so redirect
         setSendingOtp(false);
         toast.error("User already exists!");
         router.push("/auth/c-sign-in");
@@ -186,17 +174,11 @@ const [emailError, setEmailError] = useState("");
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (
-      !firstName ||
-      !lastName ||
-      !emailOrPhone ||
-      !password ||
-      !confirmPassword
-    ) {
+    if (!firstName || !lastName || !emailOrPhone || !password || !confirmPassword) {
       return toast.error("Please fill all the fields!");
     }
     if (password !== confirmPassword) {
-      return toast.error("Passwords does not match!");
+      return toast.error("Passwords do not match!");
     }
 
     setSubmitting(true);
@@ -218,19 +200,14 @@ const [emailError, setEmailError] = useState("");
           }),
         });
         const data = await res.json();
-        console.log("data: ",data);
-        console.log("res: ",res);
+
         if (res.status === 400) {
           setSubmitting(false);
           throw new Error(`${emailOrPhone} is already registered!`);
         }
         if (res.status === 402) {
-          console.log(res);
-
           setSubmitting(false);
-          throw new Error(
-            `InValid OTP has been entered for this ${emailOrPhone}!`
-          );
+          throw new Error(`Invalid OTP has been entered for this ${emailOrPhone}!`);
         }
 
         if (res.status === 200) {
@@ -257,132 +234,108 @@ const [emailError, setEmailError] = useState("");
 
   return (
     <>
-      <form className="space-y-2 animate-fade-in">
+      <form className="space-y-4 animate-fade-in" onSubmit={handleSubmit}>
         <div className="w-full grid md:grid-cols-2 gap-2">
-          <input
+          <InputField
             type="text"
             name="first-name"
             placeholder="First Name"
-            disabled={otpBtn && otpSuccess}
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
             required
+            label="First Name"
+            disabled={otpBtn && otpSuccess}
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
                 lastNameInputRef.current?.focus();
               }
             }}
-            className="input-style"
           />
-          <input
+          <InputField
             type="text"
             name="last-name"
             placeholder="Last Name"
-            disabled={otpBtn && otpSuccess}
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
             required
-            ref={lastNameInputRef}
+            inputRef={lastNameInputRef}
+            label="Last Name"
+            disabled={otpBtn && otpSuccess}
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
                 emailInputRef.current?.focus();
               }
             }}
-            className="input-style"
           />
         </div>
-        <input
+        <InputField
           type="email"
           name="email"
           placeholder="Email or Phone"
-          disabled={otpBtn && otpSuccess}
-          required
           value={emailOrPhone}
           onChange={handleEmailOrPhone}
-          ref={emailInputRef}
+          required
+          inputRef={emailInputRef}
+          label="Email or Phone"
+          disabled={otpBtn && otpSuccess}
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {
               e.preventDefault();
               passwordInputRef.current?.focus();
             }
           }}
-          className="input-style"
         />
         <div className="text-red-500 text-sm">{emailError}</div>
-        <div
-          className={`input-style flex gap-2 ${!otpSuccess && "cursor-text"}`}
-        >
-          <input
+        <div className={`flex flex-center ${!otpSuccess && "cursor-text relative"}`}>
+          <InputField
             type={showPass}
             name="password"
             placeholder="Password"
-            disabled={otpBtn && otpSuccess}
-            required
             value={password}
             onChange={handlePassword}
-            ref={passwordInputRef}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                confirmPasswordInputRef.current?.focus();
-              }
-            }}
-            className="w-full h-full bg-transparent ring-0 border-none outline-none"
+            inputRef={passwordInputRef}
+            label="Password"
+            disabled={otpBtn && otpSuccess}
+            containerStyle="w-full"
+            required
           />
           <div
             onClick={() => {
-              if (showPass === "text") setShowPass("password");
-              else setShowPass("text");
+              setShowPass(showPass === "text" ? "password" : "text");
             }}
-            className="w-fit h-fit cursor-pointer flex-center gap-1 ease-in-out duration-200"
+            className="w-fit h-fit cursor-pointer flex-center p-3 ease-in-out duration-200 pt-6 absolute right-0 top-1/4"
           >
             {showPass === "text" ? (
-              <FaRegEyeSlash
-                size={20}
-                className="w-full h-full active:scale-75 text-primary-green"
-              />
+              <FaRegEyeSlash size={20} className="w-full h-full active:scale-75 text-primary-green" />
             ) : (
               <FaRegEye size={20} className="w-full h-full active:scale-75" />
             )}
           </div>
         </div>
         <div className="text-red-500 text-sm">{passwordError}</div>
-        <div
-          className={`input-style flex gap-2 ${!otpSuccess && "cursor-text"}`}
-        >
-          <input
+        <div className={`flex flex-center ${!otpSuccess && "cursor-text relative"}`}>
+          <InputField
             type={showConfirmPass}
             name="confirm-password"
             placeholder="Confirm Password"
-            disabled={otpBtn && otpSuccess}
-            required
             value={confirmPassword}
             onChange={handleConfirmPassword}
-            ref={confirmPasswordInputRef}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                handleGetOtp(
-                  e as unknown as React.MouseEvent<HTMLButtonElement>
-                );
-              }
-            }}
-            className="w-full h-full bg-transparent ring-0 border-none outline-none"
+            inputRef={confirmPasswordInputRef}
+            label="Confirm Password"
+            disabled={otpBtn && otpSuccess}
+            required
+            containerStyle="w-full"
           />
           <div
             onClick={() => {
-              if (showConfirmPass === "text") setShowConfirmPass("password");
-              else setShowConfirmPass("text");
+              setShowConfirmPass(showConfirmPass === "text" ? "password" : "text");
             }}
-            className="w-fit h-fit cursor-pointer flex-center gap-1 ease-in-out duration-200"
+            className="w-fit h-fit cursor-pointer flex-center ease-in-out duration-200 pt-6 p-3 absolute right-0 top-1/4"
           >
             {showConfirmPass === "text" ? (
-              <FaRegEyeSlash
-                size={20}
-                className="w-full h-full active:scale-75 text-primary-green"
-              />
+              <FaRegEyeSlash size={20} className="w-full h-full active:scale-75 text-primary-green" />
             ) : (
               <FaRegEye size={20} className="w-full h-full active:scale-75" />
             )}
@@ -393,49 +346,36 @@ const [emailError, setEmailError] = useState("");
           <Button
             type="button"
             onClick={handleGetOtp}
-            disabled={disableBtn|| otpBtn || sendingOtp || otpSuccess}
+            disabled={disableBtn || otpBtn || sendingOtp || otpSuccess}
             className={`w-full ${otpBtn && "animate-pulse"}`}
           >
-            {sendingOtp
-              ? "Sending OTP..."
-              : otpSuccess
-              ? "Check your E-mail!"
-              : "Send OTP"}
+            {sendingOtp ? "Sending OTP..." : otpSuccess ? "Check your E-mail!" : "Send OTP"}
           </Button>
         ) : (
           <>
-            <input
+            <InputField
+              name = "otp"
               type="text"
               placeholder="Enter OTP"
-              disabled={disableBtn || submitting || success}
               value={otp}
-              onChange={(e) =>
-                setOtp(e.target.value.replace(/[^\d]/g, "").slice(0, 6))
-              }
+              onChange={(e) => setOtp(e.target.value.replace(/[^\d]/g, "").slice(0, 6))}
               required
+              disabled={disableBtn || submitting || success}
+              label="Enter OTP"
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
-                  handleSubmit(
-                    e as unknown as React.FormEvent<HTMLFormElement>
-                  );
+                  handleSubmit(e as unknown as React.FormEvent<HTMLFormElement>);
                 }
               }}
-              className="input-style animate-slide-down"
             />
             <Button
               type="submit"
-              onClick={(e) =>
-                handleSubmit(e as unknown as React.FormEvent<HTMLFormElement>)
-              }
+              onClick={(e) => handleSubmit(e as unknown as React.FormEvent<HTMLFormElement>)}
               disabled={disableBtn || submitting || success}
               className={`w-full ${disableBtn && "animate-pulse"}`}
             >
-              {submitting
-                ? "Registering..."
-                : success
-                ? "Registered Successfully!"
-                : "Sign Up"}
+              {submitting ? "Registering..." : success ? "Registered Successfully!" : "Sign Up"}
             </Button>
           </>
         )}

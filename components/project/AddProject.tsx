@@ -2,59 +2,69 @@
 
 import React, { useState } from "react";
 import { Button } from "../ui/button";
-import { signOut, useSession } from "next-auth/react";
+import {  useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { CustomUser } from "@/lib/types";
 import { useRouter } from "next/navigation";
-import {  useProjectContext } from "@/context/ProjectProvider";
+import { useProjectContext } from "@/context/ProjectProvider";
 
 interface FormData {
   projectDetails: {
     projectName: string;
     category: string;
     deadline: string;
-    additionalFiles: string;
+    additionalFiles: {
+      url: string;
+      title: string;
+      description: string;
+      date: string;
+      size: number;
+    }[];
     maintenanceNeeded: boolean;
     description: string;
     scope: string;
-    budget: { min: number; max: number };
+    budget: { min: number; max: number }; // Ensure budget is an object
     hasVendor: boolean;
+    vendorID?: string; // Optional vendor ID
   };
   companyDetails: {
+    clientID: string; // Set this to session.user.id
     officialName: string;
-    logo: string;
+    logo?: string; // Optional
     about: string;
-    workingLocations: string;
-    contactNo: string;
+    workingLocations: string[];
+    contactNo: string[];
     address: string;
-    companyLink: string;
-    size: string;
+    companyLink?: string; // Optional
+    size: string; // e.g., "100-200"
   };
 }
 
 const AddProject = () => {
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const user = session?.user as CustomUser;
   const router = useRouter();
-  const {setSelectedProject} = useProjectContext();
+  const { setSelectedProject } = useProjectContext();
   const [formData, setFormData] = useState<FormData>({
     projectDetails: {
       projectName: "",
       category: "",
       deadline: "",
-      additionalFiles: "",
+      additionalFiles: [],
       maintenanceNeeded: false,
       description: "",
       scope: "",
-      budget: { min: 0, max: 0 },
+      budget: { min: 0, max: 0 }, // Initialize budget as an object
       hasVendor: false,
+      vendorID: "", // Optional
     },
     companyDetails: {
+      clientID: user.id, // Set clientID to session.user.id
       officialName: "",
       logo: "",
       about: "",
-      workingLocations: "",
-      contactNo: "",
+      workingLocations: [],
+      contactNo: [],
       address: "",
       companyLink: "",
       size: "",
@@ -67,48 +77,34 @@ const AddProject = () => {
     >
   ) => {
     const { name, value } = e.target;
-    const [section, field, subField] = name.split(".");
-    setFormData((prevFormData: FormData) => {
-      const sectionData = prevFormData[section as keyof FormData];
-      if (field === "budget" && subField) {
-        return {
-          ...prevFormData,
-          [section as keyof FormData]: {
-            ...sectionData,
-            [field]: {
-              ...(sectionData as { budget: { min: number; max: number } })[field],
-              [subField]: value,
-            },
-          },
-        };
-      } else {
-        return {
-          ...prevFormData,
-          [section as keyof FormData]: {
-            ...sectionData,
-            [field]: value,
-          },
-        };
-      }
-    });
+    const [section, field] = name.split(".");
+
+    setFormData((prevFormData: FormData) => ({
+      ...prevFormData,
+      [section as keyof FormData]: {
+        ...prevFormData[section as keyof FormData],
+        [field]: value,
+      },
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const clientID = user.role === "client" ? user._id : null;
     try {
+      formData.projectDetails.budget = {
+        min: 0,
+        max: 0,
+      }
+      formData.companyDetails.clientID = user.id;
+      
+      console.log("Form data", formData);
       const response = await fetch("/api/project/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          projectDetails: { ...formData.projectDetails },
-          companyDetails: { ...formData.companyDetails, clientID },
-        }),
+        body: JSON.stringify(formData),
       });
 
       const data = await response.json();
-      console.log(data);
-
       if (data.success) {
         toast.success("Project created successfully");
         setSelectedProject(data.project._id);
@@ -120,8 +116,6 @@ const AddProject = () => {
       console.log(error);
     }
   };
-
-  if (status === "unauthenticated") router.push("/auth/c-sign-in");
 
   return (
     <form onSubmit={handleSubmit} className="grid gap-4 p-10 px-80">
@@ -156,16 +150,6 @@ const AddProject = () => {
           value={formData.projectDetails.deadline}
           onChange={handleChange}
           required
-        />
-      </label>
-      <label>
-        Additional Files (comma-separated URLs/IDs)
-        <input
-          type="text"
-          name="projectDetails.additionalFiles"
-          value={formData.projectDetails.additionalFiles}
-          onChange={handleChange}
-          placeholder="Additional Files (comma-separated URLs/IDs)"
         />
       </label>
       <label>
@@ -280,8 +264,16 @@ const AddProject = () => {
         <input
           type="text"
           name="companyDetails.workingLocations"
-          value={formData.companyDetails.workingLocations}
-          onChange={handleChange}
+          value={formData.companyDetails.workingLocations.join(", ")}
+          onChange={(e) =>
+            setFormData({
+              ...formData,
+              companyDetails: {
+                ...formData.companyDetails,
+                workingLocations: e.target.value.split(",").map((loc) => loc.trim()),
+              },
+            })
+          }
           placeholder="Working Locations (comma-separated)"
           required
         />
@@ -291,8 +283,16 @@ const AddProject = () => {
         <input
           type="text"
           name="companyDetails.contactNo"
-          value={formData.companyDetails.contactNo}
-          onChange={handleChange}
+          value={formData.companyDetails.contactNo.join(", ")}
+          onChange={(e) =>
+            setFormData({
+              ...formData,
+              companyDetails: {
+                ...formData.companyDetails,
+                contactNo: e.target.value.split(",").map((num) => num.trim()),
+              },
+            })
+          }
           placeholder="Contact Numbers (comma-separated)"
           required
         />
@@ -329,26 +329,6 @@ const AddProject = () => {
         />
       </label>
       <Button type="submit">Add Project</Button>
-      <Button
-        onClick={() => {
-          if (status === "unauthenticated") {
-            router.push("/auth/c-sign-in");
-          } else {
-            signOut();
-          }
-        }}
-        variant={status === "authenticated" ? "destructive" : "default"}
-        disabled={status === "loading"}
-        title={status === "authenticated" ? "Logout" : "Login"}
-        size="lg"
-        className="text-lg"
-      >
-        {status === "loading"
-          ? "Loading..."
-          : status === "unauthenticated"
-          ? "Login"
-          : "Logout"}
-      </Button>
     </form>
   );
 };

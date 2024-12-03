@@ -8,7 +8,7 @@ export const authFormPages = [
   // Sign In forms
   {
     id: "c-sign-in", // Updated id to match href
-    head: "Client Sign In", // Changed to reflect client sign-in
+    head: "Sign In For Client Side", // Changed to reflect client sign-in
     href: "/auth/c-sign-in", // Updated href
     sectionNode: SignIn,
     type: "signIn", // Added type for sign in
@@ -16,7 +16,7 @@ export const authFormPages = [
   },
   {
     id: "vc-sign-in", // Updated id to match href
-    head: "Vendor Client Sign In", // Changed to reflect vendor client sign-in
+    head: "Sign In For Vendor Client", // Changed to reflect vendor client sign-in
     href: "/auth/vc-sign-in", // Updated href
     sectionNode: SignIn,
     type: "signIn", // Added type for sign in
@@ -24,7 +24,7 @@ export const authFormPages = [
   },
   {
     id: "dev-sign-in", // Updated id to match href
-    head: "Developer Sign In", // Changed to reflect developer sign-in
+    head: "Sign In For Developer Side", // Changed to reflect developer sign-in
     href: "/auth/dev-sign-in", // Updated href
     sectionNode: SignIn,
     type: "signIn", // Added type for sign in
@@ -32,7 +32,7 @@ export const authFormPages = [
   },
   {
     id: "v-sign-in", // Updated id to match href
-    head: "Vendor Sign In", // Changed to reflect vendor sign-in
+    head: "Sign In For Vendor Side", // Changed to reflect vendor sign-in
     href: "/auth/v-sign-in", // Updated href
     sectionNode: SignIn,
     type: "signIn", // Added type for sign in
@@ -42,7 +42,7 @@ export const authFormPages = [
   // Sign up forms
   {
     id: "c-sign-up", // Updated id to match href
-    head: "Client Sign Up", // Changed to reflect client sign-up
+    head: "Sign Up For Client Side", // Changed to reflect client sign-up
     href: "/auth/c-sign-up", // Updated href
     sectionNode: SignUp,
     type: "signUp", // Added type for sign up
@@ -50,7 +50,7 @@ export const authFormPages = [
   },
   {
     id: "vc-sign-up", // Updated id to match href
-    head: "Vendor Client Sign Up", // Changed to reflect vendor client sign-up
+    head: "Sign Up For Vendor Client", // Changed to reflect vendor client sign-up
     href: "/auth/vc-sign-up", // Updated href
     sectionNode: SignUp,
     type: "signUp", // Added type for sign up
@@ -58,7 +58,7 @@ export const authFormPages = [
   },
   {
     id: "v-sign-up", // Updated id to match href
-    head: "Vendor Sign Up", // Changed to reflect vendor sign-up
+    head: "Sign Up For Vendor Side", // Changed to reflect vendor sign-up
     href: "/auth/v-sign-up", // Updated href
     sectionNode: SignUp,
     type: "signUp", // Added type for sign up
@@ -66,7 +66,7 @@ export const authFormPages = [
   },
   {
     id: "dev-sign-up", // Updated id to match href
-    head: "Developer Sign Up", // Changed to reflect developer sign-up
+    head: "Sign Up For Developer Side", // Changed to reflect developer sign-up
     href: "/auth/dev-sign-up", // Updated href
     sectionNode: SignUp,
     type: "signUp", // Added type for sign up

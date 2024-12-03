@@ -11,6 +11,9 @@ interface InputFieldProps {
   inputRef?: React.RefObject<HTMLInputElement>;
   required?: boolean;
   label?: string;
+  disabled?: boolean;
+  inputStyle?: string;
+  containerStyle?: string;
 }
 
 const InputField: React.FC<InputFieldProps> = ({
@@ -24,9 +27,12 @@ const InputField: React.FC<InputFieldProps> = ({
   inputRef,
   required = false,
   label,
+  disabled = false,
+  inputStyle,
+  containerStyle,
 }) => {
   return (
-    <div className="mb-4">
+    <div className={`mb-0 ${containerStyle}`}>
       {label && (
         <label htmlFor={name} className="block text-sm font-medium text-gray-700 mb-1">
           {label}
@@ -42,7 +48,8 @@ const InputField: React.FC<InputFieldProps> = ({
         onKeyDown={onKeyDown}
         ref={inputRef}
         required={required}
-        className="input-style"
+        className={`input-style ${inputStyle}`}
+        disabled={disabled}
       />
       {error && <div className="text-red-500 text-sm">{error}</div>}
     </div>

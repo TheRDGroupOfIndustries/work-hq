@@ -158,8 +158,8 @@ const AdditionalInfo: React.FC = () => {
 
   return (
     <>
-    <div className="w-full mb-4 text-center">Additional Information needed for {signUpRole}</div>
-      <form onSubmit={handleSubmit} className="animate-fade-in">
+    {/* <div className="w-full mb-4 text-center">Additional Information needed for {signUpRole}</div> */}
+      <form onSubmit={handleSubmit} className="animate-fade-in space-y-4">
         <InputField
           type="text"
           name="username"
@@ -178,7 +178,7 @@ const AdditionalInfo: React.FC = () => {
         <Button
           type="button"
           onClick={handleGenerateUsername}
-          className="mt-2 mb-4"
+          className=""
         >
           Generate Random Username
         </Button>
@@ -199,6 +199,7 @@ const AdditionalInfo: React.FC = () => {
             }}
             error={phoneError}
             inputRef={phoneInputRef}
+            
           />
         )}
 
