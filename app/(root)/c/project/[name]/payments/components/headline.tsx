@@ -2,7 +2,7 @@
 import SquareButton from "@/components/reusables/wrapper/squareButton";
 import { Plus } from "lucide-react";
 
-export default function Headline() {
+export default function Headline({setAddPaymentOpen}:{setAddPaymentOpen:(value:boolean)=>void}) {
   return (
     <div className=" w-full my-4  flex flex-row items-center justify-between">
       <div className="flex flex-col gap-1">
@@ -15,7 +15,7 @@ export default function Headline() {
 
       <SquareButton
         onClick={() => {
-          console.log("Export Report");
+          setAddPaymentOpen(true);
         }}
       >
         <Plus color="#155EEF" />
