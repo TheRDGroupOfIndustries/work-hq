@@ -5,18 +5,18 @@ export interface CustomUser extends NextAuthUser {
   username?: string; // Uniquely generated
   firstName: string;
   lastName?: string;
-  wakaTime?:{
+  wakaTime?: {
     user_id: string;
     access_token: string;
     refresh_token: string;
     expires_at: Date;
-  }
+  };
   profileImage?: string;
   authIntegrated?: string[]; // Auth providers integrated
   email: string;
   phone: string;
   loginStep?: number; // 0: Registration using phone or email, 1: userName, password & additonal info , 3: Create first project
-  role: "client" | "vendorClient" | "developer" | "vendor" | "manager" | "ceo"; // Role enum
+  role: "client" | "vendorClient" | "developer" | "vendor" | "manager" | "ceo" | string; // Role enum
   password?: string;
 
   // Fields common to some roles
@@ -26,9 +26,9 @@ export interface CustomUser extends NextAuthUser {
 
   // Developer-specific fields
   workStatus?: "loggedIn" | "loggedOut" | "onBreak";
-  workingHoursRanges?: { 
-    date:Date;
-    timeRange: {startTime: string; endTime: string}[] 
+  workingHoursRanges?: {
+    date: Date;
+    timeRange: { startTime: string; endTime: string }[];
   }[]; // Working hours array
   joiningDate?: Date;
   position?: string[]; // Developer positions
