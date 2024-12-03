@@ -1,7 +1,7 @@
 "use client";
 import SquareButton from "@/components/reusables/wrapper/squareButton";
 
-export default function Headline() {
+export default function Headline({setIsRaiseTicketOpen}:{setIsRaiseTicketOpen:(value:boolean)=>void}) {
   return (
     <div className=" w-full my-4 flex flex-row items-center justify-between">
       <div className="flex flex-col gap-1">
@@ -13,9 +13,7 @@ export default function Headline() {
       </div>
 
       <SquareButton
-        onClick={() => {
-          console.log("Export Report");
-        }}
+      onClick={()=>{setIsRaiseTicketOpen(true)}}
       >
         Raise a Ticket
       </SquareButton>
