@@ -1,27 +1,15 @@
 "use client";
 import SquareButton from "@/components/reusables/wrapper/squareButton";
+import { DialogClose } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Plus } from "lucide-react";
-import { useEffect } from "react";
 
-export default function AddPayment({
-  setAddPaymentOpen,
-}: {
-  setAddPaymentOpen: (value: boolean) => void;
-}) {
-  useEffect(() => {
-    // Disable scroll on the body
-    document.body.style.overflow = "hidden";
-    return () => {
-      // Re-enable scroll on cleanup
-      document.body.style.overflow = "";
-    };
-  }, []);
+export default function AddPayment() {
   return (
-    <div
-      onClick={() => setAddPaymentOpen(false)}
-      className="z-10 absolute flex items-center justify-center  right-0 bottom-0 left-0 h-[calc(100vh-70px)]  w-full bg-black/30"
-    >
+    // <div
+    //   onClick={() => setAddPaymentOpen(false)}
+    //   className=" z-10 absolute flex items-center justify-center  right-0 bottom-0 left-0 h-[calc(100vh-70px)]  w-full bg-black/30"
+    // >
       <div
         onClick={(e) => e.stopPropagation()}
         className="z-10 w-[733px] m-4  bg-primary-sky-blue flex flex-col gap-6 rounded-3xl   p-5 lg:p-6 "
@@ -77,18 +65,19 @@ export default function AddPayment({
           </div>
         </div>
         <div className="flex flex-row gap-2 justify-end">
+        <DialogClose asChild>
           <SquareButton
             className="text-[#6A6A6A] w-fit self-end"
-            onClick={() => {}}
           >
             Cancel
           </SquareButton>
+          </DialogClose>
           <button className="flex flex-row items-center py-3 px-5 gap-2 shadow-[3px_3px_10px_0px_#789BD399,5px_5px_15px_0px_#00000099_inset,-3px_-3px_10px_0px_#FFFFFF] rounded-xl text-[#ffffff]  text-nowrap bg-primary-blue">
             <Plus color="#ffffff" />
             Add Payment
           </button>
         </div>
       </div>
-    </div>
+    // </div>
   );
 }

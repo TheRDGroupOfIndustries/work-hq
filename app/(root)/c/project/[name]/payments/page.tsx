@@ -6,16 +6,12 @@ import { ROLE } from "@/tempData";
 import { VENDOR } from "@/types";
 import PaymentInfo from "./components/paymentInfo";
 import MyPayments from "./components/myPayments";
-import { useState } from "react";
-import AddPayment from "./components/addPayment";
 import PaymentRequest from "./components/paymentRequest";
 
 export default function Payments() {
-  const [addPaymentOpen, setAddPaymentOpen] = useState(false);
   return (
     <MainContainer role={ROLE}>
-      {addPaymentOpen && <AddPayment setAddPaymentOpen={setAddPaymentOpen} />}
-      <Headline setAddPaymentOpen={setAddPaymentOpen} />
+      <Headline />
       <Tabs defaultValue="paymentInfo" className="">
         <TabsList className="flex rounded-none h-[65px]  shadow-[3px_3px_10px_0px_#789BD399_inset,-5px_-5px_15px_0px_#FFFFFF] rounded-t-xl flex-row items-center justify-around w-full  bg-transparent text-base font-semibold text-black px-0 my-">
           <TabsTrigger className={`${

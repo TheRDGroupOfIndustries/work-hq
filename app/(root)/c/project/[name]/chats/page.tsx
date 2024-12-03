@@ -1,10 +1,7 @@
 "use client";
 import MainContainer from "@/components/reusables/wrapper/mainContainer";
-import { useState } from "react";
 import Headline from "./components/headline";
 import { ROLE } from "@/tempData";
-import Image from "next/image";
-import AddChat from "./components/addChat";
 import { useRouter } from "next/navigation";
 interface ChatList {
   id: string;
@@ -43,14 +40,65 @@ const chatList: ChatList[] = [
     lastMessage: "Hello", 
     lastMessageTime: "2:30 pm",
   },
+  {
+    id: "1",
+    avatar:
+      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=880&q=80",
+    name: "Liam Smith",
+    role: "Developer",
+    lastMessage: "Hello",
+    lastMessageTime: "2:30 pm",
+  },
+  {
+    id: "2",
+    avatar:
+      "",
+    name: "benjamin",
+    role: "Developer",
+    lastMessage: "Hello",
+    lastMessageTime: "2:30 pm",
+  },
+  {
+    id: "3",
+    avatar:
+      "",
+    name: "vanessa",  
+    role: "Developer",
+    lastMessage: "Hello", 
+    lastMessageTime: "2:30 pm",
+  },
+  {
+    id: "1",
+    avatar:
+      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=880&q=80",
+    name: "Liam Smith",
+    role: "Developer",
+    lastMessage: "Hello",
+    lastMessageTime: "2:30 pm",
+  },
+  {
+    id: "2",
+    avatar:
+      "",
+    name: "benjamin",
+    role: "Developer",
+    lastMessage: "Hello",
+    lastMessageTime: "2:30 pm",
+  },
+  {
+    id: "3",
+    avatar:
+      "",
+    name: "vanessa",  
+    role: "Developer",
+    lastMessage: "Hello", 
+    lastMessageTime: "2:30 pm",
+  },
 ];
 export default function Chats() {
-  const [isAddChatOpen, setIsAddChatOpen] = useState(false);
   return (
     <MainContainer role={ROLE}>
-      {isAddChatOpen && <AddChat setIsAddChatOpen={setIsAddChatOpen} />}
-
-      <Headline role={ROLE} setIsAddChatOpen={setIsAddChatOpen} />
+      <Headline role={ROLE}  />
       {chatList.map((chat: ChatList) => (
         <Card key={chat.id} chat={chat} />
       ))}

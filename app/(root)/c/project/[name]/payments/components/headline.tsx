@@ -1,8 +1,15 @@
 "use client";
 import SquareButton from "@/components/reusables/wrapper/squareButton";
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Plus } from "lucide-react";
+import AddPayment from "./addPayment";
 
-export default function Headline({setAddPaymentOpen}:{setAddPaymentOpen:(value:boolean)=>void}) {
+
+export default function Headline() {
   return (
     <div className=" w-full my-4  flex flex-row items-center justify-between">
       <div className="flex flex-col gap-1">
@@ -13,14 +20,17 @@ export default function Headline({setAddPaymentOpen}:{setAddPaymentOpen:(value:b
         </p>
       </div>
 
-      <SquareButton
-        onClick={() => {
-          setAddPaymentOpen(true);
-        }}
-      >
-        <Plus color="#155EEF" />
-        Add Payment
-      </SquareButton>
+      <Dialog>
+        <DialogTrigger>
+          <SquareButton>
+            <Plus color="#155EEF" />
+            Add Payment
+          </SquareButton>
+        </DialogTrigger>
+        <DialogContent>
+          <AddPayment/>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
