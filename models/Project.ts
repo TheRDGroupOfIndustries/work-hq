@@ -1,6 +1,5 @@
 import { Schema, model, models } from "mongoose";
 
-// Define the TypeScript interface for the Projects Schema
 export interface ProjectDBTypes {
   projectID: string;
   projectDetails: {
@@ -36,9 +35,8 @@ export interface ProjectDBTypes {
     deploymentLink?: string;
     figmaLink?: string;
     projectHours?: {
-     date: Date;
-     totalHours: number;
-
+      date: Date;
+      totalHours: number;
     }[]; // Derived from developers' hours
     teams: Schema.Types.ObjectId[]; // Array of User IDs
     // tasks: Schema.Types.ObjectId[]; // Ref to Tasks schema
@@ -53,13 +51,15 @@ const projectSchema = new Schema<ProjectDBTypes>(
       projectName: { type: String, required: true },
       category: { type: String, required: true },
       deadline: { type: Date, required: true },
-      additionalFiles: [{
-        url: { type: String, required: true },
-        title: { type: String, required: true },
-        description: { type: String, required: true },
-        date: { type: Date, required: true },
-        size: { type: Number, required: true },
-      }],
+      additionalFiles: [
+        {
+          url: { type: String, required: true },
+          title: { type: String, required: true },
+          description: { type: String, required: true },
+          date: { type: Date, required: true },
+          size: { type: Number, required: true },
+        },
+      ],
       maintenanceNeeded: { type: Boolean, required: true },
       description: { type: String, required: true },
       scope: { type: String, required: true },
@@ -88,7 +88,8 @@ const projectSchema = new Schema<ProjectDBTypes>(
         {
           date: { type: Date, required: true },
           totalHours: { type: Number, required: true },
-        }],
+        },
+      ],
       teams: [{ type: Schema.Types.ObjectId, ref: "User", required: true }],
       // tasks: [{ type: Schema.Types.ObjectId, ref: "Task", required: true }],
     },

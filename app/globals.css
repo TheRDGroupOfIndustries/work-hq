@@ -29,29 +29,25 @@
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
-  
+
     --primary-sky-blue: #e4eefe;
-    --primary-blue: #155EEF;
-    --primary-vendor: #EFF0F1;
-    --dark-blue : #001D6C;
-    --dark-gray : #344054;
-    --light-gray : #6A6A6A;
-    --vendor-dark : #360227;
-
-
+    --primary-blue: #155eef;
+    --primary-vendor: #eff0f1;
+    --dark-blue: #001d6c;
+    --dark-gray: #344054;
+    --light-gray: #6a6a6a;
+    --vendor-dark: #360227;
 
     /* Project Report Chart Color */
-    --pie-chart-color-1: #4A3AFF;
-    --pie-chart-color-2: #2D5BFF;
-    --pie-chart-color-3: #93AAFD;
-    --pie-chart-color-4: #C6D2FD;
+    --pie-chart-color-1: #4a3aff;
+    --pie-chart-color-2: #2d5bff;
+    --pie-chart-color-3: #93aafd;
+    --pie-chart-color-4: #c6d2fd;
 
-    --vendor-pie-chart-color-1: #7E065C;
-    --vendor-pie-chart-color-2: #BE198F;
-    --vendor-pie-chart-color-3: #F65BCA;
-    --vendor-pie-chart-color-4: #FFB7EA;
-
-
+    --vendor-pie-chart-color-1: #7e065c;
+    --vendor-pie-chart-color-2: #be198f;
+    --vendor-pie-chart-color-3: #f65bca;
+    --vendor-pie-chart-color-4: #ffb7ea;
   }
   .dark {
     --background: 240 10% 3.9%;
@@ -122,10 +118,12 @@
   .br {
     @apply border border-[red];
   }
-
   .text-desktop {
     @apply text-base;
   }
+}
+input[type="search"]::-webkit-search-cancel-button {
+  cursor: pointer; /* set cursor to pointer on the cross (x) icon */
 }
 
 * {

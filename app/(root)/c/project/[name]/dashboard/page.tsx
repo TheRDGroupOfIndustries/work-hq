@@ -1,7 +1,7 @@
-import MainContainer from "@/components/reusables/wrapper/mainContainer";
-import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
 import { dashboardProjectReport, dashbordHoursCount, ROLE } from "@/tempData";
+import MainContainer from "@/components/reusables/wrapper/mainContainer";
 import HoursCountCard from "@/components/reusables/components/hoursCountCard";
 import ProjectReportCard from "@/components/reusables/components/projectReportCard";
 import Deployment from "./components/deployment";

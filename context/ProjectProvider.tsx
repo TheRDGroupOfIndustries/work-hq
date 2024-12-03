@@ -5,10 +5,12 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { CustomUser, ProjectValues } from "@/lib/types";
 
 interface ProjectContextType {
-  selectedProject: string;
   projectDetails: ProjectValues | null;
-  setProject: (id: string) => Promise<void>;
-  setSelectedProject: React.Dispatch<React.SetStateAction<string>>;
+  userAllProjectsDetails: ProjectValues[];
+  selectedProject: { _id: string; name: string };
+  setSelectedProject: React.Dispatch<
+    React.SetStateAction<{ _id: string; name: string }>
+  >;
 }
 
 export const ProjectContext = createContext<ProjectContextType | undefined>(
@@ -21,46 +23,63 @@ const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({
   const { data: session } = useSession();
   const user = session?.user as CustomUser;
 
-  const [selectedProject, setSelectedProject] = useState<ProjectContextType["selectedProject"]>(() => {
-    if (user?.allProjects && user.allProjects.length > 0) {
-      return user.allProjects[user.allProjects.length - 1];
-    } else {
-      return "";
-    }
-  });
+  const [selectedProject, setSelectedProject] = useState<{
+    _id: string;
+    name: string;
+  }>({ _id: "", name: "" });
+  const [projectDetails, setProjectDetails] = useState<ProjectValues | null>(
+    null
+  );
+  const [userAllProjectsDetails, setUserAllProjectsDetails] = useState<
+    ProjectValues[]
+  >([]);
 
-  const [projectDetails, setProjectDetails] = useState<ProjectContextType["projectDetails"]>(null);
-
+  // Fetch details for all projects when the user has any projects
   useEffect(() => {
-    if (user?.allProjects && user.allProjects.length > 0) 
-      setSelectedProject(user.allProjects[user.allProjects.length - 1]);
-    else 
-      setSelectedProject("");
+    const fetchAllProjectsDetails = async () => {
+      if (user?.allProjects && user.allProjects.length > 0) {
+        try {
+          const projectDetailsPromises = user.allProjects.map(
+            async (projectId) => {
+              const res = await fetch(
+                `/api/project/get/getByProjectID/${projectId}`
+              );
+              const data = await res.json();
+              return data.project;
+            }
+          );
+          const allProjectsDetails = await Promise.all(projectDetailsPromises);
+          setUserAllProjectsDetails(allProjectsDetails);
+        } catch (error) {
+          console.error("Error fetching all project details:", error);
+        }
+      }
+    };
+
+    fetchAllProjectsDetails();
   }, [user?.allProjects]);
 
-  const getProjectDetails = async (_id: string) => {
-    try {
-      const res = await fetch(`/api/allProjects/${_id}`);
-      const data = await res.json();
-      setProjectDetails(data.project);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
+  // Update projectDetails when selectedProject changes
   useEffect(() => {
-    if (selectedProject)
-      getProjectDetails(selectedProject);
-  }, [selectedProject]);
+    const selectedProjectDetails = userAllProjectsDetails.find(
+      (project) => project._id === selectedProject._id
+    );
 
-  const setProject = async (_id: string) => {
-    setSelectedProject(_id);
-    getProjectDetails(_id);
-  };
+    if (selectedProjectDetails) {
+      setProjectDetails(selectedProjectDetails);
+    } else {
+      setProjectDetails(null);
+    }
+  }, [selectedProject, userAllProjectsDetails]);
 
   return (
     <ProjectContext.Provider
-      value={{ selectedProject, projectDetails, setProject,setSelectedProject }}
+      value={{
+        projectDetails,
+        userAllProjectsDetails,
+        selectedProject,
+        setSelectedProject,
+      }}
     >
       {children}
     </ProjectContext.Provider>

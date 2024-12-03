@@ -1,4 +1,11 @@
 "use client";
+
+import { useSession } from "next-auth/react";
+import React, { useState } from "react";
+import Link from "next/link";
+import { CustomUser } from "@/lib/types";
+import { usePathname } from "next/navigation";
+// import { Button } from "@/components/ui/button";
 import AssetsAndScope from "@/components/icons/Assets&Scope";
 import Chats from "@/components/icons/Chats";
 import Helpdesk from "@/components/icons/Helpdesk";
@@ -15,18 +22,10 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
-  SelectValue,
 } from "@/components/ui/select";
-import { CustomUser } from "@/lib/types";
-import { useSession } from "next-auth/react";
-import Link from "next/link";
-import React from "react";
-// import { Button } from "@/components/ui/button";
 // import { IoNotificationsOutline } from "react-icons/io5";
 import { useProjectContext } from "@/context/ProjectProvider";
-
 import { Role, VENDOR } from "@/types";
 import {
   Bell,
@@ -37,7 +36,7 @@ import {
   Settings,
   UserRound,
 } from "lucide-react";
-import { usePathname } from "next/navigation";
+import Image from "next/image";
 
 const list = [
   {
@@ -79,11 +78,6 @@ const list = [
 ];
 
 const Navbar = ({ role }: { role: Role }) => {
-  const { data: session } = useSession();
-  const user = session?.user as CustomUser;
-  const { selectedProject, setProject } = useProjectContext();
-  const userProjects = user?.allProjects;
-
   const pathname = usePathname();
 
   return (
@@ -97,8 +91,8 @@ const Navbar = ({ role }: { role: Role }) => {
       {/* left */}
       <div className="flex flex-row items-center gap-3 sm:gap-9 text-lg font-semibold px-5">
         <h1 className="text-2xl font-semibold">Logo</h1>
-        <div className="lg:flex  items-center  hidden text-nowrap">
-          <SelectProject role={role} />
+        <div className="hidden lg:flex-center text-nowrap">
+          {pathname !== "/c/all-projects" && <SelectProject role={role} />}
           <Link
             href="/c/all-projects"
             className={`h-full text-desktop py-5 px-4 mr-3 ${
@@ -113,28 +107,37 @@ const Navbar = ({ role }: { role: Role }) => {
           >
             All Projects
           </Link>
-          <span
-            className={`text-desktop cursor-pointer flex flex-row items-center py-3 px-3 gap-2   rounded-xl ${
-              role === VENDOR
-                ? "text-white shadow-[3px_3px_10px_0px_#000000,-3px_-3px_10px_0px_#610646] bg-[#360227] "
-                : "text-dark-gray shadow-[3px_3px_10px_0px_#789BD399,-3px_-3px_10px_0px_#FFFFFF] "
-            }`}
-          >
-            <Plus
-              color={`${role === VENDOR ? "white" : "var(--dark-gray)"}`}
-              className=""
-            />{" "}
-            Add Project
-          </span>
+          {pathname !== "/c/all-projects" && (
+            <span
+              className={`text-desktop cursor-pointer flex flex-row items-center py-3 px-3 gap-2   rounded-xl ${
+                role === VENDOR
+                  ? "text-white shadow-[3px_3px_10px_0px_#000000,-3px_-3px_10px_0px_#610646] bg-[#360227] "
+                  : "text-dark-gray shadow-[3px_3px_10px_0px_#789BD399,-3px_-3px_10px_0px_#FFFFFF] "
+              }`}
+            >
+              <Plus
+                color={`${role === VENDOR ? "white" : "var(--dark-gray)"}`}
+                className=""
+              />{" "}
+              Add Project
+            </span>
+          )}
         </div>
       </div>
 
       {/* right */}
       <div className="flex flex-row items-center gap-5 pr-5">
         <span className="relative w-full hidden sm:block">
+          <Search
+            color={role === VENDOR ? "white" : "#697077"}
+            strokeWidth={2.6}
+            className="absolute h-[20px] w-[20px] top-[14px] left-4 font-medium"
+          />
           <input
+            type="search"
+            name="search"
             placeholder="Search"
-            className={`  text-base  md:[250px] xl:w-[350px] sm:min-w-[250px]  py-3 px-6 pl-11 outline-none  border-[#C1C7CD] rounded-xl placeholder:font-medium placeholder:text-base
+            className={`text-base md:[250px] xl:w-[350px] sm:min-w-[250px] py-3 px-6 pl-11 outline-none border-[#C1C7CD] rounded-xl placeholder:font-medium placeholder:text-base
               
               ${
                 role === VENDOR
@@ -143,18 +146,10 @@ const Navbar = ({ role }: { role: Role }) => {
               }
               
             `}
-            type="search"
-            name=""
-            id=""
-          />
-          <Search
-            color={ role === VENDOR ? "white" : "#697077"}
-            strokeWidth={2.6}
-            className="absolute h-[20px] w-[20px] top-[14px] left-4 font-medium"
           />
         </span>
         <span className="relative">
-          <Bell color={ role === VENDOR ? "white" : "var(--dark-blue)"} />
+          <Bell color={role === VENDOR ? "white" : "var(--dark-blue)"} />
           <div className="h-3 w-3 p-1 bg-[#ff2525] rounded-full absolute top-0 right-0">
             <span className="w-full h-full flex items-center justify-center text-[6px] text-white">
               12
@@ -162,7 +157,7 @@ const Navbar = ({ role }: { role: Role }) => {
           </div>
         </span>
         <span>
-          <Settings color={ role === VENDOR ? "white" : "var(--dark-blue)"} />
+          <Settings color={role === VENDOR ? "white" : "var(--dark-blue)"} />
         </span>
         <ProfileDropDownMenu />
       </div>
@@ -173,30 +168,52 @@ const Navbar = ({ role }: { role: Role }) => {
 export default Navbar;
 
 export function SelectProject({ role }: { role: Role }) {
+  const { userAllProjectsDetails } = useProjectContext();
+  const [selectedProject, setSelectedProject] = useState(
+    userAllProjectsDetails?.[0]?.projectDetails || null
+  );
+
+  const handleSelect = (projectName: string) => {
+    const selected = userAllProjectsDetails.find(
+      (project) => project.projectDetails.projectName === projectName
+    );
+    if (selected) {
+      setSelectedProject({ ...selected.projectDetails });
+    }
+  };
+
   return (
     <Select>
       <SelectTrigger
-        className={` border-0 shadow-none text-lg  ${
+        className={`border-0 shadow-none text-lg ${
           role === VENDOR
             ? "bg-vendor-dark text-white"
             : "bg-primary-sky-blue text-dark-gray"
-        } `}
+        }`}
       >
         <p
-          className={`h-full flex text-desktop flex-row gap-5 items-center cursor-pointer py-5 px-4 `}
+          className={`h-full flex text-desktop flex-row gap-5 items-center cursor-pointer py-5 px-4`}
         >
-          Projects
+          {selectedProject?.projectName || "Select a Project"}
         </p>
-        {/* <SelectValue placeholder="Select a fruit" /> */}
       </SelectTrigger>
       <SelectContent className="shadow-[3px_3px_10px_0px_#789BD399,-3px_-3px_10px_0px_#FFFFFF] text-desktop mt-5">
         <SelectGroup>
-          <SelectLabel>Fruits</SelectLabel>
-          <SelectItem value="apple">Apple</SelectItem>
-          <SelectItem value="banana">Banana</SelectItem>
-          <SelectItem value="blueberry">Blueberry</SelectItem>
-          <SelectItem value="grapes">Grapes</SelectItem>
-          <SelectItem value="pineapple">Pineapple</SelectItem>
+          {userAllProjectsDetails
+            // ?.filter(
+            //   (project) =>
+            //     project.projectDetails.projectName !==
+            //     selectedProject?.projectName
+            // )
+            .map((project, index) => (
+              <SelectItem
+                key={index}
+                value={project.projectDetails.projectName}
+                onClick={() => handleSelect(project.projectDetails.projectName)}
+              >
+                {project.projectDetails.projectName}
+              </SelectItem>
+            ))}
         </SelectGroup>
       </SelectContent>
     </Select>
@@ -205,12 +222,22 @@ export function SelectProject({ role }: { role: Role }) {
 
 export function ProfileDropDownMenu() {
   const pathname = usePathname();
+  const { data: session } = useSession();
+  const user = session?.user as CustomUser;
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className=" border-0 text-desktop">
+      <DropdownMenuTrigger className="border-0 text-desktop select-none">
         <span className="relative">
-          <div className="flex items-center justify-center w-[40px] h-[40px] rounded-full overflow-hidden bg-[#4872b5]"></div>
-          <div className="h-4 w-4 bg-[#25ff30] border-2  border-white rounded-full absolute bottom-0 right-0"></div>
+          <div className="flex-center w-10 h-10 rounded-full bg-[#4872b5] overflow-hidden">
+            <Image
+              src={user?.profileImage || user?.image || "/assets/user.png"}
+              alt="profile image"
+              width={200}
+              height={200}
+              className="w-10 h-10 rounded-full"
+            />
+          </div>
+          <div className="h-4 w-4 bg-[#25ff30] border-2 border-white rounded-full absolute bottom-0 right-0"></div>
         </span>
       </DropdownMenuTrigger>
       <DropdownMenuContent className=" ">
