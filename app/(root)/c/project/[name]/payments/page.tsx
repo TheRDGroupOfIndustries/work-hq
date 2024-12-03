@@ -8,6 +8,7 @@ import PaymentInfo from "./components/paymentInfo";
 import MyPayments from "./components/myPayments";
 import { useState } from "react";
 import AddPayment from "./components/addPayment";
+import PaymentRequest from "./components/paymentRequest";
 
 export default function Payments() {
   const [addPaymentOpen, setAddPaymentOpen] = useState(false);
@@ -36,11 +37,12 @@ export default function Payments() {
                 ROLE === VENDOR
                   ? "data-[state=active]:border-vendor-dark"
                   : "data-[state=active]:border-primary-blue"
-              } `} value="paymentRequest">Client Payments</TabsTrigger>        
+              } `} value="clientPayments">Client Payments</TabsTrigger>        
         </TabsList>
         <TabsContent value="paymentInfo"><PaymentInfo/></TabsContent>
         <TabsContent value="myPayments"><MyPayments/></TabsContent>
-        <TabsContent value="paymentRequest">66</TabsContent>
+        <TabsContent value="paymentRequest"><PaymentRequest/></TabsContent>
+        <TabsContent value="clientPayments">Same as My Payments</TabsContent>
       </Tabs>
     </MainContainer>
   );
