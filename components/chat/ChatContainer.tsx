@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Chat,
   Channel,
@@ -11,9 +11,8 @@ import {
   Window,
 } from "stream-chat-react";
 import { useChatContext } from "@/context/ChatProvider";
-import { Channel as ChannelType } from "stream-chat";
 import { Button } from "@/components/ui/button";
-import { PlusCircle } from 'lucide-react';
+import { PlusCircle } from "lucide-react";
 import { CreateChannelDialog } from "./CreateChannelDialog";
 import { ChannelList } from "./ChannelList";
 

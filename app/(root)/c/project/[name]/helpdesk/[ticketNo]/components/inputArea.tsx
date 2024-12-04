@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { SendHorizontal } from "lucide-react";
 import { useState } from "react";
@@ -7,6 +7,8 @@ import Toolbar from "./toolbar";
 
 export default function InputArea() {
   const [text, setText] = useState("");
+  console.log(text);
+
   const [activeFormats, setActiveFormats] = useState<Set<string>>(new Set());
 
   const handleFormat = (command: string) => {

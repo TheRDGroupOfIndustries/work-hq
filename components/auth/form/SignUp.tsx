@@ -124,7 +124,13 @@ const SignUp: React.FC = () => {
   const handleGetOtp = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
-    if (!firstName || !lastName || !emailOrPhone || !password || !confirmPassword) {
+    if (
+      !firstName ||
+      !lastName ||
+      !emailOrPhone ||
+      !password ||
+      !confirmPassword
+    ) {
       return toast.error("Please fill all the fields!");
     }
     if (password !== confirmPassword) {
@@ -174,7 +180,13 @@ const SignUp: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!firstName || !lastName || !emailOrPhone || !password || !confirmPassword) {
+    if (
+      !firstName ||
+      !lastName ||
+      !emailOrPhone ||
+      !password ||
+      !confirmPassword
+    ) {
       return toast.error("Please fill all the fields!");
     }
     if (password !== confirmPassword) {
@@ -199,7 +211,7 @@ const SignUp: React.FC = () => {
             checkOtpCode,
           }),
         });
-        const data = await res.json();
+        // const data = await res.json();
 
         if (res.status === 400) {
           setSubmitting(false);
@@ -207,7 +219,9 @@ const SignUp: React.FC = () => {
         }
         if (res.status === 402) {
           setSubmitting(false);
-          throw new Error(`Invalid OTP has been entered for this ${emailOrPhone}!`);
+          throw new Error(
+            `Invalid OTP has been entered for this ${emailOrPhone}!`
+          );
         }
 
         if (res.status === 200) {
@@ -288,7 +302,11 @@ const SignUp: React.FC = () => {
           }}
         />
         <div className="text-red-500 text-sm">{emailError}</div>
-        <div className={`flex flex-center ${!otpSuccess && "cursor-text relative"}`}>
+        <div
+          className={`flex flex-center ${
+            !otpSuccess && "cursor-text relative"
+          }`}
+        >
           <InputField
             type={showPass}
             name="password"
@@ -308,14 +326,21 @@ const SignUp: React.FC = () => {
             className="w-fit h-fit cursor-pointer flex-center p-3 ease-in-out duration-200 pt-6 absolute right-0 top-1/4"
           >
             {showPass === "text" ? (
-              <FaRegEyeSlash size={20} className="w-full h-full active:scale-75 text-primary-green" />
+              <FaRegEyeSlash
+                size={20}
+                className="w-full h-full active:scale-75 text-primary-green"
+              />
             ) : (
               <FaRegEye size={20} className="w-full h-full active:scale-75" />
             )}
           </div>
         </div>
         <div className="text-red-500 text-sm">{passwordError}</div>
-        <div className={`flex flex-center ${!otpSuccess && "cursor-text relative"}`}>
+        <div
+          className={`flex flex-center ${
+            !otpSuccess && "cursor-text relative"
+          }`}
+        >
           <InputField
             type={showConfirmPass}
             name="confirm-password"
@@ -330,12 +355,17 @@ const SignUp: React.FC = () => {
           />
           <div
             onClick={() => {
-              setShowConfirmPass(showConfirmPass === "text" ? "password" : "text");
+              setShowConfirmPass(
+                showConfirmPass === "text" ? "password" : "text"
+              );
             }}
             className="w-fit h-fit cursor-pointer flex-center ease-in-out duration-200 pt-6 p-3 absolute right-0 top-1/4"
           >
             {showConfirmPass === "text" ? (
-              <FaRegEyeSlash size={20} className="w-full h-full active:scale-75 text-primary-green" />
+              <FaRegEyeSlash
+                size={20}
+                className="w-full h-full active:scale-75 text-primary-green"
+              />
             ) : (
               <FaRegEye size={20} className="w-full h-full active:scale-75" />
             )}
@@ -349,33 +379,47 @@ const SignUp: React.FC = () => {
             disabled={disableBtn || otpBtn || sendingOtp || otpSuccess}
             className={`w-full ${otpBtn && "animate-pulse"}`}
           >
-            {sendingOtp ? "Sending OTP..." : otpSuccess ? "Check your E-mail!" : "Send OTP"}
+            {sendingOtp
+              ? "Sending OTP..."
+              : otpSuccess
+              ? "Check your E-mail!"
+              : "Send OTP"}
           </Button>
         ) : (
           <>
             <InputField
-              name = "otp"
+              name="otp"
               type="text"
               placeholder="Enter OTP"
               value={otp}
-              onChange={(e) => setOtp(e.target.value.replace(/[^\d]/g, "").slice(0, 6))}
+              onChange={(e) =>
+                setOtp(e.target.value.replace(/[^\d]/g, "").slice(0, 6))
+              }
               required
               disabled={disableBtn || submitting || success}
               label="Enter OTP"
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
-                  handleSubmit(e as unknown as React.FormEvent<HTMLFormElement>);
+                  handleSubmit(
+                    e as unknown as React.FormEvent<HTMLFormElement>
+                  );
                 }
               }}
             />
             <Button
               type="submit"
-              onClick={(e) => handleSubmit(e as unknown as React.FormEvent<HTMLFormElement>)}
+              onClick={(e) =>
+                handleSubmit(e as unknown as React.FormEvent<HTMLFormElement>)
+              }
               disabled={disableBtn || submitting || success}
               className={`w-full ${disableBtn && "animate-pulse"}`}
             >
-              {submitting ? "Registering..." : success ? "Registered Successfully!" : "Sign Up"}
+              {submitting
+                ? "Registering..."
+                : success
+                ? "Registered Successfully!"
+                : "Sign Up"}
             </Button>
           </>
         )}
