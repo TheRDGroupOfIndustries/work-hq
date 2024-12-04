@@ -1,8 +1,9 @@
 "use client";
+import Headline from "@/components/reusables/components/headline";
 import MainContainer from "@/components/reusables/wrapper/mainContainer";
-import Headline from "./components/headline";
 import { ROLE } from "@/tempData";
 import { useRouter } from "next/navigation";
+import AddChat from "./components/addChat";
 interface ChatList {
   id: string;
   avatar: string;
@@ -96,9 +97,12 @@ const chatList: ChatList[] = [
   },
 ];
 export default function Chats() {
+  const headLineButtons = [
+    { buttonText: "Add Chat", lightGrayColor: true, onNeedIcon: false, onClick: () => alert("Clicked"), dialogContent: <AddChat/> },
+  ];
   return (
     <MainContainer role={ROLE}>
-      <Headline role={ROLE}  />
+      <Headline role={ROLE} title="Chats" subTitle="Project / Chats" buttonObjects={headLineButtons} />
       {chatList.map((chat: ChatList) => (
         <Card key={chat.id} chat={chat} />
       ))}

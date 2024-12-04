@@ -1,19 +1,22 @@
 "use client";
 
+import Headline from "@/components/reusables/components/headline";
 import MainContainer from "@/components/reusables/wrapper/mainContainer";
-import Headline from "./components/headline";
 import { useProjectContext } from "@/context/ProjectProvider";
 import { ProjectValues } from "@/lib/types";
+import { ROLE } from "@/tempData";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
 export default function AllProjects() {
   const { userAllProjectsDetails } = useProjectContext();
-
+  const headLineButtons = [
+    { buttonText: "Add New Project", lightGrayColor: false, onNeedIcon: false, onClick: () => alert("Add New Project") },
+  ];
   return (
     <MainContainer>
-      <Headline />
+      <Headline role={ROLE} title="All Project" subTitle="Project" buttonObjects={headLineButtons} />
       <ProjectTable projects={userAllProjectsDetails} />
     </MainContainer>
   );

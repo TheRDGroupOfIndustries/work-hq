@@ -1,6 +1,5 @@
 'use client';
 import MainContainer from "@/components/reusables/wrapper/mainContainer";
-import Headline from "./components/headline";
 import { ROLE } from "@/tempData";
 import { useState } from "react";
 import {
@@ -32,6 +31,8 @@ import { MoreVertical } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import RaiseTicket from "./components/raiseTicket";
+import Headline from "@/components/reusables/components/headline";
 
 
 interface Ticket {
@@ -146,9 +147,14 @@ export default function Helpdesk() {
   const isAllSelected =
   filteredTickets.length > 0 && selectedRows.length === filteredTickets.length;
 
+  
+  const headLineButtons = [
+    { buttonText: "Raise Ticket", lightGrayColor: false, onNeedIcon: true, onClick: () => console.log("Export Report"), dialogContent: <RaiseTicket/> },
+  ];
+
   return (
     <MainContainer role={ROLE}>
-      <Headline/>
+      <Headline role={ROLE} title="Helpdest Tickets" subTitle="Project / Chats" buttonObjects={headLineButtons} />
 
       <div className="flex flex-wrap gap-4">
         <Input

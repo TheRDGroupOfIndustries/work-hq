@@ -4,12 +4,13 @@ import MainContainer from "@/components/reusables/wrapper/mainContainer";
 import SquareButton from "@/components/reusables/wrapper/squareButton";
 import { Label } from "@/components/ui/label";
 import { Mail, MessageCircleMore, Phone, SquarePen } from "lucide-react";
-import Headline from "./components/headline";
+import { ROLE } from "@/tempData";
+import Headline from "@/components/reusables/components/headline";
 
 export default function Profile() {
   return (
     <MainContainer>
-      <Headline />
+      <Headline role={ROLE} title="Profile" subTitle="Project / Chats"  />
       <Container>
         <div className=" flex gap-4 flex-col-reverse sm:flex-row  justify-between">
           <div className="flex flex-row  sm:mx-0 items-center justify-between gap-4">
