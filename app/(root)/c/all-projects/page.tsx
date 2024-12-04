@@ -1,20 +1,20 @@
 "use client";
 
-import MainContainer from "@/components/reusables/wrapper/mainContainer";
-import Headline from "./components/headline";
-import { useProjectContext } from "@/context/ProjectProvider";
-import { ProjectValues } from "@/lib/types";
-import Image from "next/image";
-import Link from "next/link";
 import { useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { ProjectValues } from "@/lib/types";
+import { useProjectContext } from "@/context/ProjectProvider";
+import Headline from "./components/headline";
+import MainContainer from "@/components/reusables/wrapper/mainContainer";
 
 export default function AllProjects() {
-  const { userAllProjectsDetails } = useProjectContext();
+  const { userAllProjects } = useProjectContext();
 
   return (
     <MainContainer>
       <Headline />
-      <ProjectTable projects={userAllProjectsDetails} />
+      <ProjectTable projects={userAllProjects} />
     </MainContainer>
   );
 }
@@ -49,7 +49,6 @@ const ProjectTable: React.FC<ProjectTableProps> = ({ projects }) => {
 
   return (
     <div className="bg-gray-50 p-4 rounded-lg shadow-md">
-      {/* Search and Filter */}
       <div className="flex justify-between items-center mb-4">
         <input
           type="text"
