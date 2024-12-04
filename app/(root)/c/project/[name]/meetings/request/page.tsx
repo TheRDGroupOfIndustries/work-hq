@@ -1,4 +1,4 @@
-import MeetingsRequest from "@/components/pages/c/meetings/request/page";
+import MeetingsRequest from "@/components/pages/meetings/request/client/page";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 

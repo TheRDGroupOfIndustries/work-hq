@@ -1,8 +1,5 @@
-
-import Chatings from "@/components/pages/c/chats/Chatings/page";
+import Chatings from "@/components/pages/chats/Chatings/page";
 
 export default function Page() {
-  return (
-    <Chatings/>
-  );
+  return <Chatings />;
 }

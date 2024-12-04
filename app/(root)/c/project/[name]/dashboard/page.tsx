@@ -1,4 +1,4 @@
-import HomePage from "@/components/pages/c/dashboard/page";
+import HomePage from "@/components/pages/dashboard/client/page";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 

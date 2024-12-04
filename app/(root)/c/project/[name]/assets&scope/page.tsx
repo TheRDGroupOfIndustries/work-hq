@@ -1,4 +1,4 @@
-import AssetsAndScope from "@/components/pages/c/assets&scope/page";
+import AssetsAndScope from "@/components/pages/assets&scope/client/page";
 
 
 export default function Page() {

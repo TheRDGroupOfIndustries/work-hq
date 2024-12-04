@@ -3,10 +3,10 @@ import MainContainer from "@/components/reusables/wrapper/mainContainer";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ROLE } from "@/tempData";
 import { VENDOR } from "@/types";
-import PaymentInfo from "./components/paymentInfo";
-import MyPayments from "./components/myPayments";
-import PaymentRequest from "./components/paymentRequest";
-import AddPayment from "./components/addPayment";
+import PaymentInfo from "./../components/paymentInfo";
+import MyPayments from "./../components/myPayments";
+import PaymentRequest from "./../components/paymentRequest";
+import AddPayment from "./../components/addPayment";
 import Headline from "@/components/reusables/components/headline";
 
 export default function Payments() {

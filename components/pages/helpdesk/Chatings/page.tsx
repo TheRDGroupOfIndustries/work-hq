@@ -1,10 +1,10 @@
 import MainContainer from "@/components/reusables/wrapper/mainContainer";
-import ChatArea from "./components/chatArea";
-import InputArea from "./components/inputArea";
-import SecureAndEncripted from "./components/SecureAndEncripted";
+import ChatArea from "@/components/pages/bigChat/components/chatArea";
+import InputArea from "@/components/pages/bigChat/components/inputArea";
+import SecureAndEncripted from "@/components/pages/bigChat/components/SecureAndEncripted";
 import { ROLE } from "@/tempData";
 import Headline from "@/components/reusables/components/headline";
-import TicketInfo from "./components/ticketInfo";
+import TicketInfo from "@/components/pages/bigChat/components/ticketInfo";
 
 export default function Chatings() {
   const headLineButtons = [

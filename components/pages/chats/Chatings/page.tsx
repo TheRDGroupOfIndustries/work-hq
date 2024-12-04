@@ -1,9 +1,10 @@
 import MainContainer from "@/components/reusables/wrapper/mainContainer";
-import ChatArea from "./components/chatArea";
-import InputArea from "./components/inputArea";
-import SecureAndEncripted from "./components/SecureAndEncripted";
+
 import { ROLE } from "@/tempData";
 import Headline from "@/components/reusables/components/headline";
+import ChatArea from "@/components/pages/bigChat/components/chatArea";
+import SecureAndEncripted from "@/components/pages/bigChat/components/SecureAndEncripted";
+import InputArea from "@/components/pages/bigChat/components/inputArea";
 
 export default function Chatings() {
   

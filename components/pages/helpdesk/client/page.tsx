@@ -31,7 +31,7 @@ import { MoreVertical } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import RaiseTicket from "./components/raiseTicket";
+import RaiseTicket from "./../components/raiseTicket";
 import Headline from "@/components/reusables/components/headline";
 
 
