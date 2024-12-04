@@ -1,14 +1,22 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { CustomUser, ProjectValues } from "@/lib/types";
 
 interface ProjectContextType {
-  selectedProject: string;
-  projectDetails: ProjectValues | null;
-  setProject: (id: string) => Promise<void>;
-  setSelectedProject: React.Dispatch<React.SetStateAction<string>>;
+  selectedProjectDetails: ProjectValues | null;
+  userAllProjects: ProjectValues[];
+  selectedProject: { _id: string; name: string };
+  setSelectedProject: React.Dispatch<
+    React.SetStateAction<{ _id: string; name: string }>
+  >;
 }
 
 export const ProjectContext = createContext<ProjectContextType | undefined>(
@@ -21,46 +29,67 @@ const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({
   const { data: session } = useSession();
   const user = session?.user as CustomUser;
 
-  const [selectedProject, setSelectedProject] = useState<ProjectContextType["selectedProject"]>(() => {
+  const [selectedProject, setSelectedProject] = useState<{
+    _id: string;
+    name: string;
+  }>({ _id: "", name: "" });
+  const [selectedProjectDetails, setProjectDetails] =
+    useState<ProjectValues | null>(null);
+  const [userAllProjects, setUserAllProjects] = useState<ProjectValues[]>([]);
+
+  const fetchUserProjects = useCallback(async () => {
     if (user?.allProjects && user.allProjects.length > 0) {
-      return user.allProjects[user.allProjects.length - 1];
-    } else {
-      return "";
+      try {
+        const res = await fetch("/api/project/get/user-projects", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ userProjectsIds: user.allProjects }),
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          setUserAllProjects(data.projects); // Set the fetched projects
+        } else {
+          console.error("Error fetching user projects:", data.error);
+        }
+      } catch (error) {
+        console.error("Error fetching user projects:", error);
+      }
     }
-  });
-
-  const [projectDetails, setProjectDetails] = useState<ProjectContextType["projectDetails"]>(null);
-
-  useEffect(() => {
-    if (user?.allProjects && user.allProjects.length > 0) 
-      setSelectedProject(user.allProjects[user.allProjects.length - 1]);
-    else 
-      setSelectedProject("");
   }, [user?.allProjects]);
 
-  const getProjectDetails = async (_id: string) => {
-    try {
-      const res = await fetch(`/api/allProjects/${_id}`);
-      const data = await res.json();
-      setProjectDetails(data.project);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  useEffect(() => {
+    fetchUserProjects();
+  }, [fetchUserProjects]);
 
   useEffect(() => {
-    if (selectedProject)
-      getProjectDetails(selectedProject);
-  }, [selectedProject]);
+    const selectedProjectDetails = userAllProjects.find(async (project) => {
+      if (project._id === selectedProject._id) {
+        const res = await fetch(
+          `/api/project/get/getByProjectID/${project._id}`
+        );
+        const data = await res.json();
+        setProjectDetails(data.project as ProjectValues);
+      }
+    });
 
-  const setProject = async (_id: string) => {
-    setSelectedProject(_id);
-    getProjectDetails(_id);
-  };
+    if (selectedProjectDetails) {
+      setProjectDetails(selectedProjectDetails);
+    } else {
+      setProjectDetails(null);
+    }
+  }, [selectedProject, userAllProjects]);
 
   return (
     <ProjectContext.Provider
-      value={{ selectedProject, projectDetails, setProject,setSelectedProject }}
+      value={{
+        selectedProjectDetails,
+        userAllProjects,
+        selectedProject,
+        setSelectedProject,
+      }}
     >
       {children}
     </ProjectContext.Provider>

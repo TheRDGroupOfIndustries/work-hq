@@ -1,23 +1,24 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { X } from 'lucide-react'
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { X } from "lucide-react";
+import { CustomUser } from "@/lib/types";
 
 interface CreateGroupDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  onCreateGroup: (name: string, members: string[]) => void
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onCreateGroup: (name: string, members: string[]) => void;
 }
 
 export function CreateGroupDialog({
@@ -25,36 +26,35 @@ export function CreateGroupDialog({
   onOpenChange,
   onCreateGroup,
 }: CreateGroupDialogProps) {
-  const [groupName, setGroupName] = useState("")
-  const [groupDescription, setGroupDescription] = useState("")
-  const [selectedMembers, setSelectedMembers] = useState<string[]>([])
-  const [searchQuery, setSearchQuery] = useState("")
-  const [users, setUsers] = useState<any[]>([])
+  const [groupName, setGroupName] = useState("");
+  const [groupDescription, setGroupDescription] = useState("");
+  const [selectedMembers, setSelectedMembers] = useState<string[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [users, setUsers] = useState<CustomUser[]>([]);
 
   useEffect(() => {
     if (open) {
-      fetchUsers()
+      const fetchUsers = async () => {
+        try {
+          const response = await fetch(`/api/users?query=${searchQuery}`);
+          if (!response.ok) throw new Error("Failed to fetch users");
+          const data = await response.json();
+          setUsers(data);
+        } catch (error) {
+          console.error("Error fetching users:", error);
+        }
+      };
+      fetchUsers();
     }
-  }, [open, searchQuery])
-
-  const fetchUsers = async () => {
-    try {
-      const response = await fetch(`/api/users?query=${searchQuery}`)
-      if (!response.ok) throw new Error('Failed to fetch users')
-      const data = await response.json()
-      setUsers(data)
-    } catch (error) {
-      console.error('Error fetching users:', error)
-    }
-  }
+  }, [open, searchQuery]);
 
   const handleCreateGroup = () => {
-    onCreateGroup(groupName, selectedMembers)
-    setGroupName("")
-    setGroupDescription("")
-    setSelectedMembers([])
-    setSearchQuery("")
-  }
+    onCreateGroup(groupName, selectedMembers);
+    setGroupName("");
+    setGroupDescription("");
+    setSelectedMembers([]);
+    setSearchQuery("");
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -94,18 +94,27 @@ export function CreateGroupDialog({
             <Label>Add Members</Label>
             <div className="flex flex-wrap gap-2">
               {selectedMembers.map((memberId) => {
-                const user = users.find(u => u._id === memberId)
+                const user = users.find((u) => u._id === memberId);
                 return (
-                  <div key={memberId} className="flex items-center gap-1 bg-accent rounded-full px-3 py-1">
-                    <span className="text-sm">{user?.firstName} {user?.lastName}</span>
+                  <div
+                    key={memberId}
+                    className="flex items-center gap-1 bg-accent rounded-full px-3 py-1"
+                  >
+                    <span className="text-sm">
+                      {user?.firstName} {user?.lastName}
+                    </span>
                     <button
-                      onClick={() => setSelectedMembers(prev => prev.filter(id => id !== memberId))}
+                      onClick={() =>
+                        setSelectedMembers((prev) =>
+                          prev.filter((id) => id !== memberId)
+                        )
+                      }
                       className="text-muted-foreground hover:text-foreground"
                     >
                       <X className="h-4 w-4" />
                     </button>
                   </div>
-                )
+                );
               })}
             </div>
             <Input
@@ -118,7 +127,9 @@ export function CreateGroupDialog({
               {users.map((user) => (
                 <button
                   key={user._id}
-                  onClick={() => setSelectedMembers(prev => [...prev, user._id])}
+                  onClick={() =>
+                    setSelectedMembers((prev) => [...prev, user._id])
+                  }
                   className="w-full text-left p-2 hover:bg-accent rounded-md"
                   disabled={selectedMembers.includes(user._id)}
                 >
@@ -133,5 +144,5 @@ export function CreateGroupDialog({
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

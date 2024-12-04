@@ -6,7 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 // import { CustomUser } from "@/lib/types";
 import { Button } from "@/components/ui/button";
-import { useEffect} from "react";
+import { useEffect } from "react";
 import { CustomUser } from "@/lib/types";
 import { useDispatch, useSelector } from "react-redux";
 import { setSignUpRole } from "@/redux/slices/authSlice";
@@ -18,19 +18,19 @@ export default function Home() {
   const user = session?.user as CustomUser;
   const router = useRouter();
   const dispatch = useDispatch();
-  
-  const SignUpRole = useSelector((state: RootState)=> state.auth.signUpRole);
 
-  useEffect(()=>{
-    if(!SignUpRole){
-    const signUpRoleCookie = Cookies.get("SignUpRole");
-    dispatch(setSignUpRole(signUpRoleCookie? signUpRoleCookie : "client"));
+  const SignUpRole = useSelector((state: RootState) => state.auth.signUpRole);
+
+  useEffect(() => {
+    if (!SignUpRole) {
+      const signUpRoleCookie = Cookies.get("SignUpRole");
+      dispatch(setSignUpRole(signUpRoleCookie ? signUpRoleCookie : "client"));
     }
-  },[dispatch, SignUpRole])
+  }, [dispatch, SignUpRole]);
 
   useEffect(() => {
     // if (prevSessionRef.current !== session) {
-      console.log("session", session);
+    console.log("session", session);
     //   prevSessionRef.current = session;
     // }
   }, [session]);
@@ -58,16 +58,16 @@ useEffect(() => {
   return (
     <main className="w-full h-screen relative select-none flex-center flex-col gap-4 overflow-hidden">
       <div className="absolute top-2 left-2 flex-center gap-1 animate-slide-down">
-        <div className="text-xl md:text-2xl lg:text-3xl font-semibold">
+        {/* <div className="text-xl md:text-2xl lg:text-3xl font-semibold">
           <span className="text-primary">Work</span>
-        </div>
+        </div> */}
         <Image
           src="/logo.png"
           alt="logo"
           width="100"
           height="100"
           priority
-          className="w-8 h-8 overflow-hidden"
+          className="w-fit h-fit overflow-hidden"
         />
       </div>
       <div className="space-x-2 animate-fade-in">
@@ -78,7 +78,9 @@ useEffect(() => {
                 <div className="w-10 h-10 rounded-full overflow-hidden">
                   <Image
                     src={
-                      user?.profileImage ?? user?.profileImage ?? "/assets/user.png"
+                      user?.profileImage ??
+                      user?.profileImage ??
+                      "/assets/user.png"
                     }
                     alt="Profile Image"
                     width="100"

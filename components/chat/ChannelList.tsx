@@ -1,7 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Channel, ChannelFilters, ChannelSort, ChannelOptions, StreamChat, Event, ConnectAPIResponse, DefaultGenerics } from "stream-chat";
+import {
+  Channel,
+  ChannelFilters,
+  ChannelSort,
+  ChannelOptions,
+  Event,
+  DefaultGenerics,
+} from "stream-chat";
 import { useChatContext } from "@/context/ChatProvider";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -28,7 +35,7 @@ export function ChannelList({ onChannelSelect }: ChannelListProps) {
     fetchChannels();
 
     const handleNewChannel = (event: Event<DefaultGenerics>) => {
-      if (event.type === 'channel.created' && event.channel) {
+      if (event.type === "channel.created" && event.channel) {
         const newChannel = event.channel;
         if (newChannel instanceof Channel) {
           setChannels((prev) => [...prev, newChannel]);
@@ -52,7 +59,13 @@ export function ChannelList({ onChannelSelect }: ChannelListProps) {
           className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-accent transition-colors"
         >
           <Avatar>
-            <AvatarImage src={typeof channel.data?.image === 'string' ? channel.data.image : undefined} />
+            <AvatarImage
+              src={
+                typeof channel.data?.image === "string"
+                  ? channel.data.image
+                  : undefined
+              }
+            />
             <AvatarFallback>
               {channel.data?.name?.[0]?.toUpperCase() || "C"}
             </AvatarFallback>
@@ -60,8 +73,8 @@ export function ChannelList({ onChannelSelect }: ChannelListProps) {
           <div className="flex-1 text-left">
             <p className="font-medium">{channel.data?.name || "Channel"}</p>
             <p className="text-sm text-muted-foreground truncate">
-              {channel.state.messages[channel.state.messages.length - 1]?.text ||
-                "No messages yet"}
+              {channel.state.messages[channel.state.messages.length - 1]
+                ?.text || "No messages yet"}
             </p>
           </div>
         </button>
@@ -69,4 +82,3 @@ export function ChannelList({ onChannelSelect }: ChannelListProps) {
     </div>
   );
 }
-

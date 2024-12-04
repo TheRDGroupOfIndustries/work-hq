@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
+import { Channel, ChannelSortBase, DefaultGenerics } from "stream-chat";
 import { authOptions } from "@/lib/authOptions";
 import { serverClient } from "@/utils/serverClient";
-import { Channel, DefaultGenerics } from "stream-chat";
 
 export async function GET() {
   const session = await getServerSession(authOptions);
@@ -12,11 +12,15 @@ export async function GET() {
 
   try {
     const filter = { members: { $in: [session.user._id] } };
-    const sort = { last_message_at: -1 };
-    const channels = await serverClient.queryChannels(filter, sort as any, {
-      watch: true,
-      state: true,
-    });
+    const sort: { last_message_at: number } = { last_message_at: -1 };
+    const channels = await serverClient.queryChannels(
+      filter,
+      sort as ChannelSortBase,
+      {
+        watch: true,
+        state: true,
+      }
+    );
 
     // Serialize the channels data to avoid circular structure
     const serializedChannels = channels.map(
@@ -31,20 +35,27 @@ export async function GET() {
         data: {
           name: channel.data?.name,
           image: channel.data?.image,
-          members: channel.data?.members?.map((member) => {
-            if (typeof member !== 'string') { // Check if member is not a string
-              const user = member.user as { id: string; name?: string; image?: string }; // Type assertion for user
-              return {
-                user: {
-                  id: user.id, // Now it's safe to access user properties
-                  name: user.name,
-                  image: user.image,
-                },
-                // Include other properties as needed
-              };
-            }
-            return null; 
-          }).filter(Boolean),
+          members: channel.data?.members
+            ?.map((member) => {
+              if (typeof member !== "string") {
+                // Check if member is not a string
+                const user = member.user as {
+                  id: string;
+                  name?: string;
+                  image?: string;
+                }; // Type assertion for user
+                return {
+                  user: {
+                    id: user.id, // Now it's safe to access user properties
+                    name: user.name,
+                    image: user.image,
+                  },
+                  // Include other properties as needed
+                };
+              }
+              return null;
+            })
+            .filter(Boolean),
         },
         state: {
           messages: channel.state.messages.map((message) => ({

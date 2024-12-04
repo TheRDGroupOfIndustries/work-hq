@@ -1,25 +1,10 @@
-"use client";
-import MainContainer from "@/components/reusables/wrapper/mainContainer";
-import NewHeadline from "@/components/reusables/components/NewHeadline";
-import { ROLE } from "@/tempData";
+import AllProjects from "@/components/pages/c/all-projects/page";
+import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
 
-export default function AllProjects() {
-  const ButtonObjects = [
-    {
-      buttonText: "Create New Project",
-      onClick: () => {
-        console.log("Create New Project");
-      },
-    },
-  ];
-  return (
-    <MainContainer role ={ROLE}>
-      {/* <Headline /> */}
-      <NewHeadline
-        title="All Projects"
-        subTitle="Overview / All Projects"
-        buttonObjects={ButtonObjects} 
-      />
-    </MainContainer>
-  );
+export default async function Page() {
+  const session = await getServerSession();
+  if (!session) redirect("/auth/c-sign-in");
+
+  return <AllProjects />;
 }

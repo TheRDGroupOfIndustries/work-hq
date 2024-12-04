@@ -16,7 +16,14 @@ export interface CustomUser extends NextAuthUser {
   email: string;
   phone: string;
   loginStep?: number; // 0: Registration using phone or email, 1: userName, password & additonal info , 3: Create first project
-  role: "client" | "vendorClient" | "developer" | "vendor" | "manager" | "ceo" | string; // Role enum
+  role:
+    | "client"
+    | "vendorClient"
+    | "developer"
+    | "vendor"
+    | "manager"
+    | "ceo"
+    | string; // Role enum
   password?: string;
 
   // Fields common to some roles
@@ -41,33 +48,55 @@ export interface CustomUser extends NextAuthUser {
 }
 
 // project types
-interface MilestoneValues {
-  _id: string;
-  title: string;
-  due_date: Date;
-  budget?: number;
-  completed?: boolean;
-}
+// interface MilestoneValues {
+//   _id: string;
+//   title: string;
+//   due_date: Date;
+//   budget?: number;
+//   completed?: boolean;
+// }
+
 export interface ProjectValues {
   _id: string;
-  title: string;
-  description: string;
-  logo?: string;
-  start_date?: Date;
-  end_date?: Date;
-  status: string;
-  technologies?: string[];
-  milestones?: MilestoneValues[];
-  files?: string[];
-  project_ref?: string[];
-  notes?: string[];
-  client?: string;
-  vendor?: string;
-  manager?: string;
-  assigned_team?: string[];
-  figma_link?: string;
-  figma_iframe_link?: string;
-  github_link?: string;
-  deployed_link?: string;
-  progress: number;
+  projectID: string;
+  projectDetails: {
+    projectName: string;
+    category: string;
+    deadline: Date;
+    additionalFiles?: {
+      url: string;
+      title: string;
+      description: string;
+      date: Date;
+      size: number;
+    };
+    maintenanceNeeded: boolean;
+    description: string;
+    scope: string;
+    budget: { min: number; max: number };
+    hasVendor: boolean;
+    vendorID?: string; // Ref to Users schema if hasVendor is true
+  };
+  companyDetails: {
+    clientID: string; // Ref to Users schema
+    officialName: string;
+    logo?: string; // Optional
+    about: string;
+    workingLocations: string[];
+    contactNo: string[];
+    address: string;
+    companyLink?: string;
+    size: string; // e.g., "100-200"
+  };
+  developmentDetails: {
+    deploymentLink?: string;
+    figmaLink?: string;
+    projectHours?: {
+      date: Date;
+      totalHours: number;
+    }[]; // Derived from developers' hours
+    teams: string[]; // Array of User IDs
+    // tasks: Schema.Types.ObjectId[]; // Ref to Tasks schema
+  };
+  createdAt: string;
 }

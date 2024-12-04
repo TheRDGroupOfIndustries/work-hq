@@ -1,22 +1,22 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Search } from 'lucide-react'
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Search } from "lucide-react";
+import { CustomUser } from "@/lib/types";
 
 interface AddChatDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  onAddChat: (userId: string) => void
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onAddChat: (userId: string) => void;
 }
 
 export function AddChatDialog({
@@ -24,25 +24,24 @@ export function AddChatDialog({
   onOpenChange,
   onAddChat,
 }: AddChatDialogProps) {
-  const [searchQuery, setSearchQuery] = useState("")
-  const [users, setUsers] = useState<any[]>([])
+  const [searchQuery, setSearchQuery] = useState("");
+  const [users, setUsers] = useState<CustomUser[]>([]);
 
   useEffect(() => {
     if (open) {
-      fetchUsers()
+      const fetchUsers = async () => {
+        try {
+          const response = await fetch(`/api/users?query=${searchQuery}`);
+          if (!response.ok) throw new Error("Failed to fetch users");
+          const data = await response.json();
+          setUsers(data);
+        } catch (error) {
+          console.error("Error fetching users:", error);
+        }
+      };
+      fetchUsers();
     }
-  }, [open, searchQuery])
-
-  const fetchUsers = async () => {
-    try {
-      const response = await fetch(`/api/users?query=${searchQuery}`)
-      if (!response.ok) throw new Error('Failed to fetch users')
-      const data = await response.json()
-      setUsers(data)
-    } catch (error) {
-      console.error('Error fetching users:', error)
-    }
-  }
+  }, [open, searchQuery]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -65,17 +64,19 @@ export function AddChatDialog({
               <button
                 key={user._id}
                 onClick={() => {
-                  onAddChat(user._id)
-                  onOpenChange(false)
+                  onAddChat(user._id);
+                  onOpenChange(false);
                 }}
                 className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-accent transition-colors text-left"
               >
                 <Avatar>
-                  <AvatarImage src={user.profile_image || "/placeholder.svg"} />
+                  <AvatarImage src={user.profileImage || "/placeholder.svg"} />
                   <AvatarFallback>{user.firstName[0]}</AvatarFallback>
                 </Avatar>
                 <div>
-                  <p className="font-medium">{user.firstName} {user.lastName}</p>
+                  <p className="font-medium">
+                    {user.firstName} {user.lastName}
+                  </p>
                   <p className="text-sm text-muted-foreground">{user.role}</p>
                 </div>
               </button>
@@ -84,5 +85,5 @@ export function AddChatDialog({
         </ScrollArea>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

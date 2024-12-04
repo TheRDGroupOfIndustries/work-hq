@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
-import { StreamChat } from "stream-chat";
+import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
+import { StreamChat } from "stream-chat";
 import { authOptions } from "@/lib/authOptions";
 
 const serverClient = StreamChat.getInstance(
@@ -8,7 +8,7 @@ const serverClient = StreamChat.getInstance(
   process.env.STREAM_API_SECRET!
 );
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?._id) {
@@ -17,16 +17,17 @@ export async function GET(req: NextRequest) {
 
     const userId = session.user._id.toString();
 
-    if (typeof userId !== 'string' || userId.trim() === '') {
-      throw new Error('Invalid user ID');
+    if (typeof userId !== "string" || userId.trim() === "") {
+      throw new Error("Invalid user ID");
     }
 
     const token = serverClient.createToken(userId);
 
     await serverClient.upsertUser({
       id: userId,
-      name: session.user.firstName || session.user.name || 'User',
-      image: session.user.profile_image || session.user.image || "/placeholder.svg",
+      name: session.user.firstName || session.user.name || "User",
+      image:
+        session.user.profile_image || session.user.image || "/placeholder.svg",
     });
 
     return NextResponse.json({ token }, { status: 200 });

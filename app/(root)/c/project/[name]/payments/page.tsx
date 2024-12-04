@@ -1,47 +1,10 @@
-'use client';
-import MainContainer from "@/components/reusables/wrapper/mainContainer";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import Headline from "./components/headline";
-import { ROLE } from "@/tempData";
-import { VENDOR } from "@/types";
-import PaymentInfo from "./components/paymentInfo";
-import MyPayments from "./components/myPayments";
-import { useState } from "react";
-import AddPayment from "./components/addPayment";
+import Payments from "@/components/pages/c/payments/page";
+import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
 
-export default function Payments() {
-  const [addPaymentOpen, setAddPaymentOpen] = useState(false);
-  return (
-    <MainContainer role={ROLE}>
-      {addPaymentOpen && <AddPayment setAddPaymentOpen={setAddPaymentOpen} />}
-      <Headline setAddPaymentOpen={setAddPaymentOpen} />
-      <Tabs defaultValue="paymentInfo" className="">
-        <TabsList className="flex rounded-none h-[65px]  shadow-[3px_3px_10px_0px_#789BD399_inset,-5px_-5px_15px_0px_#FFFFFF] rounded-t-xl flex-row items-center justify-around w-full  bg-transparent text-base font-semibold text-black px-0 my-">
-          <TabsTrigger className={`${
-                ROLE === VENDOR
-                  ? "data-[state=active]:border-vendor-dark"
-                  : "data-[state=active]:border-primary-blue"
-              } `} value="paymentInfo">Company Payment Info</TabsTrigger>
-          <TabsTrigger className={`${
-                ROLE === VENDOR
-                  ? "data-[state=active]:border-vendor-dark"
-                  : "data-[state=active]:border-primary-blue"
-              } `} value="myPayments">My Payments</TabsTrigger>
-          <TabsTrigger className={`${
-                ROLE === VENDOR
-                  ? "data-[state=active]:border-vendor-dark"
-                  : "data-[state=active]:border-primary-blue"
-              } `} value="paymentRequest">Payment Requests</TabsTrigger>
-          <TabsTrigger className={`${
-                ROLE === VENDOR
-                  ? "data-[state=active]:border-vendor-dark"
-                  : "data-[state=active]:border-primary-blue"
-              } `} value="paymentRequest">Client Payments</TabsTrigger>        
-        </TabsList>
-        <TabsContent value="paymentInfo"><PaymentInfo/></TabsContent>
-        <TabsContent value="myPayments"><MyPayments/></TabsContent>
-        <TabsContent value="paymentRequest">66</TabsContent>
-      </Tabs>
-    </MainContainer>
-  );
+export default async function Page() {
+  const session = await getServerSession();
+  if (!session) redirect("/auth/c-sign-in");
+
+  return <Payments />;
 }

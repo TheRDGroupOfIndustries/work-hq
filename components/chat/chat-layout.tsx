@@ -1,117 +1,139 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { useRouter, useParams } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Megaphone, Plus, Search } from 'lucide-react'
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { CreateGroupDialog } from "./create-group-dialog"
-import { AddChatDialog } from "./add-chat-dialog"
-import { ChatView } from "./chat-view"
-import { cn } from "@/lib/utils"
-import { useToast } from "@/hooks/use-toast"
+import { useEffect, useState } from "react";
+import { useRouter, useParams } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Megaphone, Plus, Search } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { CreateGroupDialog } from "./create-group-dialog";
+import { AddChatDialog } from "./add-chat-dialog";
+import { ChatView } from "./chat-view";
+import { cn } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
 
 interface ChatGroup {
-  id: string
-  name: string
-  lastMessage?: string
-  updatedAt: string
-  image?: string
-  members: string[]
+  id: string;
+  name: string;
+  lastMessage?: string;
+  updatedAt: string;
+  image?: string;
+  members: string[];
 }
 
 export function ChatLayout() {
-  const [selectedChat, setSelectedChat] = useState<string | null>(null)
-  const [showCreateGroup, setShowCreateGroup] = useState(false)
-  const [showAddChat, setShowAddChat] = useState(false)
-  const [groups, setGroups] = useState<ChatGroup[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const router = useRouter()
-  const params = useParams()
-  const { toast } = useToast()
+  const [selectedChat, setSelectedChat] = useState<string | null>(null);
+  const [showCreateGroup, setShowCreateGroup] = useState(false);
+  const [showAddChat, setShowAddChat] = useState(false);
+  const [groups, setGroups] = useState<ChatGroup[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
+  const params = useParams();
+  const { toast } = useToast();
 
   useEffect(() => {
-    fetchChats()
+    fetchChats();
     if (params.chatId) {
-      setSelectedChat(params.chatId as string)
+      setSelectedChat(params.chatId as string);
     }
-  }, [params.chatId])
+  }, [params.chatId]);
 
   const fetchChats = async () => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      const response = await fetch('/api/chats')
-      if (!response.ok) throw new Error('Failed to fetch chats')
-      const data = await response.json()
-      setGroups(data.map((channel: any) => ({
-        id: channel.id,
-        name: channel.data.name || channel.data.members?.map((m: any) => m.user?.name).join(', ') || 'Unnamed Channel',
-        lastMessage: channel.state.messages[channel.state.messages.length - 1]?.text,
-        updatedAt: new Date(channel.last_message_at || channel.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        image: channel.data.image,
-        members: channel.data.members?.map((m: any) => m.user?.id).filter(Boolean) || []
-      })))
+      const response = await fetch("/api/chats");
+      if (!response.ok) throw new Error("Failed to fetch chats");
+      const data = await response.json();
+      setGroups(
+        data.map(
+          (channel: {
+            id: string;
+            data: {
+              name: string;
+              members: { user: { id: string; name: string } }[];
+              image: string;
+            };
+            state: { messages: { text: string }[] };
+            last_message_at: string;
+            created_at: string;
+          }) => ({
+            id: channel.id,
+            name:
+              channel.data.name ||
+              channel.data.members?.map((m) => m.user?.name).join(", ") ||
+              "Unnamed Channel",
+            lastMessage:
+              channel.state.messages[channel.state.messages.length - 1]?.text,
+            updatedAt: new Date(
+              channel.last_message_at || channel.created_at
+            ).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+            image: channel.data.image,
+            members:
+              channel.data.members?.map((m) => m.user?.id).filter(Boolean) ||
+              [],
+          })
+        )
+      );
     } catch (error) {
-      console.error('Error fetching chats:', error)
+      console.error("Error fetching chats:", error);
       toast({
         title: "Error",
         description: "Failed to load chats. Please try again.",
         variant: "destructive",
-      })
+      });
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleCreateGroup = async (name: string, members: string[]) => {
     try {
-      const response = await fetch('/api/chats', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/chats", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, members, isGroup: true }),
-      })
-      if (!response.ok) throw new Error('Failed to create group')
-      await fetchChats()
-      setShowCreateGroup(false)
+      });
+      if (!response.ok) throw new Error("Failed to create group");
+      await fetchChats();
+      setShowCreateGroup(false);
       toast({
         title: "Success",
         description: "Group created successfully.",
-      })
+      });
     } catch (error) {
-      console.error('Error creating group:', error)
+      console.error("Error creating group:", error);
       toast({
         title: "Error",
         description: "Failed to create group. Please try again.",
         variant: "destructive",
-      })
+      });
     }
-  }
+  };
 
   const handleAddChat = async (userId: string) => {
     try {
-      const response = await fetch('/api/chats', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/chats", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ members: [userId], isGroup: false }),
-      })
-      if (!response.ok) throw new Error('Failed to create chat')
-      await fetchChats()
-      setShowAddChat(false)
+      });
+      if (!response.ok) throw new Error("Failed to create chat");
+      await fetchChats();
+      setShowAddChat(false);
       toast({
         title: "Success",
         description: "Chat added successfully.",
-      })
+      });
     } catch (error) {
-      console.error('Error creating chat:', error)
+      console.error("Error creating chat:", error);
       toast({
         title: "Error",
         description: "Failed to add chat. Please try again.",
         variant: "destructive",
-      })
+      });
     }
-  }
+  };
 
   return (
     <div className="flex h-screen bg-background">
@@ -152,9 +174,9 @@ export function ChatLayout() {
                 <button
                   key={group.id}
                   onClick={() => {
-                    setSelectedChat(group.id)
-                    setSelectedChat(group.id)
-                    router.push(`/chat/${group.id}`)
+                    setSelectedChat(group.id);
+                    setSelectedChat(group.id);
+                    router.push(`/chat/${group.id}`);
                   }}
                   className={cn(
                     "w-full flex items-start gap-3 p-3 rounded-lg hover:bg-accent transition-colors text-left",
@@ -188,7 +210,7 @@ export function ChatLayout() {
           )}
         </ScrollArea>
       </div>
-      
+
       <div className="flex-1">
         {selectedChat ? (
           <ChatView chatId={selectedChat} />
@@ -212,5 +234,5 @@ export function ChatLayout() {
         onAddChat={handleAddChat}
       />
     </div>
-  )
+  );
 }

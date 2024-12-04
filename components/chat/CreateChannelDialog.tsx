@@ -54,6 +54,8 @@ export function CreateChannelDialog({
       setChannelName("");
       onOpenChange(false);
     } catch (error) {
+      console.log(error);
+
       toast({
         title: "Error",
         description: "Failed to create channel",
