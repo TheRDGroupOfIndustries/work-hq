@@ -10,8 +10,9 @@ import Container from "@/components/reusables/wrapper/Container";
 import MainContainer from "@/components/reusables/wrapper/mainContainer";
 import ZoomVideo from "@/components/icons/ZoomVideo";
 import { ROLE } from '@/tempData';
-import Headline from './components/headline';
 import { VENDOR } from '@/types';
+import Headline from '@/components/reusables/components/headline';
+import { usePathname, useRouter } from "next/navigation";
 
 interface Meeting {
   _id: string;
@@ -28,6 +29,14 @@ export default function MeetingsDetails() {
   // const { data: session } = useSession();
   const { selectedProject } = useProjectContext();
   const [meetings, setMeetings] = useState<Meeting[]>([]);
+
+  const pathname = usePathname()
+  const router = useRouter();
+
+  const handleRequestMeeting = () => {
+    const updatedPath = pathname.replace("details","request"); 
+    router.push(updatedPath); 
+  };
   // const navigate = useRouter();
 
   useEffect(() => {
@@ -51,10 +60,14 @@ export default function MeetingsDetails() {
     }
   };
 
+  const headLineButtons = [
+    { buttonText: " Request Meeting", lightGrayColor: false, onNeedIcon: false, onClick: () =>   handleRequestMeeting(), },
+  ];
+
   return (
     <MainContainer role={ROLE}>
       <div className="w-full flex flex-row items-center justify-between">
-        <Headline/>
+      <Headline role={ROLE} title="Helpdest Tickets" subTitle="Project / Chats" buttonObjects={headLineButtons} />
 
         
       </div>

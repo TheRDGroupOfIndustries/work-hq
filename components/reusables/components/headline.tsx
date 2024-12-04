@@ -31,7 +31,7 @@ export default function Headline({
         <h1 className="text-2xl font-semibold">{title}</h1>
         <p className="text-[#6A6A6A] text-base font-normal">{subTitle}</p>
       </div>
-
+      <div className="flex flex-col sm:flex-row gap-4">
       {buttonObjects && buttonObjects.map(
         (
           { buttonText, lightGrayColor, icon, dialogContent, onClick, onNeedIcon },
@@ -92,6 +92,7 @@ export default function Headline({
           );
         }
       )}
+      </div>
     </div>
   );
 }

@@ -6,7 +6,6 @@ import { useCallback, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useProjectContext } from '@/context/ProjectProvider';
 import { streamVideo } from '@/lib/stream-video';
-import RequestMeetingHeadline from './components/requestMeetingHeadline';
 import { Calendar } from "@/components/ui/calendar";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -18,8 +17,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import Headline from "./components/headline";
 import { ROLE } from "@/tempData";
+import { usePathname, useRouter } from "next/navigation";
+import Headline from "@/components/reusables/components/headline";
 
 
 
@@ -62,6 +62,9 @@ export default function MeetingsRequest() {
       to: "02-00",
     },
   ]);
+
+  const pathname = usePathname()
+  const router = useRouter();
 
   const timeOptions = generateTimeOptions();
 
@@ -121,9 +124,21 @@ export default function MeetingsRequest() {
     setStartTime("");
     setEndTime("");
   };
+
+
+
+  const handleRequestMeeting = () => {
+    const updatedPath = pathname.replace("request","details"); 
+    router.push(updatedPath); 
+  };
+
+  const headLineButtons = [
+    { buttonText: "Cancel", lightGrayColor: true, onNeedIcon: true, onClick: () => handleRequestMeeting(), },
+    { buttonText: "Confirm Request", lightGrayColor: false, onNeedIcon: false, onClick: () =>   handleSubmit(), },
+  ];
   return (
     <MainContainer role={ROLE}>
-      <Headline handleSubmit={handleSubmit} />
+    <Headline role={ROLE} title="Helpdest Tickets" subTitle="Project / Chats" buttonObjects={headLineButtons} />
 
       <div className="w-full  flex flex-row gap-5">
         <div className="w-1/2  flex flex-col gap-7 rounded-3xl shadow-[5px_5px_20px_0px_#7BA9EF99,-5px_-5px_20px_0px_#FFFFFF,5px_5px_20px_0px_#7BA9EF99_inset,-5px_-5px_20px_0px_#FFFFFF_inset] p-6">
