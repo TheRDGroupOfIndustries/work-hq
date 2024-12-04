@@ -1,25 +1,33 @@
-'use client';
-import { dashboardProjectReport, dashbordHoursCount, ROLE } from "@/tempData";
-import MainContainer from "@/components/reusables/wrapper/mainContainer";
+"use client";
 import HoursCountCard from "@/components/reusables/components/hoursCountCard";
 import ProjectReportCard from "@/components/reusables/components/projectReportCard";
-import Deployment from "./components/deployment";
-import Figma from "./components/figma";
+import MainContainer from "@/components/reusables/wrapper/mainContainer";
+import { dashboardProjectReport, dashbordHoursCount, ROLE } from "@/tempData";
+import Deployment from "../components/deployment";
+import Figma from "../components/figma";
 // import Headline from "./components/headline";
-import MidInformationCard from "./components/midInformationCard";
-import ProjectInfo from "./components/projectInfo";
 import Headline from "@/components/reusables/components/headline";
+import MidInformationCard from "../components/midInformationCard";
+import ProjectInfo from "../components/projectInfo";
 
 export default function HomePage() {
-
   const headLineButtons = [
-    { buttonText: "Export Report", lightGrayColor: false, onNeedIcon: false, onClick: () => console.log("Export Report") },
+    {
+      buttonText: "Export Report",
+      lightGrayColor: false,
+      onNeedIcon: false,
+      onClick: () => console.log("Export Report"),
+    },
   ];
-
 
   return (
     <MainContainer role={ROLE}>
-      <Headline role={ROLE} title="Project Overview" subTitle="Project" buttonObjects={headLineButtons} />
+      <Headline
+        role={ROLE}
+        title="Project Overview"
+        subTitle="Project"
+        buttonObjects={headLineButtons}
+      />
 
       <div className="w-full flex flex-row gap-4 ">
         <div className="w-full  flex flex-col xl:flex-row gap-10">

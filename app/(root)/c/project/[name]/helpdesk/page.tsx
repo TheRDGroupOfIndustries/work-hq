@@ -1,4 +1,4 @@
-import Helpdesk from "@/components/pages/c/helpdesk/page";
+import Helpdesk from "@/components/pages/helpdesk/client/page";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 

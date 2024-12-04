@@ -1,4 +1,4 @@
-import AllProjects from "@/components/pages/c/all-projects/page";
+import AllProjects from "@/components/pages/all-projects/client/page";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 

@@ -3,7 +3,7 @@ import Headline from "@/components/reusables/components/headline";
 import MainContainer from "@/components/reusables/wrapper/mainContainer";
 import { ROLE } from "@/tempData";
 import { useRouter } from "next/navigation";
-import AddChat from "./components/addChat";
+import AddChat from "./../components/addChat";
 interface ChatList {
   id: string;
   avatar: string;

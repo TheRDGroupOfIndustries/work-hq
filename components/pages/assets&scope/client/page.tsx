@@ -5,9 +5,9 @@ import MainContainer from "@/components/reusables/wrapper/mainContainer";
 import { dashboardProjectReport, dashbordHoursCount, ROLE } from "@/tempData";
 import HoursCountCard from "@/components/reusables/components/hoursCountCard";
 import ProjectReportCard from "@/components/reusables/components/projectReportCard";
-import FilesList from "./components/filesList";
-import ProjectScope from "./components/projectScope";
-import TasksList from "./components/tasksList";
+import FilesList from "./../components/filesList";
+import ProjectScope from "./../components/projectScope";
+import TasksList from "./../components/tasksList";
 import Headline from "@/components/reusables/components/headline";
 
 export default function AssetsAndScope() {
