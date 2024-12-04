@@ -51,7 +51,7 @@ export default function Chats() {
 }
 
 interface CardProps {
-  channel: Channel<DefaultGenerics>;
+  channel: Channel;
   onClick: () => void;
 }
 
@@ -81,9 +81,9 @@ function Card({ channel, onClick }: CardProps) {
       </div>
 
       <div className="flex justify-end items-center mr-5 py-2">
-        <span className="self-end text-base text-dark-gray">
-          {new Date(channel.lastMessage()?.created_at || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-        </span>
+        {/* <span className="self-end text-base text-dark-gray">
+          {new Date(channel?.lastMessage()?.created_at || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+        </span> */}
       </div>
     </div>
   );

@@ -4,11 +4,19 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Search, Users } from 'lucide-react';
 import { useState, useEffect } from "react";
 import { useChat } from "@/context/ChatProvider";
-import { User } from "stream-chat";
+// import { User } from "stream-chat";
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+
+interface User {
+  _id: string,
+  firstName: string,
+  lastName: string,
+  role: string,
+  profileImage: string
+}
 
 export default function AddChat({
   setIsAddChatOpen,
@@ -32,7 +40,7 @@ export default function AddChat({
             throw new Error(`HTTP error! status: ${response.status}`);
           }
           const data = await response.json();
-          setUsers(data as User[]);
+          setUsers(data);
         } catch (error) {
           console.error("Error fetching users:", error);
           toast.error("Failed to fetch users. Please try again.");
@@ -69,7 +77,7 @@ export default function AddChat({
     }
 
     try {
-      const channel = await createGroupChat(groupName, selectedUsers.map(user => user.id));
+      const channel = await createGroupChat(groupName, selectedUsers.map(user => user._id));
       if (channel) {
         setIsAddChatOpen(false);
         router.push(`/c/project/something/chats/${channel.id}`);
@@ -84,8 +92,8 @@ export default function AddChat({
 
   const toggleUserSelection = (user: User) => {
     setSelectedUsers(prev =>
-      prev.some(u => u.id === user.id)
-        ? prev.filter(u => u.id !== user.id)
+      prev.some(u => u._id === user._id)
+        ? prev.filter(u => u._id !== user._id)
         : [...prev, user]
     );
   };
@@ -140,10 +148,10 @@ export default function AddChat({
               {users.length > 0 ? (
                 users.map((user) => (
                   <Card
-                    key={user.id}
+                    key={user._id}
                     user={user}
-                    onSelect={isGroupChat ? () => toggleUserSelection(user) : () => handleCreateChat(user.id)}
-                    isSelected={selectedUsers.some(u => u.id === user.id)}
+                    onSelect={isGroupChat ? () => toggleUserSelection(user) : () => handleCreateChat(user._id)}
+                    isSelected={selectedUsers.some(u => u._id === user._id)}
                     isGroupChat={isGroupChat}
                   />
                 ))
@@ -177,10 +185,10 @@ function Card({ user, onSelect, isSelected, isGroupChat }: { user: User; onSelec
     >
       <div className="flex justify-center items-center">
         <div className="w-[60px] h-[60px] bg-slate-400 rounded-full overflow-hidden">
-          {user.image ? (
+          {user.profileImage ? (
             <img
-              src={user.image as string || ''}
-              alt={user.name || 'User'}
+              src={user.profileImage as string || ''}
+              alt={user.profileImage || 'User'}
               className="w-full h-full object-cover"
             />
           ) : null}
@@ -189,12 +197,9 @@ function Card({ user, onSelect, isSelected, isGroupChat }: { user: User; onSelec
 
       <div className="flex flex-col py-2 justify-between">
         <h1 className="line-clamp-1 flex text-lg font-semibold text-dark-gray mx-5">
-          {user.name || user.id || 'Unnamed User'}
+          {user.firstName + " " + user.lastName || user._id || 'Unnamed User'}
           {user.role && <span className="font-normal"> ({user.role})</span>}
         </h1>
-        <h4 className="text-base line-clamp-1 text-dark-gray mx-5">
-          {user.online ? '🟢 Online' : '🔴 Offline'}
-        </h4>
       </div>
       {isGroupChat && (
         <div className="flex items-center justify-end pr-4">
