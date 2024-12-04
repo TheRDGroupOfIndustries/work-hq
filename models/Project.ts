@@ -27,7 +27,7 @@ export interface ProjectDBTypes {
     logo?: string; // Optional
     about: string;
     workingLocations: string[];
-    contactNo: string[];
+    contactNo: string;
     address: string;
     companyLink?: string;
     size: string; // e.g., "100-200"
@@ -76,7 +76,7 @@ const projectSchema = new Schema<ProjectDBTypes>(
       logo: { type: String, required: false },
       about: { type: String, required: true },
       workingLocations: [{ type: String, required: true }],
-      contactNo: [{ type: String, required: true }],
+      contactNo: { type: String, required: true, minlength: 10, maxlength: 10 },
       address: { type: String, required: true },
       companyLink: { type: String, required: false },
       size: { type: String, required: true },
