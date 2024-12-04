@@ -11,17 +11,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { members } = await req.json();
+    const { groupName, members, icon } = await req.json();
 
-    if (!Array.isArray(members)) {
+    if (!Array.isArray(members) || members.length < 2) {
       return NextResponse.json({ error: "Invalid members array" }, { status: 400 });
     }
 
-    const uniqueMembers = Array.from(new Set(members.filter(Boolean).map(String)));
-
-    if (uniqueMembers.length < 2) {
-      return NextResponse.json({ error: "At least two unique members are required" }, { status: 400 });
-    }
+    const uniqueMembers = Array.from(new Set(members.map(String)));
 
     const userResponses = await Promise.all(
       uniqueMembers.map(memberId => 
@@ -36,26 +32,29 @@ export async function POST(req: NextRequest) {
     const nonExistentUsers = uniqueMembers.filter(memberId => !existingUserIds.includes(memberId));
 
     if (nonExistentUsers.length > 0) {
-      return NextResponse.json({ 
+      return NextResponse.json({
         error: `The following users don't exist: ${nonExistentUsers.join(', ')}` 
       }, { status: 400 });
     }
 
     const channel = serverClient.channel("messaging", crypto.randomUUID(), {
+      name: groupName,
+      image: icon,
       members: uniqueMembers,
       created_by_id: session.user._id,
+      type: 'group',
     });
 
     await channel.create();
 
     return NextResponse.json({ 
       channelId: channel.id,
-      message: "Channel created successfully" 
+      message: "Group created successfully" 
     }, { status: 201 });
   } catch (error: any) {
-    console.error("Error creating channel:", error);
+    console.error("Error creating group:", error);
     return NextResponse.json(
-      { error: "Failed to create channel", details: error.message },
+      { error: "Failed to create group", details: error.message },
       { status: 500 }
     );
   }
