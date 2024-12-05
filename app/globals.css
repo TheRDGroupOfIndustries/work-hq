@@ -115,11 +115,14 @@
   .input-style {
     @apply w-full mt-2 p-2 bg-transparent border border-[#D0D5DD] bg-white dark:border-zinc-800 rounded-md px-4;
   }
+  .neuro-input-style {
+    @apply w-full mt-2 p-2 py-3 bg-primary-sky-blue dark:border-zinc-800 rounded-md px-4 shadow-neuro-3;
+  }
   .br {
     @apply border border-[red];
   }
   .text-desktop {
-    @apply text-base;
+    @apply text-sm;
   }
 }
 input[type="search"]::-webkit-search-cancel-button {

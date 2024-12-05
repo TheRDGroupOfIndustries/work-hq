@@ -2,17 +2,18 @@
 import { utapi } from "@/server/uploadthing";
 
 export const uploadNewFile = async (formData: FormData) => {
-    try {
-      const file = formData.get("file") as File;
-      if (!file) throw new Error("No file provided");
-  
-      const { data } = await utapi.uploadFiles(file);
-      return data?.url || null;
-    } catch (error) {
-      console.error("Error uploading file:", error);
-      throw new Error("File upload failed");
-    }
-  };
+  try {
+    const file = formData.get("file") as File;
+    if (!file) throw new Error("No file provided");
+
+    const { data } = await utapi.uploadFiles(file);
+    console.log("uploaded link", data);
+    return data || null;
+  } catch (error) {
+    console.error("Error uploading file:", error);
+    throw new Error("File upload failed");
+  }
+};
   
   export const uploadMultipleNewFiles = async (formData: FormData) => {
     try {

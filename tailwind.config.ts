@@ -110,6 +110,15 @@ const config: Config = {
         "slide-up": "slideUp 0.8s ease-in-out",
         "slide-right": "slideRight 0.8s ease-in-out",
       },
+      dropShadow: {
+"neuro-9": "-5px -5px 10px 0 #ffffff,-5px -5px 10px 0 #ffffff, 5px 5px 10px 0 rgba(120, 155, 211, 0.8), inset -5px -5px 20px 0 rgba(255, 255, 255, 0.2), inset 5px 5px 15px 0 rgba(0, 40, 121, 1)",
+        "neuro-3": "-3px -3px 10px 0 #ffffff, 3px 3px 10px 0 rgba(120, 155, 211, 0.6)",
+      },
+      boxShadow: {
+        "neuro-9": "-5px -5px 10px 0 #ffffff,-5px -5px 10px 0 #ffffff, 5px 5px 10px 0 rgba(120, 155, 211, 0.8), inset -5px -5px 20px 0 rgba(255, 255, 255, 0.2), inset 5px 5px 15px 0 rgba(0, 40, 121, 1)",
+        "neuro-3": "-3px -3px 10px 0 #ffffff, 3px 3px 10px 0 rgba(120, 155, 211, 0.6)",
+        "neuro-11": "inset 4px 4px 10px 0 rgba(182, 206,242, 0.6),inset -4px -4px 10px 0 rgba(255, 255,255, 0.3), -4px -4px 10px 0 rgba(255, 255,255, 1), 4px 4px 10px 0 rgba(182, 206,242, 1)",
+      },
     },
   },
   plugins: [tailwindcssAnimate],

@@ -1,10 +1,10 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import React, { useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { CustomUser } from "@/lib/types";
-import { usePathname } from "next/navigation";
 // import { Button } from "@/components/ui/button";
 import AssetsAndScope from "@/components/icons/Assets&Scope";
 import Chats from "@/components/icons/Chats";
@@ -36,7 +36,6 @@ import {
   Settings,
   UserRound,
 } from "lucide-react";
-import Image from "next/image";
 
 const list = [
   {
@@ -167,20 +166,30 @@ const Navbar = ({ role }: { role: Role }) => {
 
 export default Navbar;
 
-export function SelectProject({ role }: { role: Role }) {
-  const { userAllProjectsDetails } = useProjectContext();
-  const [selectedProject, setSelectedProject] = useState(
-    userAllProjectsDetails?.[0]?.projectDetails || null
-  );
+const SelectProject = ({ role }: { role: Role }) => {
+  const router = useRouter();
+  const {
+    selectedProjectDetails,
+    userAllProjects,
+    selectedProject,
+    setSelectedProject,
+  } = useProjectContext();
+
+  console.log(selectedProjectDetails);
 
   const handleSelect = (projectName: string) => {
-    const selected = userAllProjectsDetails.find(
+    const selected = userAllProjects.find(
       (project) => project.projectDetails.projectName === projectName
     );
     if (selected) {
-      setSelectedProject({ ...selected.projectDetails });
+      setSelectedProject({
+        _id: selected._id,
+        name: selected.projectDetails.projectName,
+      });
     }
   };
+
+  if (!selectedProject._id) router.push("/c/all-projects");
 
   return (
     <Select>
@@ -194,18 +203,14 @@ export function SelectProject({ role }: { role: Role }) {
         <p
           className={`h-full flex text-desktop flex-row gap-5 items-center cursor-pointer py-5 px-4`}
         >
-          {selectedProject?.projectName || "Select a Project"}
+          {selectedProject?.name || "Select a Project"}
         </p>
       </SelectTrigger>
       <SelectContent className="shadow-[3px_3px_10px_0px_#789BD399,-3px_-3px_10px_0px_#FFFFFF] text-desktop mt-5">
         <SelectGroup>
-          {userAllProjectsDetails
-            // ?.filter(
-            //   (project) =>
-            //     project.projectDetails.projectName !==
-            //     selectedProject?.projectName
-            // )
-            .map((project, index) => (
+          {userAllProjects
+            // ?.filter((project) => project._id !== selectedProject._id)
+            ?.map((project, index) => (
               <SelectItem
                 key={index}
                 value={project.projectDetails.projectName}
@@ -218,7 +223,7 @@ export function SelectProject({ role }: { role: Role }) {
       </SelectContent>
     </Select>
   );
-}
+};
 
 export function ProfileDropDownMenu() {
   const pathname = usePathname();

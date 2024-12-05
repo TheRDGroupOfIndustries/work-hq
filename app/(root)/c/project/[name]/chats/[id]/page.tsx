@@ -1,52 +1,5 @@
-"use client";
-import MainContainer from "@/components/reusables/wrapper/mainContainer";
-import Headline from "./components/headline";
-import ChatArea from "./components/chatArea";
-import InputArea from "./components/inputArea";
-import SecureAndEncripted from "./components/SecureAndEncripted";
-import { ROLE } from "@/tempData";
-import { useChat } from "@/context/ChatProvider";
-import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import Chatings from "@/components/pages/chats/Chatings/page";
 
-export default function Chatings() {
-  const { client, setActiveChannel, activeChannel } = useChat();
-  const { id } = useParams();
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (client && id) {
-      const loadChannel = async () => {
-        try {
-          const channel = client.channel('messaging', id as string);
-          await channel.watch();
-          setActiveChannel(channel);
-        } catch (error) {
-          console.error("Error loading channel:", error);
-        } finally {
-          setLoading(false);
-        }
-      };
-      loadChannel();
-    }
-  }, [client, id, setActiveChannel]);
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (!activeChannel) {
-    return <div>Channel not found</div>;
-  }
-
-  return (
-    <MainContainer role={ROLE}>
-      <Headline />
-      <div className="h-full w-full flex flex-col">
-        <SecureAndEncripted />
-        <ChatArea />
-        <InputArea />
-      </div>
-    </MainContainer>
-  );
+export default function Page() {
+  return <Chatings />;
 }
