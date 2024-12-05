@@ -1,6 +1,6 @@
-import AllProjects from "@/components/pages/c/all-projects/page";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
+import AllProjects from "@/components/pages/c/all-projects/AllProjcets";
 
 export default async function Page() {
   const session = await getServerSession();

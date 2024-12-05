@@ -107,7 +107,8 @@ const Navbar = ({ role }: { role: Role }) => {
             All Projects
           </Link>
           {pathname !== "/c/all-projects" && (
-            <span
+            <Link
+              href="/c/add-project"
               className={`text-desktop cursor-pointer flex flex-row items-center py-3 px-3 gap-2   rounded-xl ${
                 role === VENDOR
                   ? "text-white shadow-[3px_3px_10px_0px_#000000,-3px_-3px_10px_0px_#610646] bg-[#360227] "
@@ -119,7 +120,7 @@ const Navbar = ({ role }: { role: Role }) => {
                 className=""
               />{" "}
               Add Project
-            </span>
+            </Link>
           )}
         </div>
       </div>
@@ -168,14 +169,9 @@ export default Navbar;
 
 const SelectProject = ({ role }: { role: Role }) => {
   const router = useRouter();
-  const {
-    selectedProjectDetails,
-    userAllProjects,
-    selectedProject,
-    setSelectedProject,
-  } = useProjectContext();
-
-  console.log(selectedProjectDetails);
+  const pathname = usePathname();
+  const { userAllProjects, selectedProject, setSelectedProject } =
+    useProjectContext();
 
   const handleSelect = (projectName: string) => {
     const selected = userAllProjects.find(
@@ -189,7 +185,8 @@ const SelectProject = ({ role }: { role: Role }) => {
     }
   };
 
-  if (!selectedProject._id) router.push("/c/all-projects");
+  if (!selectedProject._id && !pathname.includes("/c/add-project"))
+    router.push("/c/all-projects");
 
   return (
     <Select>
@@ -214,7 +211,12 @@ const SelectProject = ({ role }: { role: Role }) => {
               <SelectItem
                 key={index}
                 value={project.projectDetails.projectName}
-                onClick={() => handleSelect(project.projectDetails.projectName)}
+                onClick={() => {
+                  handleSelect(project.projectDetails.projectName);
+                  router.push(
+                    `/c/project/${project?.projectDetails?.projectName}/dashboard`
+                  );
+                }}
               >
                 {project.projectDetails.projectName}
               </SelectItem>

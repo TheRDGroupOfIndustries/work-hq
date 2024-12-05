@@ -100,3 +100,16 @@ export interface ProjectValues {
   };
   createdAt: string;
 }
+
+export interface TaskValues {
+  projectID: string;
+  taskNo: number;
+  issueSubject: string;
+  estimatedTime?: number;
+  assignedTo?: string;
+  status: "completed" | "pending" | "inProgress" | "refactoring";
+  createdAt: Date;
+  workingSince?: Date;
+  totalHoursSpend?: number;
+  createdBy: string;
+}
