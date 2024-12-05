@@ -16,7 +16,7 @@ export interface ProjectDBTypes {
     maintenanceNeeded: boolean;
     description: string;
     scope: string;
-    budget: { min: number; max: number };
+    budget: [{ min: number; max: number }];
     hasVendor: boolean;
     vendorID?: Schema.Types.ObjectId; // Ref to Users schema if hasVendor is true
   };
@@ -70,10 +70,10 @@ const projectSchema = new Schema<ProjectDBTypes>(
       maintenanceNeeded: { type: Boolean, required: true },
       description: { type: String, required: true },
       scope: { type: String, required: true },
-      budget: {
+      budget: [{
         min: { type: Number, required: true },
         max: { type: Number, required: true },
-      },
+      }],
       hasVendor: { type: Boolean, required: true },
       vendorID: { type: Schema.Types.ObjectId, ref: "User", required: false },
     },

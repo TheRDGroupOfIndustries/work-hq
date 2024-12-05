@@ -42,7 +42,7 @@ function Milestone2({formData, handleChange, setFormData}: {formData: AddProject
     <NeuroSelect name = 'projectDetails.maintenanceNeeded' label='Maintenance Needed' value={formData.projectDetails.maintenanceNeeded ? 'Yes':'No'} onChange={(selected)=>
     setFormData((prev) => ({...prev, projectDetails: {...prev.projectDetails, maintenanceNeeded: selected==='Yes'? true: false}}))
     } options={['Yes', 'No']} placeholder='Yes/No'/>
-    <MilestoneBudget />
+    <MilestoneBudget value={formData.projectDetails.budget} setFormData={setFormData} />
 </div>
   )
 }

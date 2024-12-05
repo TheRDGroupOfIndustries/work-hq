@@ -107,7 +107,7 @@ const Navbar = ({ role }: { role: Role }) => {
             All Projects
           </Link>
           {pathname !== "/c/all-projects" && (
-            <span
+            <Link href="/c/add-project"
               className={`text-desktop cursor-pointer flex flex-row items-center py-3 px-3 gap-2   rounded-xl ${
                 role === VENDOR
                   ? "text-white shadow-[3px_3px_10px_0px_#000000,-3px_-3px_10px_0px_#610646] bg-[#360227] "
@@ -119,7 +119,7 @@ const Navbar = ({ role }: { role: Role }) => {
                 className=""
               />{" "}
               Add Project
-            </span>
+            </Link>
           )}
         </div>
       </div>

@@ -10,6 +10,7 @@ interface UploadFileProps {
     value: string; // The current file URL
     setFormData: React.Dispatch<React.SetStateAction<AddProjectFormData>>;
     valueName: string; // The key in companyDetails to update
+    lastModified?: number;
 }
 
 interface fileType {

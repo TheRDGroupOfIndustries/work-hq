@@ -25,7 +25,7 @@ export interface AddProjectFormData {
       maintenanceNeeded: boolean;
       description: string;
       scope: string;
-      budget: { min: number; max: number }; // Ensure budget is an object
+      budget: { min: number; max: number }[]; // Ensure budget is an object
       hasVendor: boolean;
       vendorID?: string | null; // Optional vendor ID
     };
@@ -54,7 +54,7 @@ function AddProject2() {
           maintenanceNeeded: false,
           description: "",
           scope: "",
-          budget: { min: 0, max: 0 }, // Initialize budget as an object
+          budget: [{ min: 0, max: 0 }], // Initialize budget as an object
           hasVendor: false,
           vendorID: null, // Optional
         },
