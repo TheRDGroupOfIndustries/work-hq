@@ -189,7 +189,7 @@ const SelectProject = ({ role }: { role: Role }) => {
     }
   };
 
-  if (!selectedProject._id) router.push("/c/all-projects");
+  // if (!selectedProject._id) router.push("/c/all-projects");
 
   return (
     <Select>

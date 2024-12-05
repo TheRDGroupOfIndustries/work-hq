@@ -32,8 +32,15 @@ export interface ProjectDBTypes {
     size: string; // e.g., "100-200"
   };
   developmentDetails: {
-    deploymentLink?: string;
-    figmaLink?: string;
+    status: "completed" | "inProgress" | "pending" | "refactoring";
+    deployment?: {
+        link: string;
+        channelID: string;
+    };
+    figma?: {
+      link: string;
+      channelID: string;
+    };
     projectHours?: {
       date: Date;
       totalHours: number;

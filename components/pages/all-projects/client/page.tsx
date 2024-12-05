@@ -7,16 +7,19 @@ import { ProjectValues } from "@/lib/types";
 import { ROLE } from "@/tempData";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function AllProjects() {
   const { userAllProjects } = useProjectContext();
+  const router = useRouter();
   const headLineButtons = [
     {
       buttonText: "Add New Project",
       lightGrayColor: false,
       onNeedIcon: false,
-      onClick: () => alert("Add New Project"),
+      onClick: () => {
+        router.push('/c/add-project');},
     },
   ];
   return (
