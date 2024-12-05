@@ -114,23 +114,30 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
       toast.error("Chat client not initialized or user not logged in");
       return null;
     }
-
+  
     try {
       const response = await fetch('/api/chat/create-group', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ groupName, members, icon }),
+        body: JSON.stringify({ 
+          groupName, 
+          members: members.map(id => id.toString()),
+          icon 
+        }),
       });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to create group chat');
+  
+      const data = await response.json();
+  
+      if (response.status === 206) {
+        // Partial success
+        toast.warning(`Group created, but some users could not be added: ${data.nonExistentUsers.join(", ")}`);
+      } else if (!response.ok) {
+        throw new Error(data.error || 'Failed to create group chat');
       }
-
-      const { channelId } = await response.json();
-      const channel = client.channel('messaging', channelId);
+  
+      const channel = client.channel('messaging', data.channelId);
       await channel.watch();
-
+  
       return channel;
     } catch (error) {
       console.error('Error creating group chat:', error);
@@ -141,7 +148,7 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
       }
       return null;
     }
-  }; 
+  };    
 
   const updateGroupChat = async (channelId: string, data: { groupName?: string, description?: string, icon?: string, members?: string[] }): Promise<void> => {
     if (!client || !session?.user?._id) return;
