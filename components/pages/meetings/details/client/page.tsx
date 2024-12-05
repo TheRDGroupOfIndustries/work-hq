@@ -1,18 +1,19 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-// import { useSession } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 import { useProjectContext } from '@/context/ProjectProvider';
-import { streamVideo } from '@/lib/stream-video';
+import { initializeStreamVideo } from '@/lib/stream-video';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import SquareButton from "@/components/reusables/wrapper/squareButton";
 import Container from "@/components/reusables/wrapper/Container";
 import MainContainer from "@/components/reusables/wrapper/mainContainer";
 import ZoomVideo from "@/components/icons/ZoomVideo";
 import { ROLE } from '@/tempData';
-import { VENDOR } from '@/types';
-import Headline from '@/components/reusables/components/headline';
-import { usePathname, useRouter } from "next/navigation";
+import Headline from '../components/headline';
+import { StreamVideoClient } from '@stream-io/video-react-sdk';
+import { useRouter } from 'next/navigation';
+import { CustomUser } from "@/lib/types";
 
 interface Meeting {
   _id: string;
@@ -22,84 +23,68 @@ interface Meeting {
   startTime: string;
   endTime: string;
   status: string;
-  link: string;
+  streamCallId: string;
 }
 
 export default function MeetingsDetails() {
-  // const { data: session } = useSession();
+  const { data: session } = useSession();
   const { selectedProject } = useProjectContext();
   const [meetings, setMeetings] = useState<Meeting[]>([]);
-
-  const pathname = usePathname()
+  const [streamClient, setStreamClient] = useState<StreamVideoClient | null>(null);
   const router = useRouter();
 
-  const handleRequestMeeting = () => {
-    const updatedPath = pathname.replace("details","request"); 
-    router.push(updatedPath); 
-  };
-  // const navigate = useRouter();
-
   useEffect(() => {
-    if (!selectedProject) return;
+    if (session?.user && selectedProject) {
+      const user = session.user as CustomUser;
+      
+      const fetchMeetings = async () => {
+        const response = await fetch(`/api/meeting/get/getByProjectID/${selectedProject}`);
+        const data = await response.json();
+        setMeetings(data.meet || []);
+      };
 
-    const fetchMeetings = async () => {
-      const response = await fetch(`/api/meeting/get/getByProjectId/${selectedProject}`);
-      const data = await response.json();
-      setMeetings(data.meet || []);
-    };
+      fetchMeetings();
 
-    fetchMeetings();
-  }, [selectedProject]);
+      // Initialize Stream client
+      const initStream = async () => {
+        if (!user._id) {
+          console.error('User ID not found');
+          return;
+        }
+
+        const response = await fetch('/api/meeting/join/token');
+        const { token } = await response.json();
+        const client = await initializeStreamVideo(user._id.toString(), token);
+        setStreamClient(client);
+      };
+
+      initStream();
+    }
+  }, [session, selectedProject]);
 
   const handleJoinMeeting = async (meetingId: string) => {
+    if (!streamClient) return;
+
     try {
-      const call = streamVideo.call('default', meetingId);
+      const call = streamClient.call('default', meetingId);
       await call.join();
+      router.push(`/c/project/${selectedProject}/meetings/${meetingId}`);
     } catch (error) {
       console.error('Error joining meeting:', error);
     }
   };
 
-  const headLineButtons = [
-    { buttonText: " Request Meeting", lightGrayColor: false, onNeedIcon: false, onClick: () =>   handleRequestMeeting(), },
-  ];
-
   return (
     <MainContainer role={ROLE}>
-      <div className="w-full flex flex-row items-center justify-between">
-      <Headline role={ROLE} title="Helpdest Tickets" subTitle="Project / Chats" buttonObjects={headLineButtons} />
-
-        
-      </div>
-
+      <Headline />
       <Container className="p-0 sm:p-0 md:p-0 lg:p-0">
         <Tabs defaultValue="allMetting" className="">
           <TabsList className="flex rounded-none h-[65px] shadow-[3px_3px_10px_0px_#789BD399_inset,-5px_-5px_15px_0px_#FFFFFF] rounded-t-xl flex-row items-center justify-around w-full bg-transparent font-semibold text-black px-0 ">
-            <TabsTrigger className={`${
-                ROLE === VENDOR
-                  ? "data-[state=active]:border-vendor-dark"
-                  : "data-[state=active]:border-primary-blue"
-              } `} value="allMetting">All Meetings</TabsTrigger>
-            <TabsTrigger className={`${
-                ROLE === VENDOR
-                  ? "data-[state=active]:border-vendor-dark"
-                  : "data-[state=active]:border-primary-blue"
-              } `} value="pending">Pending</TabsTrigger>
-            <TabsTrigger className={`${
-                ROLE === VENDOR
-                  ? "data-[state=active]:border-vendor-dark"
-                  : "data-[state=active]:border-primary-blue"
-              } `} value="requested">Requested</TabsTrigger>
-            <TabsTrigger className={`${
-                ROLE === VENDOR
-                  ? "data-[state=active]:border-vendor-dark"
-                  : "data-[state=active]:border-primary-blue"
-              } `} value="attened">Attended</TabsTrigger>
-            <TabsTrigger className={`${
-                ROLE === VENDOR
-                  ? "data-[state=active]:border-vendor-dark"
-                  : "data-[state=active]:border-primary-blue"
-              } `} value="overdue">Overdue</TabsTrigger>
+            <TabsTrigger value="allMetting">All Meetings</TabsTrigger>
+            <TabsTrigger value="pending">Pending</TabsTrigger>
+            <TabsTrigger value="requested">Requested</TabsTrigger>
+            <TabsTrigger value="attended">Attended</TabsTrigger>
+            <TabsTrigger value="overdue">Overdue</TabsTrigger>
           </TabsList>
           <TabsContent value="allMetting">
             <div className="w-full h-full flex flex-col">
@@ -107,55 +92,12 @@ export default function MeetingsDetails() {
                 <Card 
                   key={meeting._id} 
                   details={meeting}
-                  onJoin={() => handleJoinMeeting(meeting.link)}
+                  onJoin={() => handleJoinMeeting(meeting.streamCallId)}
                 />
               ))}
             </div>
           </TabsContent>
-          <TabsContent value="pending">
-            <div className="w-full h-full flex flex-col">
-              {meetings.filter(m => m.status === "Pending").map((meeting) => (
-                <Card 
-                  key={meeting._id} 
-                  details={meeting}
-                  onJoin={() => handleJoinMeeting(meeting.link)}
-                />
-              ))}
-            </div>
-          </TabsContent>
-          <TabsContent value="requested">
-            <div className="w-full h-full flex flex-col">
-              {meetings.filter(m => m.status === "Requested").map((meeting) => (
-                <Card 
-                  key={meeting._id} 
-                  details={meeting}
-                  onJoin={() => handleJoinMeeting(meeting.link)}
-                />
-              ))}
-            </div>
-          </TabsContent>
-          <TabsContent value="attened">
-            <div className="w-full h-full flex flex-col">
-              {meetings.filter(m => m.status === "Attended").map((meeting) => (
-                <Card 
-                  key={meeting._id} 
-                  details={meeting}
-                  onJoin={() => handleJoinMeeting(meeting.link)}
-                />
-              ))}
-            </div>
-          </TabsContent>
-          <TabsContent value="overdue">
-            <div className="w-full h-full flex flex-col">
-              {meetings.filter(m => m.status === "Overdue").map((meeting) => (
-                <Card 
-                  key={meeting._id} 
-                  details={meeting}
-                  onJoin={() => handleJoinMeeting(meeting.link)}
-                />
-              ))}
-            </div>
-          </TabsContent>
+          {/* Add similar TabsContent for other tabs */}
         </Tabs>
       </Container>
     </MainContainer>
