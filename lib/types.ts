@@ -56,6 +56,17 @@ export interface CustomUser extends NextAuthUser {
 //   completed?: boolean;
 // }
 
+export interface Meeting {
+  _id: string;
+  title: string;
+  meetingDescription: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+  status: string;
+  streamCallId: string;
+}
+
 export interface ProjectValues {
   _id: string;
   projectID: string;

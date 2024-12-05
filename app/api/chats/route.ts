@@ -29,33 +29,26 @@ export async function GET() {
         type: channel.type,
         cid: channel.cid,
         last_message_at: channel.lastMessage()?.created_at,
-        created_at: channel.data?.created_at,
+        created_at: channel.data?.created_at, // Access created_at from channel.data
         updated_at: channel.data?.updated_at,
         member_count: channel.data?.member_count,
         data: {
           name: channel.data?.name,
           image: channel.data?.image,
-          members: channel.data?.members
-            ?.map((member) => {
-              if (typeof member !== "string") {
-                // Check if member is not a string
-                const user = member.user as {
-                  id: string;
-                  name?: string;
-                  image?: string;
-                }; // Type assertion for user
-                return {
-                  user: {
-                    id: user.id, // Now it's safe to access user properties
-                    name: user.name,
-                    image: user.image,
-                  },
-                  // Include other properties as needed
-                };
-              }
-              return null;
-            })
-            .filter(Boolean),
+          members: channel.data?.members?.map((member) => {
+            if (typeof member !== 'string') { // Check if member is not a string
+              const user = member.user as { id: string; name?: string; image?: string }; // Type assertion for user
+              return {
+                user: {
+                  id: user.id, // Now it's safe to access user properties
+                  name: user.name,
+                  image: user.image,
+                },
+                // Include other properties as needed
+              };
+            }
+            return null; 
+          }).filter(Boolean),
         },
         state: {
           messages: channel.state.messages.map((message) => ({

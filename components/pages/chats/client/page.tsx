@@ -1,139 +1,89 @@
 "use client";
-import Headline from "@/components/reusables/components/headline";
 import MainContainer from "@/components/reusables/wrapper/mainContainer";
+import { useState, useEffect } from "react";
+import Headline from "../components/headline";
 import { ROLE } from "@/tempData";
+import AddChat from "../components/addChat";
 import { useRouter } from "next/navigation";
-import AddChat from "./../components/addChat";
-interface ChatList {
-  id: string;
-  avatar: string;
-  name: string;
-  role: string;
-  lastMessage: string;
-  lastMessageTime: string;
-}
+import { useChat } from "@/context/ChatProvider";
+import { Channel, DefaultGenerics } from "stream-chat";
 
-const chatList: ChatList[] = [
-  {
-    id: "1",
-    avatar:
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=880&q=80",
-    name: "Liam Smith",
-    role: "Developer",
-    lastMessage: "Hello",
-    lastMessageTime: "2:30 pm",
-  },
-  {
-    id: "2",
-    avatar:
-      "",
-    name: "benjamin",
-    role: "Developer",
-    lastMessage: "Hello",
-    lastMessageTime: "2:30 pm",
-  },
-  {
-    id: "3",
-    avatar:
-      "",
-    name: "vanessa",  
-    role: "Developer",
-    lastMessage: "Hello", 
-    lastMessageTime: "2:30 pm",
-  },
-  {
-    id: "1",
-    avatar:
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=880&q=80",
-    name: "Liam Smith",
-    role: "Developer",
-    lastMessage: "Hello",
-    lastMessageTime: "2:30 pm",
-  },
-  {
-    id: "2",
-    avatar:
-      "",
-    name: "benjamin",
-    role: "Developer",
-    lastMessage: "Hello",
-    lastMessageTime: "2:30 pm",
-  },
-  {
-    id: "3",
-    avatar:
-      "",
-    name: "vanessa",  
-    role: "Developer",
-    lastMessage: "Hello", 
-    lastMessageTime: "2:30 pm",
-  },
-  {
-    id: "1",
-    avatar:
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=880&q=80",
-    name: "Liam Smith",
-    role: "Developer",
-    lastMessage: "Hello",
-    lastMessageTime: "2:30 pm",
-  },
-  {
-    id: "2",
-    avatar:
-      "",
-    name: "benjamin",
-    role: "Developer",
-    lastMessage: "Hello",
-    lastMessageTime: "2:30 pm",
-  },
-  {
-    id: "3",
-    avatar:
-      "",
-    name: "vanessa",  
-    role: "Developer",
-    lastMessage: "Hello", 
-    lastMessageTime: "2:30 pm",
-  },
-];
 export default function Chats() {
-  const headLineButtons = [
-    { buttonText: "Add Chat", lightGrayColor: true, onNeedIcon: false, onClick: () => alert("Clicked"), dialogContent: <AddChat/> },
-  ];
+  const [isAddChatOpen, setIsAddChatOpen] = useState(false);
+  const [channels, setChannels] = useState<Channel<DefaultGenerics>[]>([]);
+  const { client, setActiveChannel } = useChat();
+  const router = useRouter();
+
+  useEffect(() => {
+    const fetchChannels = async () => {
+      try {
+        const response = await fetch('/api/chats');
+        if (!response.ok) {
+          throw new Error('Failed to fetch channels');
+        }
+        const data = await response.json();
+        setChannels(data);
+      } catch (error) {
+        console.error('Error fetching channels:', error);
+      }
+    };
+
+    if (client) {
+      fetchChannels();
+    }
+  }, [client]);
+
+  const handleChannelClick = (channel: Channel<DefaultGenerics>) => {
+    setActiveChannel(channel);
+    router.push(`/c/project/something/chats/${channel.id}`);
+  };
+
   return (
     <MainContainer role={ROLE}>
-      <Headline role={ROLE} title="Chats" subTitle="Project / Chats" buttonObjects={headLineButtons} />
-      {chatList.map((chat: ChatList) => (
-        <Card key={chat.id} chat={chat} />
+      {isAddChatOpen && <AddChat setIsAddChatOpen={setIsAddChatOpen} />}
+
+      <Headline role={ROLE} setIsAddChatOpen={setIsAddChatOpen} />
+      {channels.map((channel) => (
+        <Card key={channel.id} channel={channel} onClick={() => handleChannelClick(channel)} />
       ))}
     </MainContainer>
   );
 }
 
-function Card({ chat, key }: { chat: ChatList; key: string }) {
-  const navigate = useRouter();
-  const onClickHandler = () => {
-    navigate.push(`/c/project/something/chats/${chat.id}?name=${chat.name}&role=${chat.role}`);
-  };
+interface CardProps {
+  channel: Channel;
+  onClick: () => void;
+}
+
+function Card({ channel, onClick }: CardProps) {
   return (
-    <div key={key} onClick={onClickHandler} className="cursor-pointer w-full py-1 pl-4  hover:shadow-[5px_5px_15px_0px_#789BD399,-5px_-5px_8px_0px_#ffffffcc] rounded-xl grid grid-cols-[minmax(60px,_60px)_1fr_minmax(92px,_100px)] ">
+    <div onClick={onClick} className="cursor-pointer w-full py-1 pl-4 hover:shadow-[5px_5px_15px_0px_#789BD399,-5px_-5px_8px_0px_#ffffffcc] rounded-xl grid grid-cols-[minmax(60px,_60px)_1fr_minmax(92px,_100px)]">
       <div className="flex justify-center items-center">
         <div className="w-[60px] h-[60px] bg-slate-400 rounded-full overflow-hidden">
-          {/* <Image src={chat.avatar} className="" alt="" /> */}
+          {channel.data?.image ? (
+            <img 
+            src={channel.data?.image as string || ''} 
+            alt={channel.data?.name || 'Channel'} 
+            className="w-full h-full object-cover" 
+          />
+          ) : null}
         </div>
       </div>
 
-      <div className="flex flex-col py-3  justify-between">
-        <h1 className=" text-lg font-semibold text-dark-gray mx-5">
-          {chat.name} <span className="font-normal"> {`(${chat.role})`}</span>
+      <div className="flex flex-col py-3 justify-between">
+        <h1 className="text-lg font-semibold text-dark-gray mx-5">
+          {channel.data?.name || 'Unnamed Channel'} 
+          <span className="font-normal">{channel.data?.role ? `(${channel.data.role})` : ''}</span>
         </h1>
         <h4 className="text-base text-dark-gray mx-5">
-          {chat.lastMessage}
+          {channel.state.messages[channel.state.messages.length - 1]?.text || 'No messages yet'}
         </h4>
       </div>
 
-      <div className="flex justify-end items-center mr-5 py-2  ">
-        <span className="self-end text-base text-dark-gray ">{chat.lastMessageTime}</span>
+      <div className="flex justify-end items-center mr-5 py-2">
+        {/* <span className="self-end text-base text-dark-gray">
+          {new Date(channel?.lastMessage()?.created_at || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+        </span> */}
       </div>
     </div>
   );

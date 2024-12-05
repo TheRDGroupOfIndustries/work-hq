@@ -5,15 +5,24 @@ interface EditorContentProps {
   onTextChange: (text: string) => void;
   onFormatCheck: () => void;
   placeholder?: string;
+  initialText?: string;
 }
 
 export function EditorContent({ 
   onTextChange, 
   onFormatCheck, 
-  placeholder = 'Start typing...' 
+  placeholder = 'Start typing...',
+  initialText = ''
 }: EditorContentProps) {
-  const [isEmpty, setIsEmpty] = useState(true);
+  const [isEmpty, setIsEmpty] = useState(!initialText);
   const editorRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (editorRef.current && initialText) {
+      editorRef.current.innerHTML = initialText;
+      checkEmpty();
+    }
+  }, [initialText]);
 
   const checkEmpty = () => {
     if (editorRef.current) {
@@ -21,10 +30,6 @@ export function EditorContent({
       setIsEmpty(content.trim() === '');
     }
   };
-
-  useEffect(() => {
-    checkEmpty();
-  }, []);
 
   const handleInput = (e: React.FormEvent<HTMLDivElement>) => {
     const content = e.currentTarget.textContent || '';
@@ -35,13 +40,13 @@ export function EditorContent({
   return (
     <div className="relative">
       {isEmpty && (
-        <div className="absolute top-0 left-0  text-gray-400 pointer-events-none">
+        <div className="absolute top-0 left-0 text-gray-400 pointer-events-none">
           {placeholder}
         </div>
       )}
       <div
         ref={editorRef}
-        className=" focus:outline-none prose prose-sm max-w-none"
+        className="focus:outline-none prose prose-sm max-w-none"
         contentEditable
         onInput={handleInput}
         onKeyUp={onFormatCheck}
