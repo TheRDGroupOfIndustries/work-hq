@@ -75,9 +75,12 @@ export default function AddChat({
       toast.error("Please enter a group name and select at least one user.");
       return;
     }
-
+  
     try {
-      const channel = await createGroupChat(groupName, selectedUsers.map(user => user._id));
+      const channel = await createGroupChat(
+        groupName, 
+        selectedUsers.map(user => user._id.toString())
+      );
       if (channel) {
         setIsAddChatOpen(false);
         router.push(`/c/project/something/chats/${channel.id}`);
@@ -86,9 +89,9 @@ export default function AddChat({
       }
     } catch (error) {
       console.error("Error creating group chat:", error);
-      toast.error("Failed to create group chat. Please try again.");
+      // The error message will be handled by the toast in createGroupChat
     }
-  };
+  };  
 
   const toggleUserSelection = (user: User) => {
     setSelectedUsers(prev =>
