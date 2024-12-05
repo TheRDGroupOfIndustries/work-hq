@@ -1,7 +1,14 @@
 "use server";
 
 import { utapi } from "@/server/uploadthing";
-
+import { UploadedFileData } from "uploadthing/types";
+interface fileTypeData extends UploadedFileData {
+  url: string;
+  title: string;
+  description: string;
+  lastModified: number;
+  size: number;
+}
 export const uploadNewFile = async (formData: FormData) => {
   try {
     const file = formData.get("file") as File;
@@ -9,7 +16,7 @@ export const uploadNewFile = async (formData: FormData) => {
 
     const { data } = await utapi.uploadFiles(file);
     console.log("uploaded link", data);
-    return data || null;
+    return data as fileTypeData;
   } catch (error) {
     console.error("Error uploading file:", error);
     throw new Error("File upload failed");

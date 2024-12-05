@@ -10,7 +10,7 @@ interface UploadFileProps {
     value: string; // The current file URL
     setFormData: React.Dispatch<React.SetStateAction<AddProjectFormData>>;
     valueName: string; // The key in companyDetails to update
-    lastModified?: number;
+    disabled?: boolean;
 }
 
 interface fileType {
@@ -21,11 +21,12 @@ interface fileType {
     size: number;
 }
 
-const UploadFile: React.FC<UploadFileProps> = ({ title, value, setFormData, valueName }) => {
+const UploadFile: React.FC<UploadFileProps> = ({ title, value, setFormData, valueName, disabled }) => {
     const [filePreview, setFilePreview] = React.useState<fileType | null>({url: value, title: '', description: '', date: '', size: 0});
     const [uploading, setUploading] = React.useState<boolean>(false);
 
     const handleSingleFileUpload = async () => {
+        if (disabled) return;
         const input = document.createElement("input");
         input.type = "file";
         input.accept = ".pdf, .doc, .docx, .csv"; // Acceptable file types
@@ -86,21 +87,20 @@ const UploadFile: React.FC<UploadFileProps> = ({ title, value, setFormData, valu
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                     {title}
                 </label>
-                {
-                    <Button disabled={!filePreview} style={{ background: "red" }} type='button' onClick={handleRemoveFile} className='ml-2 disabled:opacity-50'>
+                { !disabled &&
+                    <Button disabled={!filePreview?.url} style={{ background: "red" }} type='button' onClick={handleRemoveFile} className='ml-2 disabled:opacity-50'>
                         Remove
                     </Button>
                 }
             </div>
             {(filePreview && filePreview.url) ? (
                 <div className='min-h-[150px] mt-3 shadow-neuro-3 bg-transparent rounded flex-center flex-col gap-1'>
-                    <Link href={filePreview.url} className='underline hover:opacity-60'>{filePreview.title}</Link> {/* Display file name */}
-                    <span>{filePreview.size} bytes</span> {/* Display file size */}
+                    <Link href={filePreview.url} className='underline hover:opacity-60'>Assets & Scope Uploaded</Link> 
                 </div>
             ) :
-                <div className='min-h-[150px] mt-3 shadow-neuro-3 bg-transparent rounded flex-center cursor-pointer' onClick={handleSingleFileUpload}>
+                <div className={`min-h-[150px] mt-3 shadow-neuro-3 bg-transparent rounded flex-center cursor-pointer ${disabled && 'cursor-no-drop'}`} onClick={handleSingleFileUpload}>
                     <span>
-                        {uploading ? 'Uploading...' : 'Drag & Drop or Click to Upload File'}
+                        {disabled ? 'No File Uploaded' : uploading ? 'Uploading...' : 'Drag & Drop or Click to Upload File'}
                     </span>
                 </div>
             }

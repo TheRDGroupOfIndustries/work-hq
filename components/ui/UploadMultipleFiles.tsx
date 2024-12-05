@@ -19,10 +19,11 @@ interface UploadMultipleFilesProps {
     title?: string;
     values: FileObject[]; // Array of file objects
     setFormData: React.Dispatch<React.SetStateAction<AddProjectFormData>>;
-    valueName: string; // The key in projectDetails to update
+    valueName: string; // The key in projectDetails to 
+    disabled?: boolean;
 }
 
-const UploadMultipleFiles: React.FC<UploadMultipleFilesProps> = ({ title, values, setFormData, valueName }) => {
+const UploadMultipleFiles: React.FC<UploadMultipleFilesProps> = ({ title, values, setFormData, valueName , disabled}) => {
     const [filePreviews, setFilePreviews] = useState<FileObject[]>(values);
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     const [uploading, setUploading] = useState<boolean>(false);
@@ -83,17 +84,20 @@ const UploadMultipleFiles: React.FC<UploadMultipleFilesProps> = ({ title, values
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                     {title}
                 </label>
-                <Button type='button' onClick={() => setIsModalOpen(true)} className='ml-2 disabled:opacity-60'
+                <Button type='button' onClick={() => {
+                    if(disabled) return;
+                    setIsModalOpen(true);
+                }} className={`ml-2 disabled:opacity-60 ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}
                 disabled={uploading}
                     >
-                    {uploading ? 'Uploading...' : 'Upload'}
+                    {disabled ? 'No Files Uploaded' : uploading ? 'Uploading...' : 'Upload'}
                 </Button>
             </div>
             <div className='h-[150px] mt-3 shadow-neuro-3 bg-transparent rounded '>
                 {filePreviews.length > 0 ? (
                     <div className='mt-3 p-4'>
                         {filePreviews.map((file, index) => {
-                            console.log("file: ",file);
+                            // console.log("file: ",file);
                             return (
                             <div key={index} className='flex justify-between items-center'>
                                 <div>
@@ -102,17 +106,25 @@ const UploadMultipleFiles: React.FC<UploadMultipleFilesProps> = ({ title, values
                                         {file.title}
                                     </Link>
                                 </div>
-                                <Button type='button' onClick={() => handleRemoveFile(file.url)} className='ml-2 text-red-600 bg-transparent hover:text-dark-blue'>
+                                { !disabled && <Button type='button' onClick={() => handleRemoveFile(file.url)} className='ml-2 text-red-600 bg-transparent hover:text-dark-blue'>
                                     X
                                 </Button>
+                        }
                             </div>
                         )}
                         )}
                     </div>
                 ) : (
-                    <div className=' flex-center cursor-pointer h-full w-full' onClick={() => setIsModalOpen(true)}>
+                    <div className={` flex-center cursor-pointer h-full w-full ${
+                        disabled && 'cursor-no-drop'
+                    }`} onClick={() => {
+                        if(disabled) return;
+                        setIsModalOpen(true);
+                    }}>
                         <span>
-                            Drag & Drop or Click to Upload Files
+                            {disabled? 'No Files uploaded' : uploading ? 'Uploading...' : 'Drag & Drop or Click to Upload Files'}
+                           
+                            
                         </span>
                     </div>
                 )}  

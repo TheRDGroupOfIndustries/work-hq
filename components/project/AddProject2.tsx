@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import MainContainer from '@/components/reusables/wrapper/mainContainer';
 import { ROLE } from '@/tempData';
 import NewHeadline from '../reusables/components/NewHeadline';
@@ -10,6 +10,9 @@ import Milestone from './components/Milestone';
 import Milestone1 from './components/Milestone1';
 import Milestone2 from './components/Milestone2';
 import Milestone3 from './components/Milestone3';
+import { toast } from 'sonner';
+import { useProjectContext } from '@/context/ProjectProvider';
+import { useRouter } from 'next/navigation';
 export interface AddProjectFormData {
     projectDetails: {
       projectName: string;
@@ -43,8 +46,10 @@ export interface AddProjectFormData {
   }
 function AddProject2() {
     const { data: session } = useSession()
+    const [creating, setCreating] = useState(false);
     const user = session?.user as CustomUser;
     const [currentStep, setCurrentStep] = useState(0);
+    const router = useRouter();
     const [formData, setFormData] = useState<AddProjectFormData>({
         projectDetails: {
           projectName: "",
@@ -70,19 +75,12 @@ function AddProject2() {
           size: "",
         },
       });
-      useEffect(() => {
-        console.log("Form Data:", formData);
-        }, [formData]);
-        
+     
+        const {setSelectedProject} = useProjectContext();
       const ButtonObjects = [
         {
             buttonText: 'Cancel',
-            onClick: () => console.log('Cancel New Project'),
-            noIcon: true,
-        },
-        {
-            buttonText: 'Proceed',
-            onClick: () => console.log('Proceed to Next Step'),
+            onClick: () => router.push('/c/all-projects'),
             noIcon: true,
         }]
     const handleChange = (
@@ -109,10 +107,38 @@ function AddProject2() {
         setCurrentStep((prevStep) => Math.max(prevStep - 1, 0)); // Move to the previous step
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Handle final submission logic here
+     
+        const date = new Date(formData.projectDetails.deadline as Date);
+        let finalFormData = formData;
+        finalFormData.projectDetails.deadline = date;
+        finalFormData.companyDetails.clientID = user._id;
+
+        console.log('date:', date);
         console.log('Final Form Data:', formData);
+      try{
+        setCreating(true);
+        const response = await fetch("/api/project/create", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        });
+  
+        const data = await response.json();
+        if (data.success) {
+          toast.success("Project created successfully");
+          setSelectedProject(data.project._id);
+          router.push(`/c/project/something/dashboard`);
+        } else {
+          toast.error("Failed to create project");
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setCreating(false);
+      }
+    
     };
 
     return (
@@ -143,16 +169,18 @@ function AddProject2() {
 
                 <div className="flex justify-between">
                     {currentStep > 0 && (
-                        <Button type="button" onClick={handlePrevious}>
+                        <Button disabled={creating} type="button" onClick={handlePrevious}>
                             Previous
                         </Button>
                     )}
                     {currentStep < 2 ? (
-                        <Button type="button" onClick={handleNext}>
+                        <Button disabled={creating} type="button" onClick={handleNext}>
                             Next
                         </Button>
                     ) : (
-                        <Button type="submit">Submit</Button>
+                        <Button type="submit" disabled={creating}>{
+                            creating ? 'Creating Project...' : 'Create Project' }
+                          </Button>
                     )}
                 </div>
             </form>

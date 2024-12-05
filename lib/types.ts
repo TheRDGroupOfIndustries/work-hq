@@ -75,12 +75,13 @@ export interface ProjectValues {
     category: string;
     deadline: Date;
     additionalFiles?: {
-      url: string;
+      _id: string;
       title: string;
+      url: string;
       description: string;
       date: Date;
       size: number;
-    };
+    }[];
     maintenanceNeeded: boolean;
     description: string;
     scope: string;

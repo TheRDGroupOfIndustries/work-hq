@@ -1,7 +1,9 @@
 "use client";
 
 import { useProjectContext } from "@/context/ProjectProvider";
+import { formatDateString } from "@/lib/utils";
 import { Role, VENDOR } from "@/types";
+import Link from "next/link";
 
 export default function ProjectInfo({ role }: { role: Role }) {
   const { selectedProjectDetails } = useProjectContext();
@@ -70,7 +72,11 @@ export default function ProjectInfo({ role }: { role: Role }) {
               <div className="w-full flex flex-col">
                 <h2 className="text-lg text-[#344054]">Company Contact No</h2>
                 <p className="text-base text-[#6A6A6A]">
-                  +91 {selectedProjectDetails?.companyDetails?.contactNo}
+                  <Link
+                    href={`tel:${selectedProjectDetails?.companyDetails?.contactNo}`}
+                  >
+                    {selectedProjectDetails?.companyDetails?.contactNo}
+                  </Link>
                 </p>
               </div>
 
@@ -121,9 +127,9 @@ export default function ProjectInfo({ role }: { role: Role }) {
                 <h2 className="text-lg  text-[#344054]">Expected Deadline</h2>
                 <p className="text-base  text-[#6A6A6A]">
                   {selectedProjectDetails?.projectDetails?.deadline
-                    ? new Date(
-                        selectedProjectDetails?.projectDetails?.deadline
-                      ).toLocaleDateString()
+                    ? formatDateString(
+                        selectedProjectDetails?.projectDetails?.deadline.toString()
+                      )
                     : "No deadline set"}
                 </p>
               </div>
@@ -141,15 +147,14 @@ export default function ProjectInfo({ role }: { role: Role }) {
                 <h2 className="text-lg  text-[#344054]">
                   Milestones wise Budeget
                 </h2>
-                <p className="text-base  text-[#6A6A6A]">
-                  Milestone 1: 100,000 - 150,000
-                </p>
-                <p className="text-base  text-[#6A6A6A]">
-                  Milestone 2: 50,000 - 100,000
-                </p>
-                <p className="text-base  text-[#6A6A6A]">
-                  Milestone 3: 150,000 - 250,000
-                </p>
+                {selectedProjectDetails?.projectDetails?.budget?.map(
+                  (milestone, index) => (
+                    <p key={index} className="text-base  text-[#6A6A6A]">
+                      Milestone {index + 1}: {milestone?.min.toLocaleString()} -{" "}
+                      {milestone?.max.toLocaleString()}
+                    </p>
+                  )
+                )}
               </div>
 
               <div className="w-full flex flex-col">

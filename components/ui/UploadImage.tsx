@@ -9,13 +9,17 @@ interface UploadImageProps {
     title?: string;
     setFormData: React.Dispatch<React.SetStateAction<AddProjectFormData>>;
     valueName: string;
+    value: string;
+    disabled?: boolean;
 }
 
-function UploadImage({ title, setFormData, valueName }: UploadImageProps) {
-    const [logoPreview, setLogoPreview] = React.useState<string | null>(null);
+function UploadImage({ title, value, setFormData, valueName, disabled }: UploadImageProps) {
+    // console.log('value:', value);
+    const [logoPreview, setLogoPreview] = React.useState<string | null>(value);
     const [uploadingPreview, setUploadingPreview] = React.useState<boolean>(false);
 
     const handleSignleImageUpload = async () => {
+        if(disabled) return;
         const input = document.createElement("input");
         input.type = "file";
         input.accept = "image/*, .gif";
@@ -37,11 +41,11 @@ function UploadImage({ title, setFormData, valueName }: UploadImageProps) {
                 // Update formData with the uploaded image URL
                 setFormData((prevData) => ({
                     ...prevData,
-                    // companyDetails: {
-                    //     ...prevData.companyDetails,
-                    //     logo: imageUrl, // Set the logo URL
-                    // },
-                    [valueName]: imageUrl?.url,
+                    companyDetails: {
+                        ...prevData.companyDetails,
+                        [valueName]: imageUrl.url, // Set the logo URL
+                    },
+                    // [valueName]: imageUrl?.url,
                 }));
             }
             setUploadingPreview(false);
@@ -72,7 +76,7 @@ function UploadImage({ title, setFormData, valueName }: UploadImageProps) {
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                     {title}
                 </label>
-                {logoPreview &&
+                {!disabled && logoPreview &&
                     <Button style={{ background: "red" }} type='button' onClick={() => handleRemoveImage(logoPreview)} className='ml-2'>
                         Remove
                     </Button>
@@ -83,9 +87,11 @@ function UploadImage({ title, setFormData, valueName }: UploadImageProps) {
                     <Image src={logoPreview} alt='logo' className='w-full h-full object-contain' width={100} height={100} />
                 </div>
             ) :
-                <div className='h-[150px] mt-3 shadow-neuro-3 bg-transparent rounded flex-center cursor-pointer' onClick={handleSignleImageUpload}>
+                <div className={`h-[150px] mt-3 shadow-neuro-3 bg-transparent rounded flex-center cursor-pointer ${disabled && 'cursor-no-drop' }`} onClick={handleSignleImageUpload}>
                     <span>
-                        {uploadingPreview ? 'Uploading...' : 'Drag & Drop or Click to Upload'}
+                        {disabled?
+                        'No Image Uploaded':
+                        uploadingPreview ? 'Uploading...' : 'Drag & Drop or Click to Upload'}
                     </span>
                 </div>
             }

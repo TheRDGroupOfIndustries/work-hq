@@ -2,9 +2,9 @@
 
 import { useProjectContext } from "@/context/ProjectProvider";
 import { dashboardProjectReport, dashbordHoursCount, ROLE } from "@/tempData";
+import MainContainer from "@/components/reusables/wrapper/mainContainer";
 import HoursCountCard from "@/components/reusables/components/hoursCountCard";
 import ProjectReportCard from "@/components/reusables/components/projectReportCard";
-import MainContainer from "@/components/reusables/wrapper/mainContainer";
 import Deployment from "../components/deployment";
 import Figma from "../components/figma";
 // import Headline from "./components/headline";
@@ -14,13 +14,13 @@ import ProjectInfo from "../components/projectInfo";
 
 export default function Dashboard() {
   const { selectedProjectDetails } = useProjectContext();
-  console.log(selectedProjectDetails);
+  // console.log(selectedProjectDetails);
 
-  const chartData =
-    selectedProjectDetails?.developmentDetails?.projectHours?.map((entry) => ({
-      parameter: entry.date.toISOString().slice(0, 10),
-      hours: entry.totalHours,
-    }));
+  // const chartData =
+  //   selectedProjectDetails?.developmentDetails?.projectHours?.map((entry) => ({
+  //     parameter: entry.date.toISOString().slice(0, 10),
+  //     hours: entry.totalHours,
+  //   }));
 
   const headLineButtons = [
     {
@@ -48,7 +48,7 @@ export default function Dashboard() {
             role={ROLE}
           />
 
-          <HoursCountCard
+          {/* <HoursCountCard
             totalHours={
               selectedProjectDetails?.developmentDetails?.projectHours?.reduce(
                 (acc, entry) => acc + entry.totalHours,
@@ -57,7 +57,7 @@ export default function Dashboard() {
             }
             data={chartData || []}
             role={ROLE} // Replace with actual role
-          />
+          /> */}
 
           <HoursCountCard
             totalHours={100}
@@ -69,9 +69,25 @@ export default function Dashboard() {
 
       <MidInformationCard />
 
-      <Figma role={ROLE} />
+      {/* {selectedProjectDetails?.developmentDetails?.figma?.link && ( */}
+      <Figma
+        link={
+          selectedProjectDetails?.developmentDetails?.figma?.link ||
+          "https://embed.figma.com/design/TMJBtavs0kGJfyuql8d3gG/workHQ?node-id=0-1&embed-host=share"
+        }
+        role={ROLE}
+      />
+      {/* )} */}
 
-      <Deployment role={ROLE} />
+      {/* {selectedProjectDetails?.developmentDetails?.deployment?.link && ( */}
+      <Deployment
+        link={
+          selectedProjectDetails?.developmentDetails?.deployment?.link ||
+          "https://gauravdubey.vercel.app/"
+        }
+        role={ROLE}
+      />
+      {/* )} */}
 
       <ProjectInfo role={ROLE} />
     </MainContainer>

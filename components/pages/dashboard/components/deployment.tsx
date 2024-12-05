@@ -1,19 +1,22 @@
 "use client";
 
 import { useState } from "react";
-import { Link, MessageCircleMore, SendHorizontal, X } from "lucide-react";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import Image from "next/image";
 import { Role, VENDOR } from "@/types";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Link, MessageCircleMore, SendHorizontal, X } from "lucide-react";
 
-import testimage from "@/public/temp/test.png";
-
-export default function Deployment({role}:{role:Role}) {
-  const [isChatOpen, setIsChatOpen] = useState(true);
+export default function Deployment({
+  link,
+  role,
+}: {
+  link: string;
+  role: Role;
+}) {
+  const [isChatOpen, setIsChatOpen] = useState(false);
   return (
     <div className="w-full flex flex-col gap-6 mt-6">
-        <h1 className="text-2xl font-semibold">Deployments</h1>
-        <div
+      <h1 className="text-2xl font-semibold">Deployments</h1>
+      <div
         className={` w-full   h-[500px]  rounded-[30px]  ${
           role === VENDOR
             ? "shadow-[10px_10px_20px_0px_#1c2c4766,-5px_-5px_15px_0px_#efefef]"
@@ -22,30 +25,22 @@ export default function Deployment({role}:{role:Role}) {
       >
         <div className=" w-full h-full flex flex-row overflow-hidden ">
           <div
-            className={`relative transition-all ease-in-out duration-300 w-fit lg:block   rounded-[30px] overflow-hidden   h-full   
-            ${
-              isChatOpen ? "hidden" : "block"
-            } 
-            ${
-              isChatOpen ? " lg:min-w-[60%]  " : "min-w-[100%]"
-            }  
+            className={`relative transition-all ease-in-out duration-300 w-fit lg:block rounded-[30px] overflow-hidden h-full   
+            ${isChatOpen ? "hidden" : "block"} 
+            ${isChatOpen ? " lg:min-w-[60%]  " : "min-w-[100%]"}  
             ${
               role === VENDOR
                 ? "shadow-[10px_10px_20px_0px_#6d778566_inset,-5px_-5px_15px_0px_#e0e0e0_inset]"
                 : "shadow-[10px_10px_20px_0px_#bdd6ff66_inset,-5px_-5px_15px_0px_#bfd0d9_inset]"
-            } `}
+            } overflow-hidden`}
           >
-            <Image
-              src={testimage}
-              width={100}
-              height={100}
-              className={` relative top-0 z-[-2] transition-all ease-in-out duration-300   ${
-                isChatOpen
-                  ? "w-full h-full"
-                  : "w-full h-full lg:h-fit"
-              }    `}
-              alt=""
-            />
+            <iframe
+              // style="border: 1px solid rgba(0, 0, 0, 0.1);"
+              width="100%"
+              height="100%"
+              src={link}
+              // allowfullscreen
+            ></iframe>
 
             <div className="absolute left-[45px] bottom-[35px] flex flex-row gap-4 ">
               <div className="h-[40px] w-[40px] bg-black flex flex-row items-center justify-center cursor-pointer ">
@@ -154,12 +149,16 @@ export default function Deployment({role}:{role:Role}) {
                 className=" outline-none w-full rounded-full p-3 pr-14  border border-gray-300"
               />
               <div className="absolute right-5 top-[10px] cursor-pointer">
-                <SendHorizontal color="gray" className=" hover:stroke-gray-700" size={30} />
+                <SendHorizontal
+                  color="gray"
+                  className=" hover:stroke-gray-700"
+                  size={30}
+                />
               </div>
             </div>
           </div>
         </div>
       </div>
-      </div>
-  )
+    </div>
+  );
 }

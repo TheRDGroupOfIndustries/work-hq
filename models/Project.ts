@@ -12,7 +12,7 @@ export interface ProjectDBTypes {
       description: string;
       date: Date;
       size: number;
-    };
+    }[];
     maintenanceNeeded: boolean;
     description: string;
     scope: string;
