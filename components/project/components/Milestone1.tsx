@@ -9,12 +9,7 @@ function Milestone1({formData, handleChange, setFormData}: {formData: AddProject
    
   return (
     <div className='w-full grid grid-cols-2 gap-4'>
-    <UploadImage title='Upload Your Company Logo' setFormData={setFormData}
-    valueName='companyDetails.logo'
-     />
-    <NeuroTextarea label='Tell Us About Your Company' name='companyDetails.about' value={formData.companyDetails.about} onChange={handleChange} placeholder='e.g. My company is a big company'/>
-    <NeuroTextarea label='Company Address Detail' name='companyDetails.address' value={formData.companyDetails.address} onChange={handleChange} placeholder='e.g. Near Plot No. 2, Tokyo, Japan'/>
-    <NeuroInputField 
+         <NeuroInputField 
         type = 'text'
         label='Your Company Name'
         name='companyDetails.officialName'
@@ -23,7 +18,7 @@ function Milestone1({formData, handleChange, setFormData}: {formData: AddProject
         placeholder='e.g. Google, Microsoft'
         required
     />
-    <NeuroInputField 
+        <NeuroInputField 
         type = 'text'
         label='Your Company Link (if any)'
         name='companyDetails.companyLink'
@@ -32,15 +27,35 @@ function Milestone1({formData, handleChange, setFormData}: {formData: AddProject
         placeholder='www.company.com'
         required
     />
-    <NeuroInputField 
+    <UploadImage title='Upload Your Company Logo' setFormData={setFormData}
+    valueName='logo'
+    value = {formData.companyDetails.logo ? formData.companyDetails.logo : ''}
+     />
+    <NeuroTextarea label='Tell Us About Your Company' name='companyDetails.about' value={formData.companyDetails.about} onChange={handleChange} placeholder='e.g. My company is a big company'/>
+    <NeuroMultiSelect 
+        name='companyDetails.workingLocations'
+        options={['Tokyo', 'New York', 'London', 'Paris', 'Berlin']}
+        selectedOptions={formData.companyDetails.workingLocations}
+        onChange={(selected) => setFormData((prev) => ({...prev, companyDetails: {...prev.companyDetails, workingLocations: selected}}))}
+        placeholder='Select Working Locations'
+        label='Working Locations'
+    />
+        <NeuroInputField 
         type = 'text'
         label='Company Contact No.'
         name='companyDetails.contactNo'
         value={formData.companyDetails.contactNo || ''}
-        onChange={handleChange}
+        onChange={(e)=>{
+            //check if the value is a number and if its length is greateer than or equal to 0 and less than or equal to 10
+            if (isNaN(parseInt(e.target.value)) || e.target.value.length > 10 || e.target.value.length < 0) {
+                return;
+            } 
+            handleChange(e);
+        }}
         placeholder='e.g. 1234567890, 0987654321'
         required
     />
+    <NeuroTextarea label='Company Address Detail' name='companyDetails.address' value={formData.companyDetails.address} onChange={handleChange} placeholder='e.g. Near Plot No. 2, Tokyo, Japan'/>
     <NeuroInputField 
         type = 'text'
         label='Company Size'
@@ -50,14 +65,7 @@ function Milestone1({formData, handleChange, setFormData}: {formData: AddProject
         placeholder='e.g. 100-200'
         required
     />
-   <NeuroMultiSelect 
-        name='companyDetails.workingLocations'
-        options={['Tokyo', 'New York', 'London', 'Paris', 'Berlin']}
-        selectedOptions={formData.companyDetails.workingLocations}
-        onChange={(selected) => setFormData((prev) => ({...prev, companyDetails: {...prev.companyDetails, workingLocations: selected}}))}
-        placeholder='Select Working Locations'
-        label='Working Locations'
-    />
+  
 </div>
   )
 }

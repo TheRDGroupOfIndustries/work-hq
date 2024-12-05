@@ -11,18 +11,34 @@ export type CalendarProps = React.ComponentProps<typeof DayPicker> & {
         label: string; // Optional label
         name: string; // Optional name
         containerStyle?: string; // Optional container style
+        disabledCalendar?: boolean; // Optional disabled calendar
     };
-export default function NeuroCalendar({ date, setDate, className, classNames, name, containerStyle, label}: CalendarProps) {
-
-  return <div className={`mb-0 ${containerStyle}`}>
+export default function NeuroCalendar({ date, setDate, className, classNames, name, containerStyle, label, disabledCalendar}: CalendarProps) {
+  const formatDate = (date: Date | undefined) => {
+    if (!date) return "";
+    return date.toLocaleDateString("en-US", {
+     //in form of 23 June 2021
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+  };
+  const yestarday = new Date(new Date(new Date()).getDate()-1)
+  return <div className={`mb-0 ${containerStyle} ${
+    disabledCalendar ? "cursor-not-allowed" : "cursor-pointer"
+  }
+  }`}>
   {label && (
     <label htmlFor={name} className="block text-sm font-medium text-gray-700 mb-0">
       {label}
     </label>
   )}
 
-  <DayPicker mode="single" onSelect={setDate} selected={date} 
-      disabled={{after:undefined, before: new Date()}}
+  { disabledCalendar ? <div>
+    <input type="text" name={name} id={name} value={formatDate(date)} readOnly className="neuro-input-style" />
+  </div>:<DayPicker mode="single" onSelect={setDate} selected={date} 
+  
+      disabled={{after:disabledCalendar ? yestarday:undefined, before: new Date()}}
       className={cn("p-3 mx-auto w-full", className)}
       classNames={{
         months: "flex flex-col sm:flex-row flex-center space-y-4 sm:space-x-4 sm:space-y-0",
@@ -43,7 +59,7 @@ export default function NeuroCalendar({ date, setDate, className, classNames, na
         row: "flex w-full mt-2",
         cell: cn(
           "relative p-0 text-center text-sm focus-within:relative focus-within:z-20",
-          "[&:has([aria-selected])]:rounded-full rounded-full hover:shadow-neuro-3 transition transition-all duration-300"
+          "[&:has([aria-selected])]:rounded-full [&:has([aria-selected])]:bg-blue-500 rounded-full hover:shadow-neuro-3 transition duration-300"
         ),
         day: cn(
           "h-8 w-8 p-0 font-normal bg-transparent text-gray-800 hover:text-gray-900",
@@ -71,6 +87,6 @@ export default function NeuroCalendar({ date, setDate, className, classNames, na
         ),
       }}
   />
-
+    }
   </div>
 }

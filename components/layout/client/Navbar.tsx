@@ -175,7 +175,7 @@ const SelectProject = ({ role }: { role: Role }) => {
     setSelectedProject,
   } = useProjectContext();
 
-  console.log(selectedProjectDetails);
+  // console.log(selectedProjectDetails);
 
   const handleSelect = (projectName: string) => {
     const selected = userAllProjects.find(

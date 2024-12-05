@@ -23,25 +23,25 @@ function Milestone2({formData, handleChange, setFormData}: {formData: AddProject
         placeholder='e.g. Project X'
         required
     /> 
-    <NeuroCalendar label={'Expected Project Deadline'} name='projectDetails.deadline' date={formData.projectDetails.deadline} setDate={
-        (date) => setFormData((prev) => ({...prev, projectDetails: {...prev.projectDetails, deadline: date}})
-    )} 
-    />
     <NeuroSelect name = 'projectDetails.category' label='Project Type' value={formData.projectDetails.category} onChange={(selected)=>
     setFormData((prev) => ({...prev, projectDetails: {...prev.projectDetails, category: selected}}))
     } options={['Web Development', 'Mobile Development', 'UI/UX Design', 'Digital Marketing', 'Content Writing', 'Others']} placeholder='Select Project Type'/>
 
-    <UploadFile value={formData.projectDetails.scope} title='Upload the Assets & Scope' setFormData={setFormData} valueName='scope'  />
-    
-    <UploadMultipleFiles values={formData.projectDetails.additionalFiles} title='Upload the Additional Files (optional)' setFormData={setFormData} valueName='additionalFiles' />
+    <NeuroCalendar label={'Expected Project Deadline'} name='projectDetails.deadline' date={formData.projectDetails.deadline} setDate={
+        (date) => setFormData((prev) => ({...prev, projectDetails: {...prev.projectDetails, deadline: date}})
+    )} 
+    />
+        
 
-   
-
+    <div className='flex flex-col gap-6'>
+      <NeuroSelect name = 'projectDetails.maintenanceNeeded' label='Maintenance Needed' value={formData.projectDetails.maintenanceNeeded ? 'Yes':'No'} onChange={(selected)=>
+      setFormData((prev) => ({...prev, projectDetails: {...prev.projectDetails, maintenanceNeeded: selected==='Yes'? true: false}}))
+      } options={['Yes', 'No']} placeholder='Yes/No'/>
+      <UploadMultipleFiles values={formData.projectDetails.additionalFiles} title='Upload the Additional Files (optional)' setFormData={setFormData} valueName='additionalFiles' />
+    </div>
 
     <NeuroTextarea label='What kind of project is this?' name='projectDetails.description' value={formData.projectDetails.description} onChange={handleChange} placeholder='e.g. This Project is an ecommerce project.'/>
-    <NeuroSelect name = 'projectDetails.maintenanceNeeded' label='Maintenance Needed' value={formData.projectDetails.maintenanceNeeded ? 'Yes':'No'} onChange={(selected)=>
-    setFormData((prev) => ({...prev, projectDetails: {...prev.projectDetails, maintenanceNeeded: selected==='Yes'? true: false}}))
-    } options={['Yes', 'No']} placeholder='Yes/No'/>
+    <UploadFile value={formData.projectDetails.scope} title='Upload the Assets & Scope' setFormData={setFormData} valueName='scope'  />
     <MilestoneBudget value={formData.projectDetails.budget} setFormData={setFormData} />
 </div>
   )
