@@ -16,7 +16,7 @@ export interface ProjectDBTypes {
     maintenanceNeeded: boolean;
     description: string;
     scope: string;
-    budget: { min: number; max: number };
+    budget: [{ min: number; max: number }];
     hasVendor: boolean;
     vendorID?: Schema.Types.ObjectId; // Ref to Users schema if hasVendor is true
   };
@@ -26,14 +26,21 @@ export interface ProjectDBTypes {
     logo?: string; // Optional
     about: string;
     workingLocations: string[];
-    contactNo: string[];
+    contactNo: string;
     address: string;
     companyLink?: string;
     size: string; // e.g., "100-200"
   };
   developmentDetails: {
-    deploymentLink?: string;
-    figmaLink?: string;
+    status: "completed" | "inProgress" | "pending" | "refactoring";
+    deployment?: {
+      link: string;
+      channelID: string;
+    };
+    figma?: {
+      link: string;
+      channelID: string;
+    };
     projectHours?: {
       date: Date;
       totalHours: number;
@@ -63,10 +70,12 @@ const projectSchema = new Schema<ProjectDBTypes>(
       maintenanceNeeded: { type: Boolean, required: true },
       description: { type: String, required: true },
       scope: { type: String, required: true },
-      budget: {
-        min: { type: Number, required: true },
-        max: { type: Number, required: true },
-      },
+      budget: [
+        {
+          min: { type: Number, required: true },
+          max: { type: Number, required: true },
+        },
+      ],
       hasVendor: { type: Boolean, required: true },
       vendorID: { type: Schema.Types.ObjectId, ref: "User", required: false },
     },
@@ -76,7 +85,7 @@ const projectSchema = new Schema<ProjectDBTypes>(
       logo: { type: String, required: false },
       about: { type: String, required: true },
       workingLocations: [{ type: String, required: true }],
-      contactNo: [{ type: String, required: true }],
+      contactNo: { type: String, required: true, minlength: 10, maxlength: 10 },
       address: { type: String, required: true },
       companyLink: { type: String, required: false },
       size: { type: String, required: true },

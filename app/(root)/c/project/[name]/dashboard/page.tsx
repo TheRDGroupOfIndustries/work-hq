@@ -1,6 +1,6 @@
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
-import Dashboard from "@/components/pages/c/dashboard/Dashboard";
+import Dashboard from "@/components/pages/dashboard/client/Dashboard";
 
 export default async function Page() {
   const session = await getServerSession();

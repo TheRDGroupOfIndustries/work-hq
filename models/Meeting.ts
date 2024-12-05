@@ -1,21 +1,26 @@
 import { Schema, model, models } from "mongoose";
 
-// Define the TypeScript interface
 export interface MeetingDBTypes {
-  title: string; // Title of the meeting
-  link?: string; // Optional meeting link
-  createdBy: Schema.Types.ObjectId; // Reference to the user who created the meeting
-  projectID?: Schema.Types.ObjectId; // Optional reference to the associated project
-  meetingDescription?: string; // Optional description of the meeting
-  attendees: Schema.Types.ObjectId[]; // List of attendees (user IDs)
-  date: Date; // Date of the meeting
-  startTime?: Date; // Optional start time
-  endTime?: Date; // Optional end time
-  status: "upcoming" | "requested" | "overdue" | "completed" | "inProgress"; // Enum for meeting status
-  isInstant: boolean; // Determines if the meeting is instant (automatic date/time)
+  title: string;
+  link?: string;
+  createdBy: Schema.Types.ObjectId;
+  projectID?: Schema.Types.ObjectId;
+  meetingDescription?: string;
+  attendees: Schema.Types.ObjectId[];
+  date: Date;
+  startTime?: Date;
+  endTime?: Date;
+  status: "upcoming" | "requested" | "overdue" | "completed" | "inProgress";
+  isInstant: boolean;
+  streamCallId?: string;
+  streamSessionId?: string;
+  streamToken?: string;
+  recordingEnabled?: boolean;
+  recordingUrl?: string;
+  meetingType: "video" | "audio";
+  joinedParticipants?: Schema.Types.ObjectId[];
 }
 
-// Define the schema
 const meetingSchema = new Schema<MeetingDBTypes>(
   {
     title: { type: String, required: true },
@@ -33,12 +38,17 @@ const meetingSchema = new Schema<MeetingDBTypes>(
       enum: ["upcoming", "requested", "overdue", "completed", "inProgress"],
     },
     isInstant: { type: Boolean, required: true },
+    streamCallId: { type: String },
+    streamSessionId: { type: String },
+    streamToken: { type: String },
+    recordingEnabled: { type: Boolean, default: false },
+    recordingUrl: { type: String },
+    meetingType: { type: String, enum: ["video", "audio"], default: "video" },
+    joinedParticipants: [{ type: Schema.Types.ObjectId, ref: "User" }],
   },
   { timestamps: true }
 );
 
-// Export the model
-const Meeting =
-  models && (models.Meeting || model<MeetingDBTypes>("Meeting", meetingSchema));
+const Meeting = models?.Meeting || model<MeetingDBTypes>("Meeting", meetingSchema);
 
 export default Meeting;

@@ -1,4 +1,4 @@
-import Payments from "@/components/pages/c/payments/page";
+import Payments from "@/components/pages/payments/client/page";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 

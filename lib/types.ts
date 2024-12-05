@@ -56,6 +56,17 @@ export interface CustomUser extends NextAuthUser {
 //   completed?: boolean;
 // }
 
+export interface Meeting {
+  _id: string;
+  title: string;
+  meetingDescription: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+  status: string;
+  streamCallId: string;
+}
+
 export interface ProjectValues {
   _id: string;
   projectID: string;
@@ -73,7 +84,7 @@ export interface ProjectValues {
     maintenanceNeeded: boolean;
     description: string;
     scope: string;
-    budget: { min: number; max: number };
+    budget: [{ min: number; max: number }];
     hasVendor: boolean;
     vendorID?: string; // Ref to Users schema if hasVendor is true
   };
@@ -83,14 +94,21 @@ export interface ProjectValues {
     logo?: string; // Optional
     about: string;
     workingLocations: string[];
-    contactNo: string[];
+    contactNo: string;
     address: string;
     companyLink?: string;
     size: string; // e.g., "100-200"
   };
   developmentDetails: {
-    deploymentLink?: string;
-    figmaLink?: string;
+    status: "completed" | "inProgress" | "pending" | "refactoring";
+    deployment?: {
+      link: string;
+      channelID: string;
+    };
+    figma?: {
+      link: string;
+      channelID: string;
+    };
     projectHours?: {
       date: Date;
       totalHours: number;
@@ -98,7 +116,6 @@ export interface ProjectValues {
     teams: string[]; // Array of User IDs
     // tasks: Schema.Types.ObjectId[]; // Ref to Tasks schema
   };
-  createdAt: string;
 }
 
 export interface TaskValues {
