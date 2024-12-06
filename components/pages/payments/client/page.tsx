@@ -11,7 +11,7 @@ import Headline from "@/components/reusables/components/headline";
 
 export default function Payments() {
   const headLineButtons = [
-    { buttonText: "Add Payment", lightGrayColor: false, onNeedIcon: false, onClick: () => console.log("Export Report"), dialogContent: <AddPayment/> },
+    { buttonText: "Add Payment", onNeedIcon: false, onClick: () => console.log("Export Report"), dialogContent: <AddPayment/> },
   ];
   return (
     <MainContainer role={ROLE}>

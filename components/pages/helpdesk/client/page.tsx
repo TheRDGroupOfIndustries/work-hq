@@ -116,11 +116,12 @@ export default function Helpdesk() {
       <Headline role={ROLE} title="Helpdest Tickets" subTitle="Project / Chats" buttonObjects={headLineButtons} />
 
       <div className="flex flex-wrap gap-4">
-        <Input
-          placeholder="Search..."
+      <input
+          type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="max-w-xs"
+          placeholder="Search..."
+          className="w-[200px] text-base h-[40px] outline-none shadow-neuro-3 bg-transparent rounded-lg px-4"
         />
         <Select value={issueType} onValueChange={setIssueType}>
           <SelectTrigger className="w-[180px]">

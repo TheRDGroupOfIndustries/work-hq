@@ -8,9 +8,12 @@ import ProjectReportCard from "@/components/reusables/components/projectReportCa
 import Deployment from "../components/deployment";
 import Figma from "../components/figma";
 // import Headline from "./components/headline";
-import Headline from "@/components/reusables/components/headline";
+import Headline, {
+  ButtonObjectType,
+} from "@/components/reusables/components/headline";
 import MidInformationCard from "../components/midInformationCard";
 import ProjectInfo from "../components/projectInfo";
+import MidSizeCard from "@/components/reusables/wrapper/midSizeCard";
 
 export default function Dashboard() {
   const { selectedProjectDetails } = useProjectContext();
@@ -25,11 +28,10 @@ export default function Dashboard() {
   const headLineButtons = [
     {
       buttonText: "Export Report",
-      lightGrayColor: false,
       onNeedIcon: false,
       onClick: () => console.log("Export Report"),
     },
-  ];
+  ] as ButtonObjectType[];
 
   return (
     <MainContainer role={ROLE}>

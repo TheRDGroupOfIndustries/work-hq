@@ -116,7 +116,7 @@ export default function MeetingsRequest() {
                 placeholder="Meeting Title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full text-base h-[40px] outline-none shadow-[3px_3px_10px_0px_#789BD399,-3px_-3px_10px_0px_#FFFFFF] bg-transparent rounded-lg px-4"
+                className="w-full text-base h-[40px] outline-none shadow-neuro-3 bg-transparent rounded-lg px-4"
                 required
               />
             </div>
@@ -128,7 +128,7 @@ export default function MeetingsRequest() {
                 onChange={(e) => setDescription(e.target.value)}
                 rows={6}
                 placeholder="Meeting Description"
-                className="w-full resize-none border-0 p-3 focus-visible:ring-0 h-[40px] outline-none shadow-[3px_3px_10px_0px_#789BD399,-3px_-3px_10px_0px_#FFFFFF] bg-transparent rounded-lg px-4"
+                className="w-full resize-none border-0 p-3 focus-visible:ring-0 h-[40px] outline-none shadow-neuro-3 bg-transparent rounded-lg px-4"
               />
             </div>
           </div>
@@ -139,7 +139,7 @@ export default function MeetingsRequest() {
                 mode="single"
                 selected={date}
                 onSelect={setDate}
-                className="rounded-md w-fit shadow-[3px_3px_10px_0px_#789BD399,-3px_-3px_10px_0px_#FFFFFF]"
+                className="rounded-md w-fit shadow-neuro-3"
               />
             </div>
             <div className="flex w-full flex-col gap-4">
@@ -182,7 +182,30 @@ export default function MeetingsRequest() {
           </div>
         </div>
 
-        {/* Meeting Requests Preview section remains unchanged */}
+        <div className="w-1/2 h-[400px] flex flex-col gap-4">
+          <h1>Meeting Requests Preview</h1>
+          <div className="w-full h-full flex flex-col">
+            {meetingRequests.map((meeting, index) => (
+              <div
+                key={index}
+                className="flex flex-row items-center justify-between w-full hover:shadow-neuro-3 p-4 px-6 rounded-xl cursor-pointer"
+              >
+                <div className="flex items-center space-x-4">
+                  <ZoomVideo />
+                  <div>
+                    <h3 className="text-lg font-semibold text-blue-600">
+                      {meeting.title}
+                    </h3>
+                    <p className="text-gray-700">{meeting.description}</p>
+                    <p className="text-gray-600">
+                      {meeting.date} | {meeting.from} - {meeting.to}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </MainContainer>
   );

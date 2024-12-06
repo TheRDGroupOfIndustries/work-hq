@@ -1,7 +1,7 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { CustomUser } from "@/lib/types";
@@ -37,44 +37,7 @@ import {
   UserRound,
 } from "lucide-react";
 
-const list = [
-  {
-    id: "1",
-    title: "Dashboard",
-    Icon: ChartNoAxesColumn,
-    link: "/c/dashboard",
-  },
-  {
-    id: "2",
-    title: "Assets & Scope",
-    Icon: AssetsAndScope,
-    link: "/c/assets&scope",
-  },
-  {
-    id: "3",
-    title: "Meetings",
-    Icon: Meeting,
-    link: "/c/meetings/details",
-  },
-  {
-    id: "4",
-    title: "Chats",
-    Icon: Chats,
-    link: "/c/chats",
-  },
-  {
-    id: "5",
-    title: "Payments",
-    Icon: AssetsAndScope,
-    link: "/c/payments",
-  },
-  {
-    id: "6",
-    title: "Helpdesk",
-    Icon: Helpdesk,
-    link: "/c/helpdesk",
-  },
-];
+
 
 const Navbar = ({ role }: { role: Role }) => {
   const pathname = usePathname();
@@ -87,6 +50,7 @@ const Navbar = ({ role }: { role: Role }) => {
           : "bg-primary-sky-blue shadow-[0px_3px_12px_0px_#d3e1f6]"
       }`}
     >
+
       {/* left */}
       <div className="flex flex-row items-center gap-3 sm:gap-9 text-lg font-semibold px-5">
         <h1 className="text-2xl font-semibold">Logo</h1>
@@ -168,10 +132,14 @@ const Navbar = ({ role }: { role: Role }) => {
 export default Navbar;
 
 const SelectProject = ({ role }: { role: Role }) => {
-  const router = useRouter();
-  const pathname = usePathname();
-  const { userAllProjects, selectedProject, setSelectedProject } =
-    useProjectContext();
+  const {
+    selectedProjectDetails,
+    userAllProjects,
+    selectedProject,
+    setSelectedProject,
+  } = useProjectContext();
+
+  console.log(selectedProjectDetails);
 
   const handleSelect = (projectName: string) => {
     const selected = userAllProjects.find(
@@ -185,8 +153,7 @@ const SelectProject = ({ role }: { role: Role }) => {
     }
   };
 
-  if (!selectedProject._id && !pathname.includes("/c/add-project"))
-    router.push("/c/all-projects");
+  // if (!selectedProject._id && pathName !== "/c/add-project") router.push("/c/all-projects");
 
   return (
     <Select>
@@ -231,6 +198,50 @@ export function ProfileDropDownMenu() {
   const pathname = usePathname();
   const { data: session } = useSession();
   const user = session?.user as CustomUser;
+
+  const {
+    selectedProjectDetails,
+    
+  } = useProjectContext();
+
+  const list = [
+    {
+      id: "1",
+      title: "Dashboard",
+      Icon: ChartNoAxesColumn,
+      link: `/c/project/${selectedProjectDetails?.projectDetails.projectName}/dashboard`,
+    },
+    {
+      id: "2",
+      title: "Assets & Scope",
+      Icon: AssetsAndScope,
+      link: `/c/project/${selectedProjectDetails?.projectDetails.projectName}/assets&scope`,
+    },
+    {
+      id: "3",
+      title: "Meetings",
+      Icon: Meeting,
+      link: `/c/project/${selectedProjectDetails?.projectDetails.projectName}/details`,
+    },
+    {
+      id: "4",
+      title: "Chats",
+      Icon: Chats,
+      link: `/c/project/${selectedProjectDetails?.projectDetails.projectName}/chats`,
+    },
+    {
+      id: "5",
+      title: "Payments",
+      Icon: AssetsAndScope,
+      link: `/c/project/${selectedProjectDetails?.projectDetails.projectName}/payments`,
+    },
+    {
+      id: "6",
+      title: "Helpdesk",
+      Icon: Helpdesk,
+      link: `/c/project/${selectedProjectDetails?.projectDetails.projectName}/helpdesk`,
+    },
+  ];
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="border-0 text-desktop select-none">
