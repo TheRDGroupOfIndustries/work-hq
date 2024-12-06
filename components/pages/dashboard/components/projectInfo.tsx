@@ -3,6 +3,7 @@
 import { useProjectContext } from "@/context/ProjectProvider";
 import { formatDateString } from "@/lib/utils";
 import { Role, VENDOR } from "@/types";
+import Image from "next/image";
 import Link from "next/link";
 
 export default function ProjectInfo({ role }: { role: Role }) {
@@ -32,7 +33,20 @@ export default function ProjectInfo({ role }: { role: Role }) {
           </div>
         ) : (
           <div className=" w-full h-full flex flex-col  md:flex-row p-2 ">
-            <div className="pr-3 font-normal  md:w-1/2 h-full  flex flex-col gap-1 md:border-r md:border-b-0 border-b border-[#9c9c9c]">
+            <div className="pr-3 font-normal  md:w-1/2 h-full flex flex-col gap-1 md:border-r md:border-b-0 border-b border-[#9c9c9c]">
+              <div className="w-full flex flex-col">
+                <h2 className="text-lg text-[#344054]">Company Logo</h2>
+                <Image
+                  src={
+                    selectedProjectDetails?.companyDetails?.logo ||
+                    "/assets/user.png"
+                  }
+                  alt="company logo"
+                  width={400}
+                  height={400}
+                  className="w-20 h-20 rounded-xl shadow-[10px_10px_20px_0px_#1c2c4766,-5px_-5px_15px_0px_#d8d8d8] mb-2 overflow-hidden"
+                ></Image>
+              </div>
               <div className="w-full flex flex-col">
                 <h2 className="text-lg  text-[#344054]">Company Name</h2>
                 <p className="text-base  text-[#6A6A6A]">
@@ -43,7 +57,17 @@ export default function ProjectInfo({ role }: { role: Role }) {
               <div className="w-full flex flex-col">
                 <h2 className="text-lg text-[#344054]">Company Link</h2>
                 <p className="text-base text-[#6A6A6A]">
-                  {selectedProjectDetails?.companyDetails?.companyLink}
+                  <Link
+                    href={
+                      selectedProjectDetails?.companyDetails?.companyLink ||
+                      `/c/project/${selectedProjectDetails?.projectDetails?.projectName}/dashboard`
+                    }
+                    target="_blank"
+                    title="View Company site"
+                    className="w-fit hover:text-blue-600 hover-link"
+                  >
+                    {selectedProjectDetails?.companyDetails?.companyLink}
+                  </Link>
                 </p>
               </div>
 
@@ -51,12 +75,6 @@ export default function ProjectInfo({ role }: { role: Role }) {
                 <h2 className="text-lg text-[#344054]">Company Description</h2>
                 <p className="text-base text-[#6A6A6A]">
                   {selectedProjectDetails?.companyDetails?.about}
-                </p>
-              </div>
-              <div className="w-full flex flex-col">
-                <h2 className="text-lg text-[#344054]">Company Logo</h2>
-                <p className="text-base text-black bg-red-500">
-                  Not valid position for company logo
                 </p>
               </div>
 
@@ -74,6 +92,9 @@ export default function ProjectInfo({ role }: { role: Role }) {
                 <p className="text-base text-[#6A6A6A]">
                   <Link
                     href={`tel:${selectedProjectDetails?.companyDetails?.contactNo}`}
+                    target="_blank"
+                    title="Make a call now"
+                    className="w-fit hover:text-blue-600 hover-link cursor-pointer text-base text-[#6A6A6A]"
                   >
                     {selectedProjectDetails?.companyDetails?.contactNo}
                   </Link>
@@ -88,39 +109,48 @@ export default function ProjectInfo({ role }: { role: Role }) {
               </div>
 
               <div className="w-full flex flex-col">
-                <h2 className="text-lg  text-[#344054]">Company Size</h2>
-                <p className="text-base  text-[#6A6A6A]">
+                <h2 className="text-lg text-[#344054]">Company Size</h2>
+                <p className="text-base text-[#6A6A6A]">
                   {selectedProjectDetails?.companyDetails?.size}
                 </p>
               </div>
             </div>
             <div className=" md:pl-6 font-normal md:w-1/2 h-full  flex flex-col gap-1 ">
               <div className="w-full flex flex-col">
-                <h2 className="text-lg  text-[#344054]">Project Name</h2>
-                <p className="text-base  text-[#6A6A6A]">
+                <h2 className="text-lg text-[#344054]">Project Name</h2>
+                <p className="text-base text-[#6A6A6A]">
                   {selectedProjectDetails?.projectDetails?.projectName}
                 </p>
               </div>
 
               <div className="w-full flex flex-col">
-                <h2 className="text-lg  text-[#344054]">Project Category</h2>
-                <p className="text-base  text-[#6A6A6A]">
+                <h2 className="text-lg text-[#344054]">Project Category</h2>
+                <p className="text-base text-[#6A6A6A]">
                   {selectedProjectDetails?.projectDetails?.category}
                 </p>
               </div>
 
               <div className="w-full flex flex-col">
-                <h2 className="text-lg  text-[#344054]">
+                <h2 className="text-lg text-[#344054]">
                   What kind of project is this?
                 </h2>
-                <p className="text-base  text-[#6A6A6A]">
+                <p className="text-base text-[#6A6A6A]">
                   {selectedProjectDetails?.projectDetails?.description}
                 </p>
               </div>
 
               <div className="w-full flex flex-col">
-                <h2 className="text-lg  text-[#344054]">Project SOW</h2>
-                <p className="text-base  text-[#6A6A6A]">www.companylink.com</p>
+                <h2 className="text-lg text-[#344054]">
+                  Project SOW (Scope of Work)
+                </h2>
+                <Link
+                  href={selectedProjectDetails?.projectDetails?.scope}
+                  target="_blank"
+                  title="Download scope csv file"
+                  className="w-fit hover:text-blue-600 hover-link cursor-pointer text-base text-[#6A6A6A]"
+                >
+                  Download SOW
+                </Link>
               </div>
 
               <div className="w-full flex flex-col">

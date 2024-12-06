@@ -40,8 +40,8 @@ export default function Dashboard() {
         buttonObjects={headLineButtons}
       />
 
-      <div className="w-full flex flex-row gap-4 ">
-        <div className="w-full flex flex-col xl:flex-row gap-10 overflow-hidden">
+      <div className="w-full flex flex-row gap-4">
+        <div className="w-full flex flex-col xl:flex-row gap-10">
           <ProjectReportCard
             report={dashboardProjectReport}
             totalTasks={100}
@@ -69,25 +69,19 @@ export default function Dashboard() {
 
       <MidInformationCard />
 
-      {/* {selectedProjectDetails?.developmentDetails?.figma?.link && ( */}
-      <Figma
-        link={
-          selectedProjectDetails?.developmentDetails?.figma?.link ||
-          "https://embed.figma.com/design/TMJBtavs0kGJfyuql8d3gG/workHQ?node-id=0-1&embed-host=share"
-        }
-        role={ROLE}
-      />
-      {/* )} */}
+      {selectedProjectDetails?.developmentDetails?.figma?.link && (
+        <Figma
+          link={selectedProjectDetails?.developmentDetails?.figma?.link}
+          role={ROLE}
+        />
+      )}
 
-      {/* {selectedProjectDetails?.developmentDetails?.deployment?.link && ( */}
-      <Deployment
-        link={
-          selectedProjectDetails?.developmentDetails?.deployment?.link ||
-          "https://gauravdubey.vercel.app/"
-        }
-        role={ROLE}
-      />
-      {/* )} */}
+      {selectedProjectDetails?.developmentDetails?.deployment?.link && (
+        <Deployment
+          link={selectedProjectDetails?.developmentDetails?.deployment?.link}
+          role={ROLE}
+        />
+      )}
 
       <ProjectInfo role={ROLE} />
     </MainContainer>
