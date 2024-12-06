@@ -8,16 +8,15 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { selectedProject } = useProjectContext();
-  if (!selectedProject._id) {
-    return <>{children}</>;
-  }
-  return (
-    <>
+  const { selectedProjectDetails } = useProjectContext();
+  console.log(selectedProjectDetails?._id);
+  if (selectedProjectDetails?._id !== null) {
+    return (
       <div className=" min-h-[calc(100vh-80px)] h-full   flex flex-row">
         <DesktopSidebar role={ROLE} />
         {children}
       </div>
-    </>
-  );
+    );
+  }
+  return <>{children}</>;
 }

@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Role, VENDOR } from "@/types";
 import { Link, MessageCircleMore, SendHorizontal, X } from "lucide-react";
+import { useState } from "react";
 
 export default function Figma({ link, role }: { link: string; role: Role }) {
   const [isChatOpen, setIsChatOpen] = useState(true);
@@ -30,6 +30,7 @@ export default function Figma({ link, role }: { link: string; role: Role }) {
           >
             <iframe
               // style="border: 1px solid rgba(0, 0, 0, 0.1);"
+              className="  z-[-2] w-full h-full "
               width="100%"
               height="100%"
               src={link}
@@ -85,10 +86,6 @@ export default function Figma({ link, role }: { link: string; role: Role }) {
                       this looks just fine and very easy to develop...
                     </div>
                   </div>
-
-                  
-
-                
                 </div>
               </ScrollArea>
             </div>
