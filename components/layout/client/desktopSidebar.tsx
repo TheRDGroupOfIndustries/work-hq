@@ -65,7 +65,7 @@ export default function DesktopSidebar({ role }: { role: Role }) {
   ];
   return (
     <div
-      className={`sticky    left-0 top-[70px] hidden  lg:w-[250px] h-[calc(100vh-70px)]  p-4 overflow-auto md:flex flex-col 
+      className={`sticky    left-0 top-[70px] hidden  lg:w-[250px] h-[calc(100vh-70px)]  p-4 overflow-y-auto overflow-x-hidden md:flex flex-col 
       ${
         role === VENDOR
           ? "bg-vendor-dark shadow-[3px_3px_12px_0px_#00000099] text-[#A5A5A5]"
@@ -151,16 +151,16 @@ export default function DesktopSidebar({ role }: { role: Role }) {
             />
           </div>
 
-          <div className="flex flex-col">
-            <span className="font-semibold text-sm">{user?.name}</span>
-            <span className=" text-sm text-[#475467]">
+          <div className="flex flex-col overflow-hidden">
+            <span className="font-semibold text-sm max-w-[140px]">{user?.firstName}</span>
+            <span className=" text-sm text-[#475467] max-w-[140px]">
               {user?.email}
             </span>
           </div>
         </div>
 
-        <div className="h-[10px] w-[10px] flex items-center justify-center">
-          <Logout onClick={() => signOut()} />
+        <div className="h-[40px] w-[40px] flex items-center justify-center">
+          <Logout color="#475467" onClick={() => signOut()} />
         </div>
       </Link>
     </div>
