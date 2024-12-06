@@ -43,7 +43,7 @@ const Sidebar = ({ sections }: { sections: ProjectSectionValues[] }) => {
           <div className="flex items-center gap-2">
             <div className="w-10 h-10 rounded-full overflow-hidden">
               <Image
-                src={user?.profile_image || "/assets/user.png"}
+                src={user?.profileImage || "/assets/user.png"}
                 alt="Profile Image"
                 width="200"
                 height="200"

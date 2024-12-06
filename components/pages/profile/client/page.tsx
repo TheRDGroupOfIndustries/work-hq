@@ -1,3 +1,4 @@
+"use client";
 import Logout from "@/components/icons/logout";
 import Container from "@/components/reusables/wrapper/Container";
 import MainContainer from "@/components/reusables/wrapper/mainContainer";
@@ -6,21 +7,74 @@ import { Label } from "@/components/ui/label";
 import { Mail, MessageCircleMore, Phone, SquarePen } from "lucide-react";
 import { ROLE } from "@/tempData";
 import Headline from "@/components/reusables/components/headline";
+import { signOut, useSession } from "next-auth/react";
+import { CustomUser, ProjectValues } from "@/lib/types";
+import Image from "next/image";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export default function Profile() {
+  
+  const {data: session} = useSession();
+  const user = session?.user as CustomUser;
+  const [signingOut, setSigningOut] = useState(false);
+  const [pendingProjects, setPendingProjects] = useState<string>();
+  const [ongoingProjects, setOngoingProjects] = useState<string>("00");
+  const [completedProjects, setCompletedProjects] = useState<string>("00");
+ 
+  const handleSignOut = async() => {
+    console.log("Signing Out...");
+    setSigningOut(true);
+    await signOut();
+    setSigningOut(false);
+  }
+  const [allProjects, setAllProjects] = useState <ProjectValues[] | null>(null);
+  
+  const fetchProjects = async () => {
+    if (!user) return;
+    try{
+    const res = await fetch(`/api/project/get/getByUserID/${user._id}`);
+    const data = await res.json();
+    if (data.success) {
+      setAllProjects(data.projects);
+    }
+  } catch (error) {
+    console.log(error);
+    toast.error("Something went wrong while fetching projects");
+  }
+  } 
+
+  useEffect(() => {
+    fetchProjects();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  useEffect(() => {
+    // categorizes projects into pending, ongoing and completed with padding 0 in the beginging if less than 10
+
+    if (!allProjects) return;
+    console.log("All Projects: ", allProjects);
+    const pending = allProjects.filter((project) => project.developmentDetails.status === 'pending').length.toString().padStart(2, '0');
+    const ongoing = allProjects.filter((project) => project.developmentDetails.status === 'inProgress').length.toString().padStart(2, '0');
+    const completed = allProjects.filter((project) => project.developmentDetails.status === 'completed').length.toString().padStart(2, '0');
+    setPendingProjects(pending);
+    setOngoingProjects(ongoing);
+    setCompletedProjects(completed);
+  }, [allProjects]);
   return (
     <MainContainer>
       <Headline role={ROLE} title="Profile" subTitle="Project / Chats"  />
-      <Container>
+      <Container className="md:px-8 md: my-8">
         <div className=" flex gap-4 flex-col-reverse sm:flex-row  justify-between">
           <div className="flex flex-row  sm:mx-0 items-center justify-between gap-4">
-            <div className="min-w-[130px] min-h-[130px] rounded-full bg-[#D9D9D9]"></div>
+            <div className="min-w-[130px] min-h-[130px] rounded-full ">{
+              user?.profileImage? <Image src={user?.profileImage} alt="profile" width={100} height={100} className="w-full h-full rounded-full object-contain" /> : <div className="w-full h-full rounded-full bg-gray-200"></div>
+              }</div>
             <div className="flex flex-col gap-3">
               <h1 className=" text-gray-800 text-2xl font-normal">
-                Ashri mallick
+                {user?.firstName ?? " "} {user?.lastName ?? " "}
               </h1>
               <p className=" text-gray-600 text-lg font-normal">
-                ashriarya@gmail.com
+                {user?.email ?? user?.phone ?? " "}
               </p>
               <div className="flex flex-row items-center gap-4 max-h-[100px]">
                 <Phone />
@@ -35,18 +89,20 @@ export default function Profile() {
           </SquareButton>
         </div>
 
-        <div className=" mt-8 w-full grid grid-cols-1 md:grid-cols-[1fr_2px_1fr] lg:grid-cols-[1fr_2px_1fr_2px_1fr] gap-4 ">
+        <div className=" mt-8 w-full grid grid-cols-1 md:grid-cols-[1fr_2px_1fr] lg:grid-cols-[1fr_2px_1fr_2px_1fr] gap-10 ">
           <div className="flex flex-row items-center gap-3 justify-between  w-full  ">
             <div className="flex flex-col">
-              <h1 className="text-2xl font-normal text-gray-800">
-                Ongoing Projects
+              <h1 className="text-xl font-normal text-gray-800">
+                Pending Projects
               </h1>
-              <p className="text-lg font-normal text-gray-600">
+              <p className=" font-normal text-gray-600">
                 {" "}
-                No. of projects which are still under development
+                No. of projects which have been requested
               </p>
             </div>
-            <h1 className="text-4xl font-normal text-gray-900">05</h1>
+            <h1 className="text-2xl font-normal text-gray-900">
+              {pendingProjects}
+              </h1>
           </div>
 
           <div className=" flex flex-row items-center ">
@@ -55,15 +111,17 @@ export default function Profile() {
 
           <div className="flex flex-row items-center gap-3 justify-between  w-full  ">
             <div className="flex flex-col">
-              <h1 className="text-2xl font-normal text-gray-800">
-                Requested Projects
+              <h1 className="text-xl font-normal text-gray-800">
+                Ongoing Projects
               </h1>
-              <p className="text-lg font-normal text-gray-600">
+              <p className="font-normal text-gray-600">
                 {" "}
-                No. of projects which have been requested
+                No. of projects which are currently in progress
               </p>
             </div>
-            <h1 className="text-4xl font-normal text-gray-900">05</h1>
+            <h1 className="text-2xl font-normal text-gray-900">
+              {ongoingProjects}
+              </h1>
           </div>
 
           <div className=" hidden lg:flex flex-row items-center ">
@@ -72,15 +130,17 @@ export default function Profile() {
 
           <div className="flex flex-row items-center  col-span-full lg:col-span-1 gap-4  justify-between md:justify-center lg:justify-between  w-full  ">
             <div className="flex flex-col">
-              <h1 className="text-2xl font-normal text-gray-800">
+              <h1 className="text-xl font-normal text-gray-800">
                 Completed Projects
               </h1>
-              <p className="text-lg font-normal text-gray-600">
+              <p className=" font-normal text-gray-600">
                 {" "}
                 No. of projects which have been completed
               </p>
             </div>
-            <h1 className="text-4xl font-normal text-gray-900">05</h1>
+            <h1 className="text-2xl font-normal text-gray-900">
+              {completedProjects ?? "00"}
+              </h1>
           </div>
         </div>
 
@@ -92,6 +152,7 @@ export default function Profile() {
             <input
               type="text"
               disabled
+              value={user?.firstName}
               placeholder="e.g. Johan"
               className="w-full text-base h-[40px] outline-none shadow-[3px_3px_3px_0px_#789BD399,-3px_-3px_5px_0px_#FFFFFF] bg-transparent rounded-lg px-4"
               required
@@ -102,6 +163,7 @@ export default function Profile() {
               Last Name
             </Label>
             <input
+              value={user?.lastName}
               type="text"
               disabled
               placeholder="e.g. Doe"
@@ -114,7 +176,8 @@ export default function Profile() {
             <input
               type="text"
               disabled
-              placeholder="e.g. Doe"
+              value={user?.role}
+              placeholder="e.g. Client"
               className="w-full text-base h-[40px] outline-none shadow-[3px_3px_3px_0px_#789BD399,-3px_-3px_5px_0px_#FFFFFF] bg-transparent rounded-lg px-4"
               required
             />
@@ -126,7 +189,8 @@ export default function Profile() {
             <input
               type="number"
               disabled
-              placeholder="e.g. Doe"
+              value={user?.phone ?? " "}
+              placeholder="e.g. +91 1234567890"
               className="w-full text-base h-[40px] outline-none shadow-[3px_3px_3px_0px_#789BD399,-3px_-3px_5px_0px_#FFFFFF] bg-transparent rounded-lg px-4"
               required
             />
@@ -138,6 +202,7 @@ export default function Profile() {
             <input
               type="password"
               disabled
+              value={"********"}
               placeholder="e.g. Doe"
               className="w-full text-base h-[40px] outline-none shadow-[3px_3px_3px_0px_#789BD399,-3px_-3px_5px_0px_#FFFFFF] bg-transparent rounded-lg px-4"
               required
@@ -146,9 +211,9 @@ export default function Profile() {
         </div>
 
         <div className=" w-full mt-auto flex flex-row items-center justify-end">
-          <button className="flex flex-row items-center py-3 px-4 gap-2 shadow-[3px_3px_10px_0px_#789BD399,5px_5px_15px_0px_#00000099_inset,-3px_-3px_10px_0px_#FFFFFF] rounded-xl text-[#ffffff] font-semibold text-nowrap bg-[#FF382D]">
-            <Logout color="#fff" />
-            Logout
+          <button className="flex flex-row items-center py-3 px-4 gap-2 shadow-[3px_3px_10px_0px_#789BD399,5px_5px_15px_0px_#00000099_inset,-3px_-3px_10px_0px_#FFFFFF] rounded-xl text-[#ffffff] font-semibold text-nowrap bg-[#FF382D] disabled:opacity-70" disabled ={signingOut}>
+            <Logout color="#fff" onClick={handleSignOut} />
+            {signingOut ? "Signing Out..." : "Sign Out"}
           </button>
         </div>
       </Container>

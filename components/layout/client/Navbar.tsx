@@ -1,7 +1,7 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { CustomUser } from "@/lib/types";
@@ -41,7 +41,7 @@ import {
 
 const Navbar = ({ role }: { role: Role }) => {
   const pathname = usePathname();
-
+  // const router = useRouter();
   return (
     <nav
       className={`sticky  left-0 top-0 w-full h-[70px]     flex flex-row items-center justify-between z-50 ${
@@ -133,14 +133,14 @@ export default Navbar;
 
 const SelectProject = ({ role }: { role: Role }) => {
   const {
-    selectedProjectDetails,
+    // selectedProjectDetails,
     userAllProjects,
     selectedProject,
     setSelectedProject,
   } = useProjectContext();
 
-  console.log(selectedProjectDetails);
-
+  // console.log(selectedProjectDetails);
+  const router = useRouter();
   const handleSelect = (projectName: string) => {
     const selected = userAllProjects.find(
       (project) => project.projectDetails.projectName === projectName
@@ -152,8 +152,9 @@ const SelectProject = ({ role }: { role: Role }) => {
       });
     }
   };
+  const pathName = usePathname();
 
-  // if (!selectedProject._id && pathName !== "/c/add-project") router.push("/c/all-projects");
+  if (!selectedProject._id && pathName !== "/c/add-project") router.push("/c/all-projects");
 
   return (
     <Select>

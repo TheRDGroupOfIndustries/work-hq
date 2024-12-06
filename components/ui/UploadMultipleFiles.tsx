@@ -11,7 +11,7 @@ interface FileObject {
     url: string;
     title: string;
     description: string;
-    date: string;
+    date: Date;
     size: number;
 }
 
@@ -46,7 +46,7 @@ const UploadMultipleFiles: React.FC<UploadMultipleFilesProps> = ({ title, values
             url: fileUrls[0], // Assuming single file upload
             title:modalOptions.title,
             description: modalOptions.description,
-            date: new Date().toISOString(), // Set current date
+            date: new Date(), // Set current date
             size: file.size, // Get the size of the uploaded file
         };
 

@@ -105,7 +105,7 @@ export const authOptions: NextAuthOptions = {
               firstName: user?.name?.split(" ")[0],
               lastName: user?.name?.split(" ")[1],
               email: user?.email,
-              profile_image: user?.image,
+              profileImage: user?.image,
               authIntegrated: [account.provider],
             });
             return await newUser.save();

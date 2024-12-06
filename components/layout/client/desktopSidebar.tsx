@@ -76,12 +76,13 @@ export default function DesktopSidebar({ role }: { role: Role }) {
       {/* top */}
 
       <div className="flex text-sm  flex-row gap-4 w-full px-3 py-2">
-        <div className=" h-[60px] w-[60px] bg-[#377be7]">
+        <div className=" h-[60px] w-[60px] bg-transparent shadow-neuro-3 rounded-full p-4">
           <Image
             src={selectedProjectDetails?.companyDetails.logo || "/assets/user.png"}
             alt="logo"
             width={60}
             height={60}
+            className="w-full h-full rounded-full object-contain"
           />
         </div>
         <div
@@ -152,7 +153,7 @@ export default function DesktopSidebar({ role }: { role: Role }) {
           </div>
 
           <div className="flex flex-col">
-            <span className="font-semibold text-sm">{user?.name}</span>
+            <span className="font-semibold text-sm">{user?.firstName ?? " "+ " "+ user?.lastName ?? " "}</span>
             <span className=" text-sm text-[#475467]">
               {user?.email}
             </span>

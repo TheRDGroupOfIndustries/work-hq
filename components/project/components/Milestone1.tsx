@@ -28,6 +28,7 @@ function Milestone1({formData, handleChange, setFormData}: {formData: AddProject
         required
     />
     <UploadImage title='Upload Your Company Logo*' setFormData={setFormData}
+    isCompanyDetail
     valueName='logo'
     value = {formData.companyDetails.logo ? formData.companyDetails.logo : ''}
      />

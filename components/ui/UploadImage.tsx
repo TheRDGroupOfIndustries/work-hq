@@ -11,9 +11,10 @@ interface UploadImageProps {
     valueName: string;
     value: string;
     disabled?: boolean;
+    isCompanyDetail?: boolean;
 }
 
-function UploadImage({ title, value, setFormData, valueName, disabled }: UploadImageProps) {
+function UploadImage({ title, value, setFormData, valueName, disabled, isCompanyDetail }: UploadImageProps) {
     // console.log('value:', value);
     const [logoPreview, setLogoPreview] = React.useState<string | null>(value);
     const [uploadingPreview, setUploadingPreview] = React.useState<boolean>(false);
@@ -39,14 +40,26 @@ function UploadImage({ title, value, setFormData, valueName, disabled }: UploadI
                 }
                 setLogoPreview(imageUrl?.url);
                 // Update formData with the uploaded image URL
-                setFormData((prevData) => ({
-                    ...prevData,
-                    companyDetails: {
-                        ...prevData.companyDetails,
-                        [valueName]: imageUrl.url, // Set the logo URL
-                    },
-                    // [valueName]: imageUrl?.url,
-                }));
+                if (isCompanyDetail) {
+                    setFormData((prevData) => ({
+                        ...prevData,
+                        companyDetails: {
+                            ...prevData.companyDetails,
+                            [valueName]: imageUrl.url, // Set the logo URL
+                        },
+                        // [valueName]: imageUrl?.url,
+                    }));
+                }
+                else {
+                    setFormData((prevData) => ({
+                        ...prevData,
+                        projectDetails: {
+                            ...prevData.projectDetails,
+                            [valueName]: imageUrl.url, // Set the logo URL
+                        },
+                        // [valueName]: imageUrl?.url,
+                    }));
+                }
             }
             setUploadingPreview(false);
         };

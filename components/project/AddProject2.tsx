@@ -14,35 +14,52 @@ import { toast } from 'sonner';
 import { useProjectContext } from '@/context/ProjectProvider';
 import { useRouter } from 'next/navigation';
 export interface AddProjectFormData {
-    projectDetails: {
-      projectName: string;
-      category: string;
-      deadline: Date | undefined;
-      additionalFiles: {
-        url: string;
-        title: string;
-        description: string;
-        date: string;
-        size: number;
-      }[];
-      maintenanceNeeded: boolean;
+  projectDetails: {
+    projectName: string;
+    logo?: string;
+    category: string;
+    deadline: Date | undefined;
+    additionalFiles: {
+      url: string;
+      title: string;
       description: string;
-      scope: string;
-      budget: { min: number; max: number }[]; // Ensure budget is an object
-      hasVendor: boolean;
-      vendorID?: string | null; // Optional vendor ID
+      date: Date;
+      size: number;
+    }[];
+    maintenanceNeeded: boolean;
+    description: string;
+    scope: string;
+    budget: [{ min: number; max: number }];
+    hasVendor: boolean;
+    vendorID?: string; // Ref to Users schema if hasVendor is true
+  };
+  companyDetails: {
+    clientID: string; // Ref to Users schema
+    officialName: string;
+    logo?: string; // Optional
+    about: string;
+    workingLocations: string[];
+    contactNo: string;
+    address: string;
+    companyLink?: string;
+    size: string; // e.g., "100-200"
+  };
+  developmentDetails: {
+    status: "completed" | "inProgress" | "pending" | "refactoring";
+    deployment?: {
+      link: string;
+      channelID: string;
     };
-    companyDetails: {
-      clientID: string; // Set this to session.user.id
-      officialName: string;
-      logo?: string; // Optional
-      about: string;
-      workingLocations: string[];
-      contactNo: string;
-      address: string;
-      companyLink?: string; // Optional
-      size: string; // e.g., "100-200"
+    figma?: {
+      link: string;
+      channelID: string;
     };
+    projectHours?: {
+      date: Date;
+      totalHours: number;
+    }[]; // Derived from developers' hours
+    teams: string[]; 
+  };
   }
 function AddProject2() {
     const { data: session } = useSession()
@@ -53,15 +70,16 @@ function AddProject2() {
     const [formData, setFormData] = useState<AddProjectFormData>({
         projectDetails: {
           projectName: "",
+          logo: "",
           category: "",
-          deadline: undefined,
+          deadline: new Date(Date.now()),
           additionalFiles: [],
           maintenanceNeeded: false,
           description: "",
           scope: "",
           budget: [{ min: 0, max: 0 }], // Initialize budget as an object
           hasVendor: false,
-          vendorID: null, // Optional
+          vendorID: undefined, // Optional
         },
         companyDetails: {
           clientID: user?._id, // Set clientID to session.user.id
@@ -74,6 +92,19 @@ function AddProject2() {
           companyLink: "",
           size: "",
         },
+        developmentDetails: {
+          status: "pending",
+          deployment: {
+            link: "",
+            channelID: "",
+          },
+          figma: {
+            link: "",
+            channelID: "",
+          },
+          projectHours: [],
+          teams: [],
+        }
       });
      
         const {setSelectedProject} = useProjectContext();
@@ -108,22 +139,29 @@ function AddProject2() {
             if(formData.companyDetails.contactNo.length !== 10){
                 return toast.error('Please enter a valid contact number');
             }
+            setCurrentStep((prevStep) => Math.min(prevStep + 1, 2)); // Move to the next step
         }
-        if(currentStep === 1){
+        else if(currentStep === 1){
             if(formData.projectDetails.projectName === '' || formData.projectDetails.category === '' || formData.projectDetails.deadline === undefined || formData.projectDetails.description === '' || formData.projectDetails.scope === '' || formData.projectDetails.budget[0].min === 0 || formData.projectDetails.budget[0].max === 0){
-                return toast.error('Please fill all the required fields properly');
+                toast.error('Please fill all the required fields properly');
+                return;
             }
             //for all the budgets check if the min is less than max
+            let flag = false;
             formData.projectDetails.budget.forEach((budget) => {
                 if(budget.min >= budget.max){
-                    return toast.error('Please enter a valid budget range. Minimum should be less than Maximum');
+                    toast.error('Please enter a valid budget range. Minimum should be less than Maximum');
+                    flag = true;
+                    return;
                 }
             });
-
+            if(flag) return;
+            else {
+              console.log("Changed: ");
+                setCurrentStep((prevStep) => Math.min(prevStep + 1, 2)); // Move to the next step
+                }
         }
-
-      
-        setCurrentStep((prevStep) => Math.min(prevStep + 1, 2)); // Move to the next step
+        
     };
 
     const handlePrevious = () => {

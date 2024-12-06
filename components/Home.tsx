@@ -33,7 +33,7 @@ export default function Home() {
   }, [session]);
 useEffect(() => {
   console.log("Sign Up Role", SignUpRole);
-  if(!SignUpRole || SignUpRole === "null"){
+  if(!SignUpRole || SignUpRole === "null" ) {
     return router.replace("/auth/c-sign-in");
   }
   if (status === "unauthenticated") {

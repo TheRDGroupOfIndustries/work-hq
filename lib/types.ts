@@ -1,3 +1,4 @@
+import { ProjectDBTypes } from "@/models/Project";
 import { User as NextAuthUser } from "next-auth";
 
 export interface CustomUser extends NextAuthUser {
@@ -67,56 +68,8 @@ export interface Meeting {
   streamCallId: string;
 }
 
-export interface ProjectValues {
+export interface ProjectValues  extends ProjectDBTypes {
   _id: string;
-  projectID: string;
-  projectDetails: {
-    projectName: string;
-    category: string;
-    deadline: Date;
-    additionalFiles?: {
-      _id: string;
-      title: string;
-      url: string;
-      description: string;
-      date: Date;
-      size: number;
-    }[];
-    maintenanceNeeded: boolean;
-    description: string;
-    scope: string;
-    budget: [{ min: number; max: number }];
-    hasVendor: boolean;
-    vendorID?: string; // Ref to Users schema if hasVendor is true
-  };
-  companyDetails: {
-    clientID: string; // Ref to Users schema
-    officialName: string;
-    logo?: string; // Optional
-    about: string;
-    workingLocations: string[];
-    contactNo: string;
-    address: string;
-    companyLink?: string;
-    size: string; // e.g., "100-200"
-  };
-  developmentDetails: {
-    status: "completed" | "inProgress" | "pending" | "refactoring";
-    deployment?: {
-      link: string;
-      channelID: string;
-    };
-    figma?: {
-      link: string;
-      channelID: string;
-    };
-    projectHours?: {
-      date: Date;
-      totalHours: number;
-    }[]; // Derived from developers' hours
-    teams: string[]; // Array of User IDs
-    // tasks: Schema.Types.ObjectId[]; // Ref to Tasks schema
-  };
 }
 
 export interface TaskValues {
