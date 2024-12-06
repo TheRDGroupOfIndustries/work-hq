@@ -6,7 +6,7 @@ export default function ProjectInfo({role}:{role:Role}) {
         <div className={`" w-full  rounded-[30px]  p-6 ${
       role === VENDOR
         ? "shadow-[10px_10px_20px_0px_#1c2c4766,-5px_-5px_15px_0px_#d8d8d8]"
-        : "shadow-[10px_10px_20px_0px_#3B5F9766,-5px_-5px_15px_0px_#ffffff]"
+        : "shadow-neuro-3"
     } "`}>
           <h2 className="text-lg font-semibold">ADDITONAL PROJECT INFO</h2>
 

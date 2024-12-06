@@ -74,7 +74,7 @@ export default function MeetingsDetails() {
 
       <Container className="p-0 sm:p-0 md:p-0 lg:p-0">
         <Tabs defaultValue="allMetting" className="">
-          <TabsList className="flex rounded-none h-[65px] shadow-[3px_3px_10px_0px_#789BD399_inset,-5px_-5px_15px_0px_#FFFFFF] rounded-t-xl flex-row items-center justify-around w-full bg-transparent font-semibold text-black px-0 ">
+          <TabsList className="flex rounded-none h-[65px] shadow-neuro-4 rounded-t-xl flex-row items-center justify-around w-full bg-transparent font-semibold text-black px-0 ">
             <TabsTrigger className={`${
                 ROLE === VENDOR
                   ? "data-[state=active]:border-vendor-dark"
@@ -170,7 +170,7 @@ function Card({
   onJoin: () => void;
 }) {
   return (
-    <div className="flex flex-row items-center justify-between w-full hover:shadow-[3px_3px_10px_0px_#789BD399,-5px_-5px_10px_0px_#FFFFFF] p-3 sm:p-4 md:p-5 lg:p-6">
+    <div className="flex flex-row items-center justify-between w-full hover:shadow-neuro-3 p-3 sm:p-4 md:p-5 lg:p-6">
       <div className="flex flex-row items-center gap-4">
         <ZoomVideo />
         <div className="flex flex-col">

@@ -1,22 +1,33 @@
 "use client";
 
+import Filter from "@/components/icons/Filter";
 import Headline from "@/components/reusables/components/headline";
 import MainContainer from "@/components/reusables/wrapper/mainContainer";
+import SquareButton from "@/components/reusables/wrapper/squareButton";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useProjectContext } from "@/context/ProjectProvider";
 import { ProjectValues } from "@/lib/types";
 import { ROLE } from "@/tempData";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function AllProjects() {
   const { userAllProjects } = useProjectContext();
+  const router = useRouter();
   const headLineButtons = [
     {
       buttonText: "Add New Project",
-      lightGrayColor: false,
       onNeedIcon: false,
-      onClick: () => alert("Add New Project"),
+      onClick: () => router.push("/c/add-project"),
     },
   ];
   return (
@@ -61,19 +72,20 @@ const ProjectTable: React.FC<ProjectTableProps> = ({ projects }) => {
   );
 
   return (
-    <div className="bg-gray-50 p-4 rounded-lg shadow-md">
-      <div className="flex justify-between items-center mb-4">
+    <div className=" p-4 rounded-lg ">
+      <div className="flex items-center gap-4 mb-4">
         <input
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search..."
-          className="px-4 py-2 border rounded-lg w-1/2"
+          className="w-[200px] text-base h-[40px] outline-none shadow-neuro-3 bg-transparent rounded-lg px-4"
         />
-        <select
+
+        {/* <select
           value={filterCategory}
           onChange={(e) => setFilterCategory(e.target.value)}
-          className="px-4 py-2 border rounded-lg"
+          className="px-2 h-[40px]  flex text-desktop flex-row items-center font-medium  gap-2 shadow-[3px_3px_10px_0px_#789BD399,-3px_-3px_10px_0px_#FFFFFF] rounded-xl outline-none"
         >
           <option value="">All Categories</option>
           {categories.map((category, index) => (
@@ -81,12 +93,28 @@ const ProjectTable: React.FC<ProjectTableProps> = ({ projects }) => {
               {category}
             </option>
           ))}
-        </select>
+        </select> */}
+
+        <Select value={filterCategory} onValueChange={setFilterCategory}>
+          <SelectTrigger className="w-fit te outline-none gap-1 bg-transparent">
+            <div className="w-full text-[#697077] flex flex-row gap-1 items-center justify-end">
+              <Filter  />
+              Filter
+            </div>
+          </SelectTrigger>
+          <SelectContent>
+            {categories.map((category, index) => (
+              <SelectItem key={index} value={category}>
+                {category}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       <table className="w-full text-left border-collapse">
         <thead>
-          <tr className="bg-gray-100 text-gray-700">
+          <tr className="bg-transparent text-dark-gray   border-b border-gray-300">
             <th className="px-4 py-2"></th>
             <th className="w-[55vw] px-4 py-2">Project Name</th>
             <th className="px-4 py-2">Status</th>
@@ -97,7 +125,7 @@ const ProjectTable: React.FC<ProjectTableProps> = ({ projects }) => {
         <tbody>
           {filteredProjects.length > 0 ? (
             filteredProjects.map((project, index) => (
-              <tr key={index} className="border-t hover:bg-gray-100">
+              <tr key={index} className="border-t ">
                 <td className="px-4 py-2">{index + 1}</td>
                 <td className="w-[55vw] -ml-10 flex items-center gap-2 px-4 py-2">
                   <Image

@@ -98,7 +98,7 @@ const chatList: ChatList[] = [
 ];
 export default function Chats() {
   const headLineButtons = [
-    { buttonText: "Add Chat", lightGrayColor: true, onNeedIcon: false, onClick: () => alert("Clicked"), dialogContent: <AddChat/> },
+    { buttonText: "Add Chat", type: 'lightGray', onNeedIcon: false, onClick: () => alert("Clicked"), dialogContent: <AddChat/> },
   ];
   return (
     <MainContainer role={ROLE}>
