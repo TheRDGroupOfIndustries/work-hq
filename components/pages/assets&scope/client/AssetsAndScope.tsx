@@ -11,12 +11,7 @@ import Headline from "@/components/reusables/components/headline";
 
 export default function AssetsAndScope() {
   const headLineButtons = [
-    {
-      buttonText: "Export Scope",
-      lightGrayColor: false,
-      onNeedIcon: false,
-      onClick: () => console.log("Export Scope"),
-    },
+    { buttonText: "Export Scope", onNeedIcon: false, onClick: () => console.log("Export Scope") },
   ];
   return (
     <MainContainer role={ROLE}>

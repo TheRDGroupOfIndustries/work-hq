@@ -7,47 +7,60 @@ import { Role, VENDOR } from "@/types";
 import { ChartNoAxesColumn } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useSession, signOut } from "next-auth/react";
+import { CustomUser } from "@/lib/types";
+import Image from "next/image";
+import Logout from "@/components/icons/logout";
+import { useProjectContext } from "@/context/ProjectProvider";
 // import { Link, useLocation } from "react-router-dom";
 
 export default function DesktopSidebar({ role }: { role: Role }) {
   const pathname = usePathname();
+  
+  const { data: session } = useSession();
+  const user = session?.user as CustomUser;
+
+  const {
+    selectedProjectDetails,
+    
+  } = useProjectContext();
 
   const list = [
     {
       id: "1",
       title: "Dashboard",
       Icon: ChartNoAxesColumn,
-      link: "/c/project/something/dashboard",
+      link: `/c/project/${selectedProjectDetails?.projectDetails.projectName}/dashboard`,
     },
     {
       id: "2",
       title: "Assets & Scope",
       Icon: AssetsAndScope,
-      link: "/c/project/something/assets&scope",
+      link: `/c/project/${selectedProjectDetails?.projectDetails.projectName}/assets&scope`,
     },
     {
       id: "3",
       title: "Meetings",
       Icon: Meeting,
-      link: "/c/project/something/meetings/details",
+      link: `/c/project/${selectedProjectDetails?.projectDetails.projectName}/details`,
     },
     {
       id: "4",
       title: "Chats",
       Icon: Chats,
-      link: "/c/project/something/chats",
+      link: `/c/project/${selectedProjectDetails?.projectDetails.projectName}/chats`,
     },
     {
       id: "5",
       title: "Payments",
       Icon: AssetsAndScope,
-      link: "/c/project/something/payments",
+      link: `/c/project/${selectedProjectDetails?.projectDetails.projectName}/payments`,
     },
     {
       id: "6",
       title: "Helpdesk",
       Icon: Helpdesk,
-      link: "/c/project/something/helpdesk",
+      link: `/c/project/${selectedProjectDetails?.projectDetails.projectName}/helpdesk`,
     },
   ];
   return (
@@ -63,13 +76,20 @@ export default function DesktopSidebar({ role }: { role: Role }) {
       {/* top */}
 
       <div className="flex text-sm  flex-row gap-4 w-full px-3 py-2">
-        <div className=" h-[60px] w-[60px] bg-[#377be7]"></div>
+        <div className=" h-[60px] w-[60px] bg-[#377be7]">
+          <Image
+            src={selectedProjectDetails?.companyDetails.logo || "/assets/user.png"}
+            alt="logo"
+            width={60}
+            height={60}
+          />
+        </div>
         <div
           className={`flex flex-col ${
             role === VENDOR ? "text-white" : "text-dark-gray"
           } `}
         >
-          <span>Project 1</span>
+          <span>{selectedProjectDetails?.projectDetails.projectName}</span>
           <span>Progress - 58%</span>
         </div>
       </div>
@@ -121,17 +141,27 @@ export default function DesktopSidebar({ role }: { role: Role }) {
         className="flex flex-row items-center justify-between mt-auto cursor-pointer text-sm"
       >
         <div className=" flex flex-row items-center gap-2">
-          <div className="h-[40px] w-[40px] rounded-full bg-[#377be7]"></div>
+          <div className="h-[40px] w-[40px] rounded-full bg-[#377be7]">
+          <Image
+              src={user?.profileImage || user?.image || "/assets/user.png"}
+              alt="profile image"
+              width={200}
+              height={200}
+              className="w-10 h-10 rounded-full"
+            />
+          </div>
 
           <div className="flex flex-col">
-            <span className="font-semibold text-sm">Olivia rhye</span>
+            <span className="font-semibold text-sm">{user?.name}</span>
             <span className=" text-sm text-[#475467]">
-              olivia@untitledui.com
+              {user?.email}
             </span>
           </div>
         </div>
 
-        <div className="h-[10px] w-[10px] rounded-full  border"></div>
+        <div className="h-[10px] w-[10px] flex items-center justify-center">
+          <Logout onClick={() => signOut()} />
+        </div>
       </Link>
     </div>
   );

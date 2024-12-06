@@ -118,6 +118,22 @@ const config: Config = {
         "neuro-9": "-5px -5px 10px 0 #ffffff,-5px -5px 10px 0 #ffffff, 5px 5px 10px 0 rgba(120, 155, 211, 0.8), inset -5px -5px 20px 0 rgba(255, 255, 255, 0.2), inset 5px 5px 15px 0 rgba(0, 40, 121, 1)",
         "neuro-3": "-3px -3px 10px 0 #ffffff, 3px 3px 10px 0 rgba(120, 155, 211, 0.6)",
         "neuro-11": "inset 4px 4px 10px 0 rgba(182, 206,242, 0.6),inset -4px -4px 10px 0 rgba(255, 255,255, 0.3), -4px -4px 10px 0 rgba(255, 255,255, 1), 4px 4px 10px 0 rgba(182, 206,242, 1)",
+
+        "neuro-1" : "var(--neuro-1)",
+        "neuro-4" : "var(--neuro-4)",
+        "neuro-5" : "var(--neuro-5)",
+        // "neuro-9" : "var(--neuro-9)",
+        "neuro-8" : "var(--neuro-8)",
+        "neuro-10" : "var(--neuro-10)",
+
+        "dark-neuro-1" : "var(--dark-neuro-1)",
+
+        "vendor-neuro-1" : "var(--vendor-neuro-1)",
+        "vendor-neuro-2" : "var(--vendor-neuro-2)",
+        "vendor-neuro-3" : "var(--vendor-neuro-3)",
+        "vendor-neuro-5" : "var(--vendor-neuro-5)",
+        "vendor-neuro-6" : "var(--vendor-neuro-6)",
+        "vendor-neuro-7" : "var(--vendor-neuro-7)",
       },
     },
   },

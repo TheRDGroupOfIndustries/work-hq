@@ -38,6 +38,9 @@ export default function Chats() {
     router.push(`/c/project/something/chats/${channel.id}`);
   };
 
+  const headLineButtons = [
+    { buttonText: "Add Chat", type: 'lightGray', onNeedIcon: false, onClick: () => alert("Clicked"), dialogContent: <AddChat/> },
+  ];
   return (
     <MainContainer role={ROLE}>
       {isAddChatOpen && <AddChat setIsAddChatOpen={setIsAddChatOpen} />}

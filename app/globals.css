@@ -33,7 +33,7 @@
     --primary-sky-blue: #e4eefe;
     --primary-blue: #155eef;
     --primary-vendor: #eff0f1;
-    --dark-blue: #001d6c;
+    --dark-blue: #00359E;
     --dark-gray: #344054;
     --light-gray: #6a6a6a;
     --vendor-dark: #360227;
@@ -48,6 +48,27 @@
     --vendor-pie-chart-color-2: #be198f;
     --vendor-pie-chart-color-3: #f65bca;
     --vendor-pie-chart-color-4: #ffb7ea;
+
+    /** Shadow Color  */
+
+    --neuro-1: 5px 5px 15px 0px #789BD366, -5px -5px 20px 0px #FFFFFFCC;
+    --neuro-4: 5px 5px 20px 0px #B6CEF2,-5px -5px 20px 0px #FFFFFF,-5px -5px 20px 0px #FFFFFF4D inset,5px 5px 20px 0px #B6CEF299 inset;
+    --neuro-5: 5px 5px 25px 0px #89A1C766,-8px -8px 20px 0px #FFFFFF;
+    --neuro-8: 5px 5px 20px 0px #7BA9EF99,-5px -5px 20px 0px #FFFFFF,-5px -5px 20px 0px #FFFFFF inset,5px 5px 20px 0px #7BA9EF99 inset;
+    --neuro-9 : 5px 5px 10px 0px #789BD3CC,-5px -5px 10px 0px #FFFFFF,5px 5px 15px 0px #002879 inset,-5px -5px 20px 0px #FFFFFF33 inset,-5px -5px 10px 0px #FFFFFF;
+    --neuro-10 : 5px 5px 10px 0px #789BD3CC, -5px -5px 10px 0px #FFFFFF, -5px -5px 20px 0px #FFFFFF33 inset, -5px -5px 10px 0px #FFFFFF;
+
+
+
+    --dark-neuro-1: 3px 3px 10px 0px #000000,-3px -3px 10px 0px #610646;
+    
+    --vendor-neuro-1: px 5px 15px 0px #C7C7C7,-5px -5px 20px 0px #FFFFFFCC;
+    --vendor-neuro-2: 5px 5px 20px 0px #D2D2D2,-5px -5px 20px 0px #FFFFFF,5px 5px 20px 0px #D2D2D2 inset,-5px -5px 20px 0px #FFFFFF4D inset;
+    --vendor-neuro-3: 3px 3px 10px 0px #CDCDCD,-3px -3px 10px 0px #FFFFFF;
+    --vendor-neuro-5: 5px 5px 25px 0px #D2D2D2, -8px -8px 20px 0px #FFFFFF;
+    --vendor-neuro-6: 3px 3px 10px 0px #999999, -5px -5px 10px 0px #FFFFFF, 5px 5px 15px 0px #2D0020 inset, -3px -3px 10px 0px #FFFFFF66 inset;
+    --vendor-neuro-7: 5px 5px 20px 0px #CDCDCD, -5px -5px 20px 0px #FFFFFF, -5px -5px 20px 0px #FFFFFF4D inset, 5px 5px 20px 0px #CDCDCD99 inset;
+  
   }
   .dark {
     --background: 240 10% 3.9%;
