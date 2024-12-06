@@ -42,7 +42,7 @@ export default function DesktopSidebar({ role }: { role: Role }) {
       id: "3",
       title: "Meetings",
       Icon: Meeting,
-      link: `/c/project/${selectedProjectDetails?.projectDetails.projectName}/details`,
+      link: `/c/project/${selectedProjectDetails?.projectDetails.projectName}/meetings/details`,
     },
     {
       id: "4",

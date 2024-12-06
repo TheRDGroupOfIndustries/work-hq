@@ -1,10 +1,8 @@
 "use client";
-import ZoomVideo from "@/components/icons/ZoomVideo";
 import MainContainer from "@/components/reusables/wrapper/mainContainer";
-import { useCallback, useState, useEffect } from 'react';
+import { useCallback, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useProjectContext } from '@/context/ProjectProvider';
-import { initializeStreamVideo } from '@/lib/stream-video';
 import Headline from "../components/headline";
 import { Calendar } from "@/components/ui/calendar";
 import { Label } from "@/components/ui/label";
@@ -18,7 +16,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ROLE } from "@/tempData";
-import { StreamVideoClient } from '@stream-io/video-react-sdk';
 import { useRouter } from 'next/navigation';
 
 const generateTimeOptions = () => {
@@ -41,27 +38,12 @@ export default function MeetingsRequest() {
   const [description, setDescription] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
-  const [attendees, setAttendees] = useState<string[]>([]);
   const [isInstant, setIsInstant] = useState(false);
-  const [streamClient, setStreamClient] = useState<StreamVideoClient | null>(null);
 
   const timeOptions = generateTimeOptions();
 
-  useEffect(() => {
-    if (session?.user) {
-      const initStream = async () => {
-        const response = await fetch('/api/meeting/join/token');
-        const { token } = await response.json();
-        const client = await initializeStreamVideo(session.user._id, token);
-        setStreamClient(client);
-      };
-
-      initStream();
-    }
-  }, [session]);
-
   const handleSubmit = useCallback(async () => {
-    if (!session?.user || !selectedProject || !streamClient) return;
+    if (!session?.user || !selectedProject ) return;
 
     try {
       // Create meeting in database
@@ -69,38 +51,30 @@ export default function MeetingsRequest() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'project_id': selectedProject,
         },
         body: JSON.stringify({
           title,
           meetingDescription: description,
           date: date?.toISOString(),
-          startTime,
-          endTime,
-          attendees,
+          projectID: selectedProject._id,
+          startTime: new Date(`${date?.toISOString().split('T')[0]}T${startTime}:00`).toISOString(),
+          endTime: new Date(`${date?.toISOString().split('T')[0]}T${endTime}:00`).toISOString(),
+          createdBy: session.user._id,
           isInstant,
         }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to create meeting');
-      }
-
-      const { meeting } = await response.json();
-
-      // If instant meeting, join immediately
-      if (isInstant) {
-        const call = streamClient.call('default', meeting.streamCallId);
-        await call.join();
-        // Navigate to meeting room or open meeting UI
-      } else {
-        router.push(`/c/project/${selectedProject}/meetings/details`);
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to create meeting');
+      }else {
+        router.push(`/c/project/${selectedProject.name}/meetings/details`);
       }
 
     } catch (error) {
       console.error('Error creating meeting:', error);
     }
-  }, [date, description, endTime, isInstant, selectedProject, session?.user, startTime, title, attendees, streamClient, router]);
+  }, [date, description, endTime, selectedProject, session?.user, startTime, title, router]);
 
   return (
     <MainContainer role={ROLE}>
@@ -116,7 +90,7 @@ export default function MeetingsRequest() {
                 placeholder="Meeting Title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full text-base h-[40px] outline-none shadow-neuro-3 bg-transparent rounded-lg px-4"
+                className="w-full text-base h-[40px] outline-none shadow-[3px_3px_10px_0px_#789BD399,-3px_-3px_10px_0px_#FFFFFF] bg-transparent rounded-lg px-4"
                 required
               />
             </div>
@@ -128,10 +102,21 @@ export default function MeetingsRequest() {
                 onChange={(e) => setDescription(e.target.value)}
                 rows={6}
                 placeholder="Meeting Description"
-                className="w-full resize-none border-0 p-3 focus-visible:ring-0 h-[40px] outline-none shadow-neuro-3 bg-transparent rounded-lg px-4"
+                className="w-full resize-none border-0 p-3 focus-visible:ring-0 h-[40px] outline-none shadow-[3px_3px_10px_0px_#789BD399,-3px_-3px_10px_0px_#FFFFFF] bg-transparent rounded-lg px-4"
               />
             </div>
           </div>
+          <div className="space-y-2">
+        <label className="flex items-center space-x-2">
+          <input
+            type="checkbox"
+            checked={isInstant}
+            onChange={(e) => setIsInstant(e.target.checked)}
+            className="form-checkbox h-5 w-5 text-blue-600"
+          />
+          <span>Is Instant Meeting</span>
+        </label>
+      </div>
           <div className="w-full flex flex-row gap-5">
             <div className="flex flex-col gap-2">
               <Label>Select Date </Label>
@@ -139,7 +124,7 @@ export default function MeetingsRequest() {
                 mode="single"
                 selected={date}
                 onSelect={setDate}
-                className="rounded-md w-fit shadow-neuro-3"
+                className="rounded-md w-fit shadow-[3px_3px_10px_0px_#789BD399,-3px_-3px_10px_0px_#FFFFFF]"
               />
             </div>
             <div className="flex w-full flex-col gap-4">
@@ -179,31 +164,6 @@ export default function MeetingsRequest() {
                 </Select>
               </div>
             </div>
-          </div>
-        </div>
-
-        <div className="w-1/2 h-[400px] flex flex-col gap-4">
-          <h1>Meeting Requests Preview</h1>
-          <div className="w-full h-full flex flex-col">
-            {meetingRequests.map((meeting, index) => (
-              <div
-                key={index}
-                className="flex flex-row items-center justify-between w-full hover:shadow-neuro-3 p-4 px-6 rounded-xl cursor-pointer"
-              >
-                <div className="flex items-center space-x-4">
-                  <ZoomVideo />
-                  <div>
-                    <h3 className="text-lg font-semibold text-blue-600">
-                      {meeting.title}
-                    </h3>
-                    <p className="text-gray-700">{meeting.description}</p>
-                    <p className="text-gray-600">
-                      {meeting.date} | {meeting.from} - {meeting.to}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            ))}
           </div>
         </div>
       </div>
