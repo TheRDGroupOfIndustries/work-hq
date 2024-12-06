@@ -111,7 +111,7 @@ function AddProject2() {
         e.preventDefault();
      
         const date = new Date(formData.projectDetails.deadline as Date);
-        let finalFormData = formData;
+        const finalFormData = formData;
         finalFormData.projectDetails.deadline = date;
         finalFormData.companyDetails.clientID = user._id;
 
