@@ -19,7 +19,8 @@ export default function AllProjects() {
       lightGrayColor: false,
       onNeedIcon: false,
       onClick: () => {
-        router.push('/c/add-project');},
+        router.push("/c/add-project");
+      },
     },
   ];
   return (

@@ -1,36 +1,33 @@
 "use client";
-import HoursCountCard from "@/components/reusables/components/hoursCountCard";
-import ProjectReportCard from "@/components/reusables/components/projectReportCard";
+
 import MainContainer from "@/components/reusables/wrapper/mainContainer";
 import { dashboardProjectReport, dashbordHoursCount, ROLE } from "@/tempData";
-import Deployment from "../components/deployment";
-import Figma from "../components/figma";
-// import Headline from "./components/headline";
+import HoursCountCard from "@/components/reusables/components/hoursCountCard";
+import ProjectReportCard from "@/components/reusables/components/projectReportCard";
+import FilesList from "../components/filesList";
+import ProjectScope from "../components/projectScope";
+import TasksList from "../components/tasksList";
 import Headline from "@/components/reusables/components/headline";
-import MidInformationCard from "../components/midInformationCard";
-import ProjectInfo from "../components/projectInfo";
 
-export default function HomePage() {
+export default function AssetsAndScope() {
   const headLineButtons = [
     {
-      buttonText: "Export Report",
+      buttonText: "Export Scope",
       lightGrayColor: false,
       onNeedIcon: false,
-      onClick: () => console.log("Export Report"),
+      onClick: () => console.log("Export Scope"),
     },
   ];
-
   return (
     <MainContainer role={ROLE}>
       <Headline
         role={ROLE}
-        title="Project Overview"
+        title="Assets & Scope"
         subTitle="Project"
         buttonObjects={headLineButtons}
       />
-
       <div className="w-full flex flex-row gap-4 ">
-        <div className="w-full  flex flex-col xl:flex-row gap-10">
+        <div className="w-full flex flex-col xl:flex-row gap-10">
           <ProjectReportCard
             report={dashboardProjectReport}
             totalTasks={100}
@@ -44,14 +41,9 @@ export default function HomePage() {
           />
         </div>
       </div>
-
-      <MidInformationCard />
-
-      <Figma role={ROLE} />
-
-      <Deployment role={ROLE} />
-
-      <ProjectInfo role={ROLE} />
+      <ProjectScope />
+      <FilesList role={ROLE} />
+      <TasksList role={ROLE} />
     </MainContainer>
   );
 }

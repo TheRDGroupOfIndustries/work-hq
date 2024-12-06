@@ -8,10 +8,11 @@ import {
   useEffect,
   useState,
 } from "react";
-import { CustomUser, ProjectValues } from "@/lib/types";
+import { CustomUser, ProjectValues, TaskValues } from "@/lib/types";
 
 interface ProjectContextType {
   selectedProjectDetails: ProjectValues | null;
+  selectedProjectTasks: TaskValues | null;
   userAllProjects: ProjectValues[];
   selectedProject: { _id: string; name: string };
   setSelectedProject: React.Dispatch<
@@ -29,13 +30,16 @@ const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({
   const { data: session } = useSession();
   const user = session?.user as CustomUser;
 
+  const [userAllProjects, setUserAllProjects] = useState<ProjectValues[]>([]);
   const [selectedProject, setSelectedProject] = useState<{
     _id: string;
     name: string;
   }>({ _id: "", name: "" });
   const [selectedProjectDetails, setProjectDetails] =
     useState<ProjectValues | null>(null);
-  const [userAllProjects, setUserAllProjects] = useState<ProjectValues[]>([]);
+  const [selectedProjectTasks, setProjectTasks] = useState<TaskValues | null>(
+    null
+  );
 
   const fetchUserProjects = useCallback(async () => {
     if (user?.allProjects && user.allProjects.length > 0) {
@@ -67,11 +71,16 @@ const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     const selectedProjectDetails = userAllProjects.find(async (project) => {
       if (project._id === selectedProject._id) {
-        const res = await fetch(
+        const projectRes = await fetch(
           `/api/project/get/getByProjectID/${project._id}`
         );
-        const data = await res.json();
-        setProjectDetails(data.project as ProjectValues);
+        const taskRes = await fetch(
+          `/api/task/get/getByProjectID/${project._id}`
+        );
+        const projectDetailsData = await projectRes.json();
+        const taskData = await taskRes.json();
+        setProjectDetails(projectDetailsData.project as ProjectValues);
+        setProjectTasks(taskData.project as TaskValues);
       }
     });
 
@@ -86,6 +95,7 @@ const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({
     <ProjectContext.Provider
       value={{
         selectedProjectDetails,
+        selectedProjectTasks,
         userAllProjects,
         selectedProject,
         setSelectedProject,

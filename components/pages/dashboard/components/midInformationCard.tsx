@@ -1,28 +1,41 @@
+"use client";
+
+import { useProjectContext } from "@/context/ProjectProvider";
+import { formatDateString } from "@/lib/utils";
 import Deadline from "@/components/icons/Deadline";
 import ProjectCompletion from "@/components/icons/ProjectCompletion";
 import WorkingTeamCount from "@/components/icons/WorkingTeamCount";
 import Container from "@/components/reusables/wrapper/Container";
 
-const midCardData = [
-  {
-    title: "Project Completion",
-    icon: Deadline,
-    data: "58%",
-  },
-  {
-    title: "Working Team Count",
-    icon: Deadline,
-    data: "04",
-  },
-  {
-    title: "Expected deadline",
-    icon: Deadline,
-    data: "20th july, 2024",
-    data1: "Saturday",
-  },
-];
-
 export default function MidInformationCard() {
+  const { selectedProjectDetails } = useProjectContext();
+  const midCardData = [
+    {
+      title: "Project Completion",
+      icon: Deadline,
+      data: "58%",
+    },
+    {
+      title: "Working Team Count",
+      icon: Deadline,
+      data: selectedProjectDetails?.developmentDetails?.teams?.length,
+    },
+    {
+      title: "Expected deadline",
+      icon: Deadline,
+      data: selectedProjectDetails?.projectDetails?.deadline
+        ? formatDateString(
+            selectedProjectDetails?.projectDetails?.deadline.toString()
+          )
+        : "No deadline set",
+      day: selectedProjectDetails?.projectDetails?.deadline
+        ? new Date(
+            selectedProjectDetails?.projectDetails?.deadline
+          ).toLocaleString("en-US", { weekday: "long" })
+        : "",
+    },
+  ];
+
   return (
     <>
       <Container className=" hidden md:block   ">
@@ -68,7 +81,7 @@ export default function MidInformationCard() {
                 <Deadline />
               </div>
               <div className=" font-semibold text-xl flex flex-col">
-                {midCardData[2].data} <span>{midCardData[2].data1}</span>
+                {midCardData[2].data} <span>{midCardData[2].day}</span>
               </div>
             </div>
           </div>
@@ -123,7 +136,7 @@ export default function MidInformationCard() {
               </div>
               <div className=" font-semibold text-lg flex flex-col">
                 {midCardData[2].data}
-                <span>{midCardData[2].data1}</span>
+                <span>{midCardData[2].day}</span>
               </div>
             </div>
           </div>

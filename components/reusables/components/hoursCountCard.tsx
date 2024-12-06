@@ -1,4 +1,6 @@
 "use client";
+
+import { useEffect, useState } from "react";
 import {
   ChartConfig,
   ChartContainer,
@@ -7,9 +9,8 @@ import {
 } from "@/components/ui/chart";
 import { ChevronDown } from "lucide-react";
 import { Area, AreaChart, CartesianGrid, Line, XAxis, YAxis } from "recharts";
-import MidSizeCard from "../wrapper/midSizeCard";
-import { useEffect, useState } from "react";
 import { Role, VENDOR } from "@/types";
+import MidSizeCard from "../wrapper/midSizeCard";
 
 interface Data {
   parameter: string;
@@ -28,10 +29,9 @@ export default function HoursCountCard({
   const [isVendor, setIsVendor] = useState(false);
 
   useEffect(() => {
-    if (role === VENDOR) {
-      setIsVendor(true);
-    }
+    if (role === VENDOR) setIsVendor(true);
   }, [role]);
+
   return (
     <MidSizeCard className="max-h-[305px]  ">
       <div className="w-full h-full flex flex-col gap-2 py-5">
@@ -86,11 +86,7 @@ function Chart({ data, isVendor }: { data: Data[]; isVendor: boolean }) {
               //     : "var(--vendor-pie-chart-color-4)"
               // }`}
 
-              stopColor={`${
-                isVendor
-                  ? "#FFB7EA"
-                  : "#C6D2FD"
-              }`}
+              stopColor={`${isVendor ? "#FFB7EA" : "#C6D2FD"}`}
               stopOpacity={0.8}
             />
             <stop
@@ -101,11 +97,7 @@ function Chart({ data, isVendor }: { data: Data[]; isVendor: boolean }) {
               //     : "var(--vendor-pie-chart-color-1)"
               // }`}
 
-              stopColor={`${
-                isVendor
-                  ? "#7E065C"
-                  : "#4A3AFF"
-              }`}
+              stopColor={`${isVendor ? "#7E065C" : "#4A3AFF"}`}
               stopOpacity={0.8}
             />
           </linearGradient>
@@ -164,7 +156,7 @@ function Title({ totalHours }: { totalHours?: string | number }) {
 
       <div className="flex flex-row gap-2">
         <button className="text-base flex flex-row items-center py-2 px-4 gap-2 shadow-[3px_3px_10px_0px_#789BD399,-3px_-3px_10px_0px_#FFFFFF] text-light-gray rounded-xl">
-          7 days <ChevronDown color='var(--light-gray)' />
+          7 days <ChevronDown color="var(--light-gray)" />
         </button>
       </div>
     </div>

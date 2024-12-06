@@ -12,7 +12,7 @@ export interface ProjectDBTypes {
       description: string;
       date: Date;
       size: number;
-    };
+    }[];
     maintenanceNeeded: boolean;
     description: string;
     scope: string;
@@ -34,8 +34,8 @@ export interface ProjectDBTypes {
   developmentDetails: {
     status: "completed" | "inProgress" | "pending" | "refactoring";
     deployment?: {
-        link: string;
-        channelID: string;
+      link: string;
+      channelID: string;
     };
     figma?: {
       link: string;
@@ -70,10 +70,12 @@ const projectSchema = new Schema<ProjectDBTypes>(
       maintenanceNeeded: { type: Boolean, required: true },
       description: { type: String, required: true },
       scope: { type: String, required: true },
-      budget: [{
-        min: { type: Number, required: true },
-        max: { type: Number, required: true },
-      }],
+      budget: [
+        {
+          min: { type: Number, required: true },
+          max: { type: Number, required: true },
+        },
+      ],
       hasVendor: { type: Boolean, required: true },
       vendorID: { type: Schema.Types.ObjectId, ref: "User", required: false },
     },

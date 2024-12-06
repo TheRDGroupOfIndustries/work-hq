@@ -75,16 +75,17 @@ export interface ProjectValues {
     category: string;
     deadline: Date;
     additionalFiles?: {
-      url: string;
+      _id: string;
       title: string;
+      url: string;
       description: string;
       date: Date;
       size: number;
-    };
+    }[];
     maintenanceNeeded: boolean;
     description: string;
     scope: string;
-    budget: { min: number; max: number };
+    budget: [{ min: number; max: number }];
     hasVendor: boolean;
     vendorID?: string; // Ref to Users schema if hasVendor is true
   };
@@ -94,14 +95,21 @@ export interface ProjectValues {
     logo?: string; // Optional
     about: string;
     workingLocations: string[];
-    contactNo: string[];
+    contactNo: string;
     address: string;
     companyLink?: string;
     size: string; // e.g., "100-200"
   };
   developmentDetails: {
-    deploymentLink?: string;
-    figmaLink?: string;
+    status: "completed" | "inProgress" | "pending" | "refactoring";
+    deployment?: {
+      link: string;
+      channelID: string;
+    };
+    figma?: {
+      link: string;
+      channelID: string;
+    };
     projectHours?: {
       date: Date;
       totalHours: number;
@@ -109,5 +117,17 @@ export interface ProjectValues {
     teams: string[]; // Array of User IDs
     // tasks: Schema.Types.ObjectId[]; // Ref to Tasks schema
   };
-  createdAt: string;
+}
+
+export interface TaskValues {
+  projectID: string;
+  taskNo: number;
+  issueSubject: string;
+  estimatedTime?: number;
+  assignedTo?: string;
+  status: "completed" | "pending" | "inProgress" | "refactoring";
+  createdAt: Date;
+  workingSince?: Date;
+  totalHoursSpend?: number;
+  createdBy: string;
 }

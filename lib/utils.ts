@@ -47,6 +47,22 @@ export const calculateDiscount = (price: number, oldPrice: number): number => {
   return parseFloat(discountPercentage.toFixed(0));
 };
 
+export const formatDateString = (dateString: string) => {
+  const date = new Date(dateString);
+  // const options = { day: "numeric", month: "long", year: "numeric" };
+  const day = date.getDate();
+  const month = date.toLocaleString("default", { month: "long" });
+  const suffix =
+    day % 10 === 1 && day !== 11
+      ? "st"
+      : day % 10 === 2 && day !== 12
+      ? "nd"
+      : day % 10 === 3 && day !== 13
+      ? "rd"
+      : "th";
+  return `${day}${suffix} ${month}, ${date.getFullYear()}`;
+};
+
 export const formatTimestamp = (timestamp: string): string => {
   const date = new Date(timestamp);
 
