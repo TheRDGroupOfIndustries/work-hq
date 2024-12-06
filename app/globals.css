@@ -145,6 +145,14 @@ input[type="search"]::-webkit-search-cancel-button {
   display: none;
 }
 
+.gradient-welcome{
+  background: linear-gradient(180deg, rgba(0,32,146, 0.3) 20%, rgba(0,32,146, 0.45) 46%, rgba(0,32,146, 0.8) 100%);
+  backdrop-filter: blur(2px);
+}
+.blur-effect {
+  filter: blur(80px);
+  -webkit-filter: blur(80px); /* For Safari support */
+}
 .theme {
   transition: 5s all ease;
 }

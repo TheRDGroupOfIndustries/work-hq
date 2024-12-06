@@ -100,6 +100,29 @@ function AddProject2() {
       };
 
     const handleNext = () => {
+        // validateInfo();
+        if(currentStep === 0){
+            if(formData.companyDetails.officialName === '' || formData.companyDetails.about === '' || formData.companyDetails.contactNo === ''  || formData.companyDetails.address === '' || formData.companyDetails.size === '' || formData.companyDetails.workingLocations.length === 0){
+                return toast.error('Please fill all the required fields properly');
+            } 
+            if(formData.companyDetails.contactNo.length !== 10){
+                return toast.error('Please enter a valid contact number');
+            }
+        }
+        if(currentStep === 1){
+            if(formData.projectDetails.projectName === '' || formData.projectDetails.category === '' || formData.projectDetails.deadline === undefined || formData.projectDetails.description === '' || formData.projectDetails.scope === '' || formData.projectDetails.budget[0].min === 0 || formData.projectDetails.budget[0].max === 0){
+                return toast.error('Please fill all the required fields properly');
+            }
+            //for all the budgets check if the min is less than max
+            formData.projectDetails.budget.forEach((budget) => {
+                if(budget.min >= budget.max){
+                    return toast.error('Please enter a valid budget range. Minimum should be less than Maximum');
+                }
+            });
+
+        }
+
+      
         setCurrentStep((prevStep) => Math.min(prevStep + 1, 2)); // Move to the next step
     };
 
@@ -173,14 +196,16 @@ function AddProject2() {
                             Previous
                         </Button>
                     )}
-                    {currentStep < 2 ? (
+                    {currentStep < 2 && (
                         <Button disabled={creating} type="button" onClick={handleNext}>
                             Next
                         </Button>
-                    ) : (
-                        <Button type="submit" disabled={creating}>{
-                            creating ? 'Creating Project...' : 'Create Project' }
-                          </Button>
+                    ) }
+                    {currentStep === 2 && (
+                        <Button disabled={creating} type="submit">
+
+                            {creating ? "Creating..." : "Create Project"}
+                        </Button>
                     )}
                 </div>
             </form>
