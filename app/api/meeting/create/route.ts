@@ -3,7 +3,6 @@ import { getServerSession } from "next-auth";
 import connectToMongoDB from "@/utils/db";
 import Meeting from "@/models/Meeting";
 import { CustomUser } from "@/lib/types";
-import { serverVideoClient, createVideoToken } from "@/utils/serverClient";
 
 export const POST = async (request: NextRequest) => {
   const session = await getServerSession();
@@ -16,25 +15,26 @@ export const POST = async (request: NextRequest) => {
   }
 
   const user = session.user as CustomUser;
-  const project_id = request.headers.get("project_id");
   
-  if (!project_id) {
-    return NextResponse.json({
-      status: 400,
-      success: false,
-      error: "Project ID is required",
-    });
-  }
-
   const {
     title,
     meetingDescription,
     date,
     startTime,
     endTime,
-    attendees,
+    projectID,
     isInstant,
+    createdBy
   } = await request.json();
+
+  // Validate required fields
+  if (!title || !meetingDescription || !date || !startTime || !endTime || !projectID || createdBy === undefined || isInstant === undefined) {
+    return NextResponse.json({
+      status: 400,
+      success: false,
+      error: "Missing required fields",
+    });
+  }
 
   await connectToMongoDB();
 
@@ -45,31 +45,23 @@ export const POST = async (request: NextRequest) => {
       status = "requested";
     } else {
       if (date && new Date(date) > new Date()) {
-        status = "upcoming";
+        status = "requested";
       } else {
         status = "inProgress";
       }
     }
 
-    // Create Stream call
-    const callId = `meeting-${Date.now()}`;
-    const call = serverVideoClient.call("default", callId);
-    const streamToken = createVideoToken(user._id);
-
     // Create meeting document
     const meeting = new Meeting({
       title,
-      createdBy: user._id,
-      projectID: project_id,
+      createdBy,
+      projectID,
       meetingDescription,
-      attendees: ["client", "vendor", "vendorClient"].includes(user.role) ? [] : attendees,
-      date,
-      startTime,
-      endTime,
+      date: new Date(date),
+      startTime: new Date(startTime),
+      endTime: new Date(endTime),
       status,
       isInstant,
-      streamCallId: callId,
-      streamToken,
     });
 
     const savedMeeting = await meeting.save();
@@ -81,15 +73,6 @@ export const POST = async (request: NextRequest) => {
         error: "Failed to create meeting!",
       });
     }
-
-    // Set call data
-    await call.update({
-      custom: {
-        meetingId: savedMeeting._id.toString(),
-        projectId: project_id,
-        createdBy: user._id,
-      },
-    });
 
     return NextResponse.json({
       status: 200,

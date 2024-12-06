@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useProjectContext } from '@/context/ProjectProvider';
-import { initializeStreamVideo } from '@/lib/stream-video';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import SquareButton from "@/components/reusables/wrapper/squareButton";
 import Container from "@/components/reusables/wrapper/Container";
@@ -11,68 +10,44 @@ import MainContainer from "@/components/reusables/wrapper/mainContainer";
 import ZoomVideo from "@/components/icons/ZoomVideo";
 import { ROLE } from '@/tempData';
 import Headline from '../components/headline';
-import { StreamVideoClient } from '@stream-io/video-react-sdk';
-import { useRouter } from 'next/navigation';
-import { CustomUser } from "@/lib/types";
+import { VENDOR } from '@/types';
 
 interface Meeting {
   _id: string;
   title: string;
-  description: string;
+  meetingDescription: string;
   date: string;
   startTime: string;
   endTime: string;
   status: string;
-  streamCallId: string;
 }
 
 export default function MeetingsDetails() {
   const { data: session } = useSession();
   const { selectedProject } = useProjectContext();
   const [meetings, setMeetings] = useState<Meeting[]>([]);
-  const [streamClient, setStreamClient] = useState<StreamVideoClient | null>(null);
-  const router = useRouter();
 
   useEffect(() => {
     if (session?.user && selectedProject) {
-      const user = session.user as CustomUser;
-      
+
       const fetchMeetings = async () => {
-        const response = await fetch(`/api/meeting/get/getByProjectID/${selectedProject}`);
-        const data = await response.json();
-        setMeetings(data.meet || []);
+        try {
+          const response = await fetch(`/api/meeting/get/getByProjectID/${selectedProject._id}`);
+          const data = await response.json();
+          if (data.success && Array.isArray(data.meet)) {
+            setMeetings(data.meet);
+          } else {
+            console.error('Failed to fetch meetings:', data.error || 'Unknown error');
+          }
+        } catch (error) {
+          console.error('Error fetching meetings:', error);
+        }
+
       };
 
       fetchMeetings();
-
-      // Initialize Stream client
-      const initStream = async () => {
-        if (!user._id) {
-          console.error('User ID not found');
-          return;
-        }
-
-        const response = await fetch('/api/meeting/join/token');
-        const { token } = await response.json();
-        const client = await initializeStreamVideo(user._id.toString(), token);
-        setStreamClient(client);
-      };
-
-      initStream();
     }
   }, [session, selectedProject]);
-
-  const handleJoinMeeting = async (meetingId: string) => {
-    if (!streamClient) return;
-
-    try {
-      const call = streamClient.call('default', meetingId);
-      await call.join();
-      router.push(`/c/project/${selectedProject}/meetings/${meetingId}`);
-    } catch (error) {
-      console.error('Error joining meeting:', error);
-    }
-  };
 
   return (
     <MainContainer role={ROLE}>
@@ -80,90 +55,152 @@ export default function MeetingsDetails() {
       <Container className="p-0 sm:p-0 md:p-0 lg:p-0">
         <Tabs defaultValue="allMetting" className="">
           <TabsList className="flex rounded-none h-[65px] shadow-neuro-4 rounded-t-xl flex-row items-center justify-around w-full bg-transparent font-semibold text-black px-0 ">
-            <TabsTrigger className={`${
-                ROLE === VENDOR
-                  ? "data-[state=active]:border-vendor-dark"
-                  : "data-[state=active]:border-primary-blue"
+            <TabsTrigger className={`${ROLE === VENDOR
+              ? "data-[state=active]:border-vendor-dark"
+              : "data-[state=active]:border-primary-blue"
               } `} value="allMetting">All Meetings</TabsTrigger>
-            <TabsTrigger className={`${
-                ROLE === VENDOR
-                  ? "data-[state=active]:border-vendor-dark"
-                  : "data-[state=active]:border-primary-blue"
-              } `} value="pending">Pending</TabsTrigger>
-            <TabsTrigger className={`${
-                ROLE === VENDOR
-                  ? "data-[state=active]:border-vendor-dark"
-                  : "data-[state=active]:border-primary-blue"
+            <TabsTrigger className={`${ROLE === VENDOR
+              ? "data-[state=active]:border-vendor-dark"
+              : "data-[state=active]:border-primary-blue"
+              } `} value="inProgress">In Progress</TabsTrigger>
+            <TabsTrigger className={`${ROLE === VENDOR
+              ? "data-[state=active]:border-vendor-dark"
+              : "data-[state=active]:border-primary-blue"
+              } `} value="upcoming">Upcoming</TabsTrigger>
+            <TabsTrigger className={`${ROLE === VENDOR
+              ? "data-[state=active]:border-vendor-dark"
+              : "data-[state=active]:border-primary-blue"
               } `} value="requested">Requested</TabsTrigger>
-            <TabsTrigger className={`${
-                ROLE === VENDOR
-                  ? "data-[state=active]:border-vendor-dark"
-                  : "data-[state=active]:border-primary-blue"
-              } `} value="attened">Attended</TabsTrigger>
-            <TabsTrigger className={`${
-                ROLE === VENDOR
-                  ? "data-[state=active]:border-vendor-dark"
-                  : "data-[state=active]:border-primary-blue"
+            <TabsTrigger className={`${ROLE === VENDOR
+              ? "data-[state=active]:border-vendor-dark"
+              : "data-[state=active]:border-primary-blue"
+              } `} value="completed">Completed</TabsTrigger>
+            <TabsTrigger className={`${ROLE === VENDOR
+              ? "data-[state=active]:border-vendor-dark"
+              : "data-[state=active]:border-primary-blue"
               } `} value="overdue">Overdue</TabsTrigger>
           </TabsList>
           <TabsContent value="allMetting">
             <div className="w-full h-full flex flex-col">
               {meetings.map((meeting) => (
-                <Card 
-                  key={meeting._id} 
+                <Card
+                  key={meeting._id}
                   details={meeting}
-                  onJoin={() => handleJoinMeeting(meeting.streamCallId)}
                 />
               ))}
             </div>
           </TabsContent>
-          {/* Add similar TabsContent for other tabs */}
+          <TabsContent value="inProgress">
+            <div className="w-full h-full flex flex-col">
+              {meetings
+                .filter((meeting) => meeting.status === 'inProgress')
+                .map((meeting) => (
+                  <Card
+                    key={meeting._id}
+                    details={meeting}
+                  />
+                ))}
+            </div>
+          </TabsContent>
+          <TabsContent value="upcoming">
+            <div className="w-full h-full flex flex-col">
+              {meetings
+              .filter((meeting) => meeting.status === 'upcoming')
+              .map((meeting) => (
+                <Card
+                  key={meeting._id}
+                  details={meeting}
+                />
+              ))}
+            </div>
+          </TabsContent>
+          <TabsContent value="requested">
+            <div className="w-full h-full flex flex-col">
+              {meetings
+              .filter((meeting) => meeting.status === 'requested')
+              .map((meeting) => (
+                <Card
+                  key={meeting._id}
+                  details={meeting}
+                />
+              ))}
+            </div>
+          </TabsContent>
+          <TabsContent value="completed">
+            <div className="w-full h-full flex flex-col">
+              {meetings
+              .filter((meeting) => meeting.status === 'completed')
+              .map((meeting) => (
+                <Card
+                  key={meeting._id}
+                  details={meeting}
+                />
+              ))}
+            </div>
+          </TabsContent>
+          <TabsContent value="overdue">
+            <div className="w-full h-full flex flex-col">
+              {meetings
+              .filter((meeting) => meeting.status === 'overdue')
+              .map((meeting) => (
+                <Card
+                  key={meeting._id}
+                  details={meeting}
+                />
+              ))}
+            </div>
+          </TabsContent>
         </Tabs>
       </Container>
     </MainContainer>
   );
 }
 
+function formatTime(isoString: string): string {
+  const time = new Date(isoString);
+  return time.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+}
+
+function formatDate(isoString: string): string {
+  const date = new Date(isoString);
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
 function Card({
   details,
-  onJoin,
 }: {
   details: Meeting;
-  onJoin: () => void;
 }) {
   return (
     <div className="flex flex-row items-center justify-between w-full hover:shadow-neuro-3 p-3 sm:p-4 md:p-5 lg:p-6">
       <div className="flex flex-row items-center gap-4">
         <ZoomVideo />
         <div className="flex flex-col">
-          <h3 className={`text-lg font-semibold ${
-            details.status === "Pending" || details.status === "Requested"
-              ? "text-[#155EEF]"
-              : "text-gray-800"
-          }`}>
+          <h3 className={`text-lg font-semibold ${details.status === "In Progress" || details.status === "Requested"
+            ? "text-[#155EEF]"
+            : "text-gray-800"
+            }`}>
             {details.title}
           </h3>
           <p className="text-base font-normal text-gray-700">
-            {details.description}
+            {details.meetingDescription}
           </p>
           <p className="text-base font-normal text-gray-700">
-            {`${details.startTime} - ${details.endTime}`}
+          {`${formatDate(details.startTime)} ${formatTime(details.startTime)} - ${formatTime(details.endTime)}`}
           </p>
         </div>
       </div>
 
       <div className="flex flex-col items-center justify-center gap-2">
-        <p className={`text-base ${
-          details.status === "Overdue" ? "text-[#FF3B30]" :
-          details.status === "Attended" ? "text-[#34C759]" :
-          "text-[#155EEF]"
-        } font-normal`}>
+        <p className={`text-base ${details.status === "Overdue" ? "text-[#FF3B30]" :
+          details.status === "Completed" ? "text-[#34C759]" :
+            "text-[#155EEF]"
+          } font-normal`}>
           {details.status}
         </p>
-        {(details.status === "Pending" || details.status === "Requested") && (
-          <SquareButton 
+        {(details.status === "In Pregress" || details.status === "Requested") && (
+          <SquareButton
             className="text-[#6A6A6A] px-0 py-0"
-            onClick={onJoin}
           >
             Join
           </SquareButton>

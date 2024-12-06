@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import connectToMongoDB from "@/utils/db";
-import Meet from "@/models/Meeting";
+import Meeting from "@/models/Meeting";
 
 export const GET = async (
   request: NextRequest,
@@ -9,13 +9,13 @@ export const GET = async (
   await connectToMongoDB();
 
   try {
-    const meet = await Meet.find({ projectID: params.project_id });
+    const meetings = await Meeting.find({ projectID: params.project_id });
 
     return NextResponse.json({
       status: 200,
       success: true,
       message: "Meet fetched successfully!",
-      meet,
+      meet: meetings,
     });
   } catch (error) {
     console.log(error);

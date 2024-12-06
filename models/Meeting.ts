@@ -6,18 +6,18 @@ export interface MeetingDBTypes {
   createdBy: Schema.Types.ObjectId;
   projectID?: Schema.Types.ObjectId;
   meetingDescription?: string;
-  attendees: Schema.Types.ObjectId[];
+  attendees?: Schema.Types.ObjectId[];
   date: Date;
   startTime?: Date;
   endTime?: Date;
-  status: "upcoming" | "requested" | "overdue" | "completed" | "inProgress";
+  status: "requested" | "upcoming" | "overdue" | "completed" | "inProgress";
   isInstant: boolean;
   streamCallId?: string;
   streamSessionId?: string;
   streamToken?: string;
   recordingEnabled?: boolean;
   recordingUrl?: string;
-  meetingType: "video" | "audio";
+  meetingType?: "video" | "audio";
   joinedParticipants?: Schema.Types.ObjectId[];
 }
 
