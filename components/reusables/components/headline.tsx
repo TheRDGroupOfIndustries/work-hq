@@ -5,8 +5,6 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Role, VENDOR } from "@/types";
 import { Plus } from "lucide-react";
 
-
-
 type ButtonType = "lightGray" | "withCustomColor" | undefined;
 
 export interface ButtonObjectType {
@@ -41,7 +39,15 @@ export default function Headline({
         {buttonObjects &&
           buttonObjects.map(
             (
-              { buttonText, color, type, icon, dialogContent, onClick, onNeedIcon },
+              {
+                buttonText,
+                color,
+                type,
+                icon,
+                dialogContent,
+                onClick,
+                onNeedIcon,
+              },
               index
             ) => {
               if (dialogContent) {
@@ -61,7 +67,7 @@ export default function Headline({
                         <DialogContent>{dialogContent}</DialogContent>
                       </Dialog>
                     );
-                  case "withCustomColor": 
+                  case "withCustomColor":
                     return (
                       <Dialog key={index}>
                         <DialogTrigger asChild>
@@ -76,22 +82,22 @@ export default function Headline({
                         </DialogTrigger>
                         <DialogContent>{dialogContent}</DialogContent>
                       </Dialog>
-                    )
-                  default: 
+                    );
+                  default:
                     return (
                       <Dialog key={index}>
-                      <DialogTrigger asChild>
-                        <DefaultButton
-                          onClick={onClick}
-                          icon={icon}
-                          buttonText={buttonText}
-                          onNeedIcon={onNeedIcon}
-                          role={role}
-                        />
-                      </DialogTrigger>
-                      <DialogContent>{dialogContent}</DialogContent>
-                    </Dialog>
-                    )
+                        <DialogTrigger asChild>
+                          <DefaultButton
+                            onClick={onClick}
+                            icon={icon}
+                            buttonText={buttonText}
+                            onNeedIcon={onNeedIcon}
+                            role={role}
+                          />
+                        </DialogTrigger>
+                        <DialogContent>{dialogContent}</DialogContent>
+                      </Dialog>
+                    );
                 }
                 //   <Dialog key={index}>
                 //     <DialogTrigger asChild>
@@ -126,35 +132,35 @@ export default function Headline({
               switch (type) {
                 case "lightGray":
                   return (
-                        <LightGrayButton
-                          onClick={onClick}
-                          icon={icon}
-                          buttonText={buttonText}
-                          onNeedIcon={onNeedIcon}
-                          role={role}
-                        />
+                    <LightGrayButton
+                      onClick={onClick}
+                      icon={icon}
+                      buttonText={buttonText}
+                      onNeedIcon={onNeedIcon}
+                      role={role}
+                    />
                   );
-                case "withCustomColor": 
+                case "withCustomColor":
                   return (
-                        <WithCustomColor
-                          onClick={onClick}
-                          icon={icon}
-                          color={color || "#3277FF"}
-                          buttonText={buttonText}
-                          onNeedIcon={onNeedIcon}
-                          role={role}
-                        />
-                  )
-                default: 
+                    <WithCustomColor
+                      onClick={onClick}
+                      icon={icon}
+                      color={color || "#3277FF"}
+                      buttonText={buttonText}
+                      onNeedIcon={onNeedIcon}
+                      role={role}
+                    />
+                  );
+                default:
                   return (
-                      <DefaultButton
-                        onClick={onClick}
-                        icon={icon}
-                        buttonText={buttonText}
-                        onNeedIcon={onNeedIcon}
-                        role={role}
-                      />
-                  )
+                    <DefaultButton
+                      onClick={onClick}
+                      icon={icon}
+                      buttonText={buttonText}
+                      onNeedIcon={onNeedIcon}
+                      role={role}
+                    />
+                  );
               }
             }
           )}
@@ -189,7 +195,8 @@ function DefaultButton({
     </SquareButton>
   );
 }
-function LightGrayButton({
+
+export function LightGrayButton({
   onClick,
   icon,
   buttonText,
@@ -235,9 +242,6 @@ function WithCustomColor({
     </SquareButton>
   );
 }
-
-
-
 
 // "use client";
 // import SquareButton from "@/components/reusables/wrapper/squareButton";

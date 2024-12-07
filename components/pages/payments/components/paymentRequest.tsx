@@ -1,4 +1,7 @@
-import SquareButton from "@/components/reusables/wrapper/squareButton";
+import React from "react";
+import { formatDateString } from "@/lib/utils";
+import { PaymentValues } from "@/lib/types";
+import { ROLE } from "@/tempData";
 import {
   Table,
   TableBody,
@@ -7,85 +10,35 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { LightGrayButton } from "@/components/reusables/components/headline";
+import AddPayment from "./addPayment";
 import { Plus } from "lucide-react";
-import React from "react";
 
-const dataFilesTasks = [
-  {
-    id: 1,
-    paymentSubject: "Phase 3 CSK Payment ",
-    amount: "30000",
-    requestedDate: "Apl 4, 2022",
-    action: "",
-  },
-  {
-    id: 2,
-    paymentSubject: "Phase 2 CSK Payment",
-    amount: "45200",
-    requestedDate: "Feb 4, 2022",
-    action: "",
-  },
-  {
-    id: 3,
-    paymentSubject: "Phase 1 CSK Payment",
-    amount: "45200",
-    requestedDate: "Jan 4, 2022",
-    action: "",
-  },
-  {
-    id: 1,
-    paymentSubject: "Phase 3 CSK Payment ",
-    amount: "30000",
-    requestedDate: "Apl 4, 2022",
-    action: "",
-  },
-  {
-    id: 2,
-    paymentSubject: "Phase 2 CSK Payment",
-    amount: "45200",
-    requestedDate: "Feb 4, 2022",
-    action: "",
-  },
-  {
-    id: 3,
-    paymentSubject: "Phase 1 CSK Payment",
-    amount: "45200",
-    requestedDate: "Jan 4, 2022",
-    action: "",
-  },
-  {
-    id: 1,
-    paymentSubject: "Phase 3 CSK Payment ",
-    amount: "30000",
-    requestedDate: "Apl 4, 2022",
-    action: "",
-  },
-  {
-    id: 2,
-    paymentSubject: "Phase 2 CSK Payment",
-    amount: "45200",
-    requestedDate: "Feb 4, 2022",
-    action: "",
-  },
-  {
-    id: 3,
-    paymentSubject: "Phase 1 CSK Payment",
-    amount: "45200",
-    requestedDate: "Jan 4, 2022",
-    action: "",
-  },
-];
-
-export default function PaymentRequest() {
+export default function PaymentRequest({
+  payments,
+  loading,
+  error,
+}: {
+  payments: PaymentValues[];
+  loading: boolean;
+  error: string;
+}) {
   return (
     <div className="p-4 flex flex-col gap-4">
-      <h1 className="text-base font-semibold">Total Client Payments - 03</h1>
-      <DataTableTasks />
+      {/* <h1 className="text-base font-semibold">Total Client Payments - 03</h1> */}
+      {loading ? (
+        <p className="p-2">Loading...</p>
+      ) : error ? (
+        <p className="p-2">{error}</p>
+      ) : (
+        <DataTableTasks payments={payments} />
+      )}
     </div>
   );
 }
 
-function DataTableTasks() {
+function DataTableTasks({ payments }: { payments: PaymentValues[] }) {
   return (
     <div className="w-full">
       <Table>
@@ -99,34 +52,30 @@ function DataTableTasks() {
           </TableRow>
         </TableHeader>
         <TableBody className="text-[#3A3A3A] max-h-[400px] text-base border-0 mb-5 px-10 overflow-hidden  ">
-          {dataFilesTasks.map((row, index) => (
+          {payments.map((row, index) => (
             <TableRow
-              key={row.id}
-              className={`h-[60px]  text-[#1E1B39] hover:bg-transparent rounded-lg mb-5 border-l-[20px] border-transparent border-b-0 `}
+              key={row._id}
+              className={`h-[60px] text-[#1E1B39] hover:bg-transparent rounded-lg mb-5 border-l-[20px] border-transparent border-b-0 `}
             >
               <TableCell className=" ">{`${index + 1}.`}</TableCell>
-              <TableCell>{row.paymentSubject}</TableCell>
+              <TableCell>{row.paymentTitle}</TableCell>
               <TableCell>{row.amount}</TableCell>
-              <TableCell>{row.requestedDate}</TableCell>
+              <TableCell>{formatDateString(row.requestedDate + "")}</TableCell>
               <TableCell>
-                {" "}
-                <SquareButton
-                //   role={role}
-                  onClick={() => {
-                    console.log("Export Report");
-                  }}
-                >
-                  <Plus
-                    // color={
-                    //   role === VENDOR
-                    //     ? "var(--vendor-dark)"
-                    //     : "var(--primary-blue)"
-                    // }
-
-                    color="var(--primary-blue)"
-                  />
-                  Add Payment
-                </SquareButton>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <LightGrayButton
+                      onClick={() => console.log("add payment")}
+                      icon={<Plus color="var(--primary-blue)" />}
+                      buttonText="Add Payment"
+                      onNeedIcon={false}
+                      role={ROLE}
+                    />
+                  </DialogTrigger>
+                  <DialogContent>
+                    <AddPayment />
+                  </DialogContent>
+                </Dialog>
               </TableCell>
             </TableRow>
           ))}
@@ -135,3 +84,69 @@ function DataTableTasks() {
     </div>
   );
 }
+
+// const dataFilesTasks = [
+//   {
+//     id: 1,
+//     paymentSubject: "Phase 3 CSK Payment ",
+//     amount: "30000",
+//     requestedDate: "Apl 4, 2022",
+//     action: "",
+//   },
+//   {
+//     id: 2,
+//     paymentSubject: "Phase 2 CSK Payment",
+//     amount: "45200",
+//     requestedDate: "Feb 4, 2022",
+//     action: "",
+//   },
+//   {
+//     id: 3,
+//     paymentSubject: "Phase 1 CSK Payment",
+//     amount: "45200",
+//     requestedDate: "Jan 4, 2022",
+//     action: "",
+//   },
+//   {
+//     id: 1,
+//     paymentSubject: "Phase 3 CSK Payment ",
+//     amount: "30000",
+//     requestedDate: "Apl 4, 2022",
+//     action: "",
+//   },
+//   {
+//     id: 2,
+//     paymentSubject: "Phase 2 CSK Payment",
+//     amount: "45200",
+//     requestedDate: "Feb 4, 2022",
+//     action: "",
+//   },
+//   {
+//     id: 3,
+//     paymentSubject: "Phase 1 CSK Payment",
+//     amount: "45200",
+//     requestedDate: "Jan 4, 2022",
+//     action: "",
+//   },
+//   {
+//     id: 1,
+//     paymentSubject: "Phase 3 CSK Payment ",
+//     amount: "30000",
+//     requestedDate: "Apl 4, 2022",
+//     action: "",
+//   },
+//   {
+//     id: 2,
+//     paymentSubject: "Phase 2 CSK Payment",
+//     amount: "45200",
+//     requestedDate: "Feb 4, 2022",
+//     action: "",
+//   },
+//   {
+//     id: 3,
+//     paymentSubject: "Phase 1 CSK Payment",
+//     amount: "45200",
+//     requestedDate: "Jan 4, 2022",
+//     action: "",
+//   },
+// ];

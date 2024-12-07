@@ -1,47 +1,17 @@
 "use client";
 
-import { useSession } from "next-auth/react";
-import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { CustomUser, PaymentValues } from "@/lib/types";
+import { PaymentValues } from "@/lib/types";
 
-export default function MyPayments() {
-  const { data: session } = useSession();
-  const user = session?.user as CustomUser;
-  const [payments, setPayments] = useState<PaymentValues[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string>("");
-
-  useEffect(() => {
-    async function fetchPayments() {
-      if (!user?._id) return;
-      setLoading(true);
-      setError("");
-      try {
-        const response = await fetch(
-          `/api/payment/get/getByUserID/${user?._id}`
-        );
-        const data = await response.json();
-        console.log(data);
-
-        if (data.status === 404) {
-          setError(data?.error || "No payments have been made.");
-          setPayments([]);
-          return;
-        }
-        setPayments(data?.payments || []);
-      } catch (error) {
-        console.error("Error fetching payments:", error);
-        setError("An error occurred while fetching payments.");
-        setPayments([]);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchPayments();
-  }, [user?._id]);
-
+export default function MyPayments({
+  payments,
+  loading,
+  error,
+}: {
+  payments: PaymentValues[];
+  loading: boolean;
+  error: string;
+}) {
   return (
     <div className="w-full grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
       {loading ? (

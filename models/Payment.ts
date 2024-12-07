@@ -1,39 +1,54 @@
 import { Schema, model, models } from "mongoose";
 
-// Define the TypeScript interface
 export interface PaymentDBTypes {
-  paymentTitle: string; // Title of the payment
-  status: "requested" | "fulfilled" | "cancelled" | "rejected" | "approved" | "upcoming"; // Enum of possible statuses
-  type: "salary" | "payment"; // Type of payment
+  paymentTitle: string;
+  status:
+    | "requested"
+    | "fulfilled"
+    | "cancelled"
+    | "rejected"
+    | "approved"
+    | "upcoming";
+  type: "salary" | "payment";
   from: {
-    role: "client" | "vendor" | "manager"; // Role of the sender
-    userID: Schema.Types.ObjectId; // Reference to the sender's user ID
+    role: "client" | "vendor" | "manager";
+    userID: Schema.Types.ObjectId;
   };
-  amount: number; // Amount of the payment
-  transactionID?: string; // Optional transaction ID
-  paymentProof?: string; // Optional proof of payment
+  amount: number;
+  transactionID?: string;
+  paymentProof?: string;
   to: {
-    role: "company" | "developer"; // Role of the recipient
-    userID?: Schema.Types.ObjectId; // User ID of recipient (required if type is "salary")
+    role: "company" | "developer";
+    userID?: Schema.Types.ObjectId;
   };
-  paymentDate?: Date; // Payment date (only applicable if status is "fulfilled")
-  requestedDate?: Date; // Date when payment was requested
-  bonus?: number; // Applicable only for "salary" type
-  requestDescription?: string; // Description, only applicable for "requested" status
+  paymentDate?: Date;
+  requestedDate?: Date;
+  bonus?: number;
+  requestDescription?: string;
 }
 
-// Define the schema
 const paymentSchema = new Schema<PaymentDBTypes>(
   {
     paymentTitle: { type: String, required: true },
     status: {
       type: String,
       required: true,
-      enum: ["requested", "fulfilled", "cancelled", "rejected", "approved", "upcoming"],
+      enum: [
+        "requested",
+        "fulfilled",
+        "cancelled",
+        "rejected",
+        "approved",
+        "upcoming",
+      ],
     },
     type: { type: String, required: true, enum: ["salary", "payment"] },
     from: {
-      role: { type: String, required: true, enum: ["client", "vendor", "manager"] },
+      role: {
+        type: String,
+        required: true,
+        enum: ["client", "vendor", "manager"],
+      },
       userID: { type: Schema.Types.ObjectId, ref: "User", required: true },
     },
     amount: { type: Number, required: true },

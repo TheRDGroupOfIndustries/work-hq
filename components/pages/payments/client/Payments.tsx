@@ -1,15 +1,59 @@
 "use client";
-import MainContainer from "@/components/reusables/wrapper/mainContainer";
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ROLE } from "@/tempData";
 import { VENDOR } from "@/types";
+import MainContainer from "@/components/reusables/wrapper/mainContainer";
 import PaymentInfo from "./../components/paymentInfo";
 import MyPayments from "./../components/myPayments";
 import PaymentRequest from "./../components/paymentRequest";
 import AddPayment from "./../components/addPayment";
 import Headline from "@/components/reusables/components/headline";
+import { useSession } from "next-auth/react";
+import { CustomUser, PaymentValues } from "@/lib/types";
+import { useEffect, useState } from "react";
 
 export default function Payments() {
+  const { data: session } = useSession();
+  const user = session?.user as CustomUser;
+
+  const [payments, setPayments] = useState<PaymentValues[]>([]);
+  const onlyRequestedPayments: PaymentValues[] = payments.filter(
+    (payment) => payment.status === "requested"
+  );
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>("");
+
+  useEffect(() => {
+    async function fetchPayments() {
+      if (!user?._id) return;
+      setLoading(true);
+      setError("");
+      try {
+        const response = await fetch(
+          `/api/payment/get/getByUserID/${user?._id}`
+        );
+        const data = await response.json();
+        console.log(data);
+
+        if (data.status === 404) {
+          setError(data?.error || "No payments have been made.");
+          setPayments([]);
+          return;
+        }
+        setPayments(data?.payments || []);
+      } catch (error) {
+        console.error("Error fetching payments:", error);
+        setError("An error occurred while fetching payments.");
+        setPayments([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchPayments();
+  }, [user?._id]);
+
   const headLineButtons = [
     {
       buttonText: "Add Payment",
@@ -18,6 +62,7 @@ export default function Payments() {
       dialogContent: <AddPayment />,
     },
   ];
+
   return (
     <MainContainer role={ROLE}>
       <Headline
@@ -73,12 +118,30 @@ export default function Payments() {
           <PaymentInfo />
         </TabsContent>
         <TabsContent value="myPayments">
-          <MyPayments />
+          <MyPayments
+            payments={payments || []}
+            loading={loading}
+            error={error}
+          />
         </TabsContent>
         <TabsContent value="paymentRequest">
-          <PaymentRequest />
+          <PaymentRequest
+            payments={onlyRequestedPayments || []}
+            loading={loading}
+            error={
+              !onlyRequestedPayments?.length
+                ? "No Payment Requests are made"
+                : error
+            }
+          />
         </TabsContent>
-        <TabsContent value="clientPayments">Same as My Payments</TabsContent>
+        <TabsContent value="clientPayments">
+          <MyPayments
+            payments={payments || []}
+            loading={loading}
+            error={error}
+          />
+        </TabsContent>
       </Tabs>
     </MainContainer>
   );
