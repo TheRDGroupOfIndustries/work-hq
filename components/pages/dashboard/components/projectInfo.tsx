@@ -18,7 +18,7 @@ export default function ProjectInfo({ role }: { role: Role }) {
         className={`" w-full  rounded-[30px]  p-6 ${
           role === VENDOR
             ? "shadow-[10px_10px_20px_0px_#1c2c4766,-5px_-5px_15px_0px_#d8d8d8]"
-            : "shadow-[10px_10px_20px_0px_#3B5F9766,-5px_-5px_15px_0px_#ffffff]"
+            : "shadow-neuro-3"
         } "`}
       >
         <h2 className="text-lg font-semibold">ADDITONAL PROJECT INFO</h2>
@@ -116,6 +116,21 @@ export default function ProjectInfo({ role }: { role: Role }) {
               </div>
             </div>
             <div className=" md:pl-6 font-normal md:w-1/2 h-full  flex flex-col gap-1 ">
+              <div className="w-full flex flex-col">
+                <h2 className="text-lg text-[#344054]">Project Logo</h2>
+                <Image
+                  src={
+                    selectedProjectDetails?.projectDetails?.logo ||
+                    selectedProjectDetails?.companyDetails?.logo ||
+                    "/assets/user.png"
+                  }
+                  alt="company logo"
+                  width={400}
+                  height={400}
+                  className="w-20 h-20 rounded-xl shadow-[10px_10px_20px_0px_#1c2c4766,-5px_-5px_15px_0px_#d8d8d8] mb-2 overflow-hidden"
+                ></Image>
+              </div>
+
               <div className="w-full flex flex-col">
                 <h2 className="text-lg text-[#344054]">Project Name</h2>
                 <p className="text-base text-[#6A6A6A]">

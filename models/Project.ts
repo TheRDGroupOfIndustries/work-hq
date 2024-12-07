@@ -4,6 +4,7 @@ export interface ProjectDBTypes {
   projectID: string;
   projectDetails: {
     projectName: string;
+    logo?: string;
     category: string;
     deadline: Date;
     additionalFiles?: {
@@ -18,10 +19,10 @@ export interface ProjectDBTypes {
     scope: string;
     budget: [{ min: number; max: number }];
     hasVendor: boolean;
-    vendorID?: Schema.Types.ObjectId; // Ref to Users schema if hasVendor is true
+    vendorID?: string; // Ref to Users schema if hasVendor is true
   };
   companyDetails: {
-    clientID: Schema.Types.ObjectId; // Ref to Users schema
+    clientID: string; // Ref to Users schema
     officialName: string;
     logo?: string; // Optional
     about: string;
@@ -45,9 +46,9 @@ export interface ProjectDBTypes {
       date: Date;
       totalHours: number;
     }[]; // Derived from developers' hours
-    teams: Schema.Types.ObjectId[]; // Array of User IDs
-    // tasks: Schema.Types.ObjectId[]; // Ref to Tasks schema
+    teams: string[]; 
   };
+  createdAt: Date;
 }
 
 // Define the Mongoose schema
@@ -55,6 +56,7 @@ const projectSchema = new Schema<ProjectDBTypes>(
   {
     projectID: { type: String, required: true },
     projectDetails: {
+      logo: { type: String, required: false },
       projectName: { type: String, required: true },
       category: { type: String, required: true },
       deadline: { type: Date, required: true },
@@ -91,8 +93,15 @@ const projectSchema = new Schema<ProjectDBTypes>(
       size: { type: String, required: true },
     },
     developmentDetails: {
-      deploymentLink: { type: String, required: false },
-      figmaLink: { type: String, required: false },
+      status: { type: String, required: true, enum: ["completed", "inProgress", "pending", "refactoring"], default: "pending" },
+      deployment: { 
+        link: { type: String, required: false },
+        channelID: { type: String, required: false },
+      },
+      figmaLink: { 
+        link: { type: String, required: false },
+        channelID: { type: String, required: false },
+      },
       projectHours: [
         {
           date: { type: Date, required: true },

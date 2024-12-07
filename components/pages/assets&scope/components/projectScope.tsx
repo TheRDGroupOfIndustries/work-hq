@@ -20,7 +20,7 @@ export default function ProjectScope() {
         raise a ticket through Helpdesk or contact Project Manager.
       </p>
       <div
-        title="Download scope csv file"
+        title="Download scope file"
         className="w-full flex flex-row items-center justify-end"
       >
         <SquareButton

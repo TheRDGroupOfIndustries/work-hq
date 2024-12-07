@@ -1,83 +1,200 @@
 "use client";
-import SquareButton from "@/components/reusables/wrapper/squareButton";
+
+import { useState } from "react";
+import Image from "next/image";
+import { uploadNewFile } from "@/utils/actions/fileUpload.action";
 import { DialogClose } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import SquareButton from "@/components/reusables/wrapper/squareButton";
 import { Plus } from "lucide-react";
+import { useSession } from "next-auth/react";
+import { CustomUser } from "@/lib/types";
 
 export default function AddPayment() {
-  return (
-    // <div
-    //   onClick={() => setAddPaymentOpen(false)}
-    //   className=" z-10 absolute flex items-center justify-center  right-0 bottom-0 left-0 h-[calc(100vh-70px)]  w-full bg-black/30"
-    // >
-      <div
-        onClick={(e) => e.stopPropagation()}
-        className="z-10 w-[733px] m-4  bg-primary-sky-blue flex flex-col gap-6 rounded-3xl   p-5 lg:p-6 "
-      >
-        <h1 className="text-2xl font-semibold text-dark-gray">Add Payment</h1>
+  const { data: session } = useSession();
+  const user = session?.user as CustomUser;
+  const [paymentData, setPaymentData] = useState({
+    paymentTitle: "",
+    status: "fulfilled",
+    type: "payment",
+    from: {
+      userID: user?._id,
+      role: user?.role,
+    },
+    to: {
+      userID: user?._id,
+      role: "company",
+    },
+    amount: 0,
+    transactionID: "",
+    paymentProof: "",
+    paymentDate: new Date(),
+    requestedDate: new Date(),
+    bonus: 0,
+    requestDescription: "",
+  });
+  const [proofPreview, setProofPreview] = useState<string>("");
+  const [uploadingPreview, setUploadingPreview] = useState<boolean>(false);
 
-        <div className="flex flex-col gap-3">
-          <div className="w-full flex flex-col gap-3">
-            <Label className="text-base font-medium text-gray-800">
-              Transaction ID
-            </Label>
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setPaymentData((prevData) => ({ ...prevData, [name]: value }));
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingPreview(true);
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const uploadResponse = await uploadNewFile(formData);
+      if (uploadResponse?.url) {
+        setProofPreview(uploadResponse.url);
+        setPaymentData((prevData) => ({
+          ...prevData,
+          paymentProof: uploadResponse.url,
+        }));
+      } else {
+        alert("File upload failed. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      alert("Failed to upload file. Please try again later.");
+    } finally {
+      setUploadingPreview(false);
+    }
+  };
+
+  const handleMakePayment = async () => {
+    try {
+      const response = await fetch("/api/payment/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(paymentData),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+
+      if (data.status === 400) {
+        alert(data.error);
+        return;
+      }
+
+      alert(`Payment created successfully: ${data.message}`);
+    } catch (error) {
+      console.error("Error creating payment:", error);
+      alert("Failed to create payment. Please try again.");
+    }
+  };
+
+  return (
+    <div
+      onClick={(e) => e.stopPropagation()}
+      className="z-10 w-[733px] m-4 bg-primary-sky-blue flex flex-col gap-6 rounded-3xl p-5 lg:p-6"
+    >
+      <h1 className="text-2xl font-semibold text-dark-gray">Add Payment</h1>
+
+      <div className="flex flex-col gap-3">
+        <div className="w-full flex flex-col gap-3">
+          <Label className="text-base font-medium text-gray-800">
+            Transaction ID
+          </Label>
+          <input
+            type="text"
+            name="transactionID"
+            value={paymentData.transactionID}
+            onChange={handleInputChange}
+            placeholder="E.g. 0192892939"
+            className="w-full text-base h-[40px] outline-none shadow-[3px_3px_3px_0px_#789BD399,-3px_-3px_5px_0px_#FFFFFF] bg-transparent rounded-lg px-4"
+            required
+          />
+        </div>
+
+        <div className="w-full flex flex-col gap-3">
+          <Label className="text-base font-medium text-gray-800">
+            Payment Subject
+          </Label>
+          <input
+            type="text"
+            name="paymentTitle"
+            value={paymentData.paymentTitle}
+            onChange={handleInputChange}
+            placeholder="What is this payment for?"
+            className="w-full text-base h-[40px] outline-none shadow-[3px_3px_3px_0px_#789BD399,-3px_-3px_5px_0px_#FFFFFF] bg-transparent rounded-lg px-4"
+            required
+          />
+        </div>
+
+        <div className="w-full flex flex-col gap-3">
+          <Label className="text-base font-medium text-gray-800">
+            Upload Payment Proof (PDF, image, etc.)
+          </Label>
+          <div className="relative w-full h-[150px] shadow-[3px_3px_3px_0px_#789BD399,-3px_-3px_5px_0px_#FFFFFF] bg-transparent rounded-lg px-4">
             <input
-              type="text"
-              placeholder="E.g. 0192892939"
-              className="w-full text-base h-[40px] outline-none shadow-[3px_3px_3px_0px_#789BD399,-3px_-3px_5px_0px_#FFFFFF] bg-transparent rounded-lg px-4"
-              required
+              type="file"
+              accept="image/*"
+              className="absolute z-50 inset-0 w-full h-full opacity-0 cursor-pointer"
+              onChange={handleFileUpload}
             />
-          </div>
-          <div className="w-full flex flex-col gap-3">
-            <Label className="text-base font-medium text-gray-800">
-              Payment Subject
-            </Label>
-            <input
-              type="text"
-              placeholder="What is this payment for?"
-              className="w-full text-base h-[40px] outline-none shadow-[3px_3px_3px_0px_#789BD399,-3px_-3px_5px_0px_#FFFFFF] bg-transparent rounded-lg px-4"
-              required
-            />
-          </div>
-          <div className="w-full flex flex-col gap-3">
-            <Label className="text-base font-medium text-gray-800">
-              Upload Payment Proof (pdf, image etc)
-            </Label>
-            <div className=" relative w-full text-base outline-none shadow-[3px_3px_3px_0px_#789BD399,-3px_-3px_5px_0px_#FFFFFF] bg-transparent rounded-lg px-4 h-[150px]">
-              <input
-                type="file"
-                name=""
-                id=""
-                className="absolute top-0 left-0 bottom-0 right-0 w-full h-full cursor-pointer opacity-0"
-              />
-            </div>
-          </div>
-          <div className="w-full flex flex-col gap-3">
-            <Label className="text-base font-medium text-gray-800">
-              Payment Amount
-            </Label>
-            <input
-              type="text"
-              placeholder="Payment amount"
-              className="w-full text-base h-[40px] outline-none shadow-[3px_3px_3px_0px_#789BD399,-3px_-3px_5px_0px_#FFFFFF] bg-transparent rounded-lg px-4"
-              required
-            />
+            {proofPreview ? (
+              <div className="h-[150px] mt-3 shadow-neuro-3 bg-transparent rounded flex-center">
+                <Image
+                  src={proofPreview}
+                  alt="logo"
+                  className="w-full h-full object-contain"
+                  width={100}
+                  height={100}
+                />
+              </div>
+            ) : (
+              <span className="absolute inset-0 flex items-center justify-center text-gray-500">
+                {uploadingPreview ? "Uploading..." : "Click to upload proof"}
+              </span>
+            )}
           </div>
         </div>
-        <div className="flex flex-row gap-2 justify-end">
-        <DialogClose asChild>
-          <SquareButton
-            className="text-[#6A6A6A] w-fit self-end"
-          >
-            Cancel
-          </SquareButton>
-          </DialogClose>
-          <button className="flex flex-row items-center py-3 px-5 gap-2 shadow-[3px_3px_10px_0px_#789BD399,5px_5px_15px_0px_#00000099_inset,-3px_-3px_10px_0px_#FFFFFF] rounded-xl text-[#ffffff]  text-nowrap bg-primary-blue">
-            <Plus color="#ffffff" />
-            Add Payment
-          </button>
+
+        <div className="w-full flex flex-col gap-3">
+          <Label className="text-base font-medium text-gray-800">
+            Payment Amount
+          </Label>
+          <input
+            type="number"
+            name="amount"
+            value={paymentData.amount}
+            onChange={handleInputChange}
+            placeholder="Payment amount"
+            className="w-full text-base h-[40px] outline-none shadow-[3px_3px_3px_0px_#789BD399,-3px_-3px_5px_0px_#FFFFFF] bg-transparent rounded-lg px-4"
+            required
+          />
         </div>
       </div>
-    // </div>
+
+      <div className="flex flex-row gap-2 justify-end">
+        <DialogClose asChild>
+          <SquareButton className="text-[#6A6A6A] w-fit self-end">
+            Cancel
+          </SquareButton>
+        </DialogClose>
+        <button
+          onClick={handleMakePayment}
+          className="flex items-center py-3 px-5 gap-2 shadow-[3px_3px_10px_0px_#789BD399,5px_5px_15px_0px_#00000099_inset,-3px_-3px_10px_0px_#FFFFFF] rounded-xl text-white bg-primary-blue"
+        >
+          <Plus color="#ffffff" />
+          Add Payment
+        </button>
+      </div>
+    </div>
   );
 }

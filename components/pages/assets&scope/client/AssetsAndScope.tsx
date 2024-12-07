@@ -8,10 +8,13 @@ import FilesList from "../components/filesList";
 import ProjectScope from "../components/projectScope";
 import TasksList from "../components/tasksList";
 import Headline from "@/components/reusables/components/headline";
-// import { useProjectContext } from "@/context/ProjectProvider";
+import { useProjectContext } from "@/context/ProjectProvider";
+import { useRouter } from "next/navigation";
 
 export default function AssetsAndScope() {
-  // const { selectedProjectDetails } = useProjectContext();
+  const router = useRouter();
+  const { selectedProject } = useProjectContext();
+
   // console.log(selectedProjectDetails);
 
   // const chartData =
@@ -23,11 +26,12 @@ export default function AssetsAndScope() {
   const headLineButtons = [
     {
       buttonText: "Export Scope",
-      lightGrayColor: false,
       onNeedIcon: false,
       onClick: () => console.log("Export Scope"),
     },
   ];
+  if (!selectedProject._id) router.push("/c/all-projects");
+
   return (
     <MainContainer role={ROLE}>
       <Headline

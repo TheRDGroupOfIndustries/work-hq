@@ -12,7 +12,7 @@ export default function MainContainer({
 }) {
   return (
     <div
-      className={`w-full   flex-1 p-3 sm:p-4  flex flex-col gap-1 overflow-auto ${
+      className={`w-full   flex-1 p-3 sm:p-4 sm:px-6  flex flex-col  overflow-auto ${
         role === VENDOR ? "bg-primary-vendor" : "bg-primary-sky-blue"
       } ${className} `}
     >

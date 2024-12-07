@@ -3,9 +3,10 @@ import { getServerSession } from "next-auth";
 import connectToMongoDB from "@/utils/db";
 import Project from "@/models/Project";
 import { CustomUser } from "@/lib/types";
+import { authOptions } from "@/lib/authOptions";
 
 export const GET = async () => {
-  const session = await getServerSession();
+  const session = await getServerSession(authOptions);
   if (!session) {
     return NextResponse.json({
       status: 401,
@@ -15,7 +16,7 @@ export const GET = async () => {
   }
 
   const user = session.user as CustomUser;
-
+  console.log("server side user while userID projects: \n", user);
   await connectToMongoDB();
 
   try {

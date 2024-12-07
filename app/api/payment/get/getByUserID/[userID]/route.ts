@@ -2,7 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import connectToMongoDB from "@/utils/db";
 import Payment from "@/models/Payment";
 
-export const GET = async (request: NextRequest, { params }: { params: { userID: string } }) => {
+export const GET = async (
+  request: NextRequest,
+  { params }: { params: { userID: string } }
+) => {
   const { userID } = params;
 
   if (!userID) {
@@ -17,11 +20,16 @@ export const GET = async (request: NextRequest, { params }: { params: { userID: 
 
   try {
     const payments = await Payment.find({
-      $or: [
-        { "to.userID": userID },
-        { "from.userID": userID },
-      ],
+      $or: [{ "to.userID": userID }, { "from.userID": userID }],
     });
+
+    if (payments.length === 0) {
+      return NextResponse.json({
+        status: 404,
+        success: false,
+        error: "No payments have been made.",
+      });
+    }
 
     return NextResponse.json({
       status: 200,

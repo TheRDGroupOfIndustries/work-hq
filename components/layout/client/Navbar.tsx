@@ -37,48 +37,8 @@ import {
   UserRound,
 } from "lucide-react";
 
-const list = [
-  {
-    id: "1",
-    title: "Dashboard",
-    Icon: ChartNoAxesColumn,
-    link: "/c/dashboard",
-  },
-  {
-    id: "2",
-    title: "Assets & Scope",
-    Icon: AssetsAndScope,
-    link: "/c/assets&scope",
-  },
-  {
-    id: "3",
-    title: "Meetings",
-    Icon: Meeting,
-    link: "/c/meetings/details",
-  },
-  {
-    id: "4",
-    title: "Chats",
-    Icon: Chats,
-    link: "/c/chats",
-  },
-  {
-    id: "5",
-    title: "Payments",
-    Icon: AssetsAndScope,
-    link: "/c/payments",
-  },
-  {
-    id: "6",
-    title: "Helpdesk",
-    Icon: Helpdesk,
-    link: "/c/helpdesk",
-  },
-];
-
 const Navbar = ({ role }: { role: Role }) => {
   const pathname = usePathname();
-
   return (
     <nav
       className={`sticky  left-0 top-0 w-full h-[70px]     flex flex-row items-center justify-between z-50 ${
@@ -168,11 +128,15 @@ const Navbar = ({ role }: { role: Role }) => {
 export default Navbar;
 
 const SelectProject = ({ role }: { role: Role }) => {
-  const router = useRouter();
-  const pathname = usePathname();
-  const { userAllProjects, selectedProject, setSelectedProject } =
-    useProjectContext();
+  const {
+    // selectedProjectDetails,
+    userAllProjects,
+    selectedProject,
+    setSelectedProject,
+  } = useProjectContext();
 
+  // console.log(selectedProjectDetails);
+  const router = useRouter();
   const handleSelect = (projectName: string) => {
     const selected = userAllProjects.find(
       (project) => project.projectDetails.projectName === projectName
@@ -184,9 +148,6 @@ const SelectProject = ({ role }: { role: Role }) => {
       });
     }
   };
-
-  if (!selectedProject._id && !pathname.includes("/c/add-project"))
-    router.push("/c/all-projects");
 
   return (
     <Select>
@@ -231,6 +192,47 @@ export function ProfileDropDownMenu() {
   const pathname = usePathname();
   const { data: session } = useSession();
   const user = session?.user as CustomUser;
+
+  const { selectedProjectDetails } = useProjectContext();
+
+  const list = [
+    {
+      id: "1",
+      title: "Dashboard",
+      Icon: ChartNoAxesColumn,
+      link: `/c/project/${selectedProjectDetails?.projectDetails.projectName}/dashboard`,
+    },
+    {
+      id: "2",
+      title: "Assets & Scope",
+      Icon: AssetsAndScope,
+      link: `/c/project/${selectedProjectDetails?.projectDetails.projectName}/assets&scope`,
+    },
+    {
+      id: "3",
+      title: "Meetings",
+      Icon: Meeting,
+      link: `/c/project/${selectedProjectDetails?.projectDetails.projectName}/details`,
+    },
+    {
+      id: "4",
+      title: "Chats",
+      Icon: Chats,
+      link: `/c/project/${selectedProjectDetails?.projectDetails.projectName}/chats`,
+    },
+    {
+      id: "5",
+      title: "Payments",
+      Icon: AssetsAndScope,
+      link: `/c/project/${selectedProjectDetails?.projectDetails.projectName}/payments`,
+    },
+    {
+      id: "6",
+      title: "Helpdesk",
+      Icon: Helpdesk,
+      link: `/c/project/${selectedProjectDetails?.projectDetails.projectName}/helpdesk`,
+    },
+  ];
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="border-0 text-desktop select-none">

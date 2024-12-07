@@ -20,6 +20,7 @@ export const GET = async () => {
       status: 200,
       success: true,
       paymentInfo,
+      message: "Company payment info.",
     });
   } catch (error) {
     console.log(error);

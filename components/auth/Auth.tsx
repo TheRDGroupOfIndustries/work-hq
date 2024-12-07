@@ -52,6 +52,9 @@ const Auth: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const signUpLink = authFormPages.find(page => page.type === "signUp" && page.role === currentPage?.role)?.href || "/auth/c-sign-up"; // Default link if not found
   const signInLink = authFormPages.find(page => page.type === "signIn" && page.role === currentPage?.role)?.href || "/auth/c-sign-in"; // Default link if not found
 
+  // if(!currentPage){
+  //    router.replace("/auth/c-sign-in");
+  // }
   return (
     <div className="w-full select-none flex flex-row items-center bg-primary-sky-blue relative min-h-screen my-0">
      

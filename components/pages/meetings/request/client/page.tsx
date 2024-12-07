@@ -1,10 +1,8 @@
 "use client";
-import ZoomVideo from "@/components/icons/ZoomVideo";
 import MainContainer from "@/components/reusables/wrapper/mainContainer";
-import { useCallback, useState, useEffect } from 'react';
+import { useCallback, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useProjectContext } from '@/context/ProjectProvider';
-import { initializeStreamVideo } from '@/lib/stream-video';
 import Headline from "../components/headline";
 import { Calendar } from "@/components/ui/calendar";
 import { Label } from "@/components/ui/label";
@@ -18,7 +16,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ROLE } from "@/tempData";
-import { StreamVideoClient } from '@stream-io/video-react-sdk';
 import { useRouter } from 'next/navigation';
 
 const generateTimeOptions = () => {
@@ -41,27 +38,12 @@ export default function MeetingsRequest() {
   const [description, setDescription] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
-  const [attendees, setAttendees] = useState<string[]>([]);
   const [isInstant, setIsInstant] = useState(false);
-  const [streamClient, setStreamClient] = useState<StreamVideoClient | null>(null);
 
   const timeOptions = generateTimeOptions();
 
-  useEffect(() => {
-    if (session?.user) {
-      const initStream = async () => {
-        const response = await fetch('/api/meeting/join/token');
-        const { token } = await response.json();
-        const client = await initializeStreamVideo(session.user._id, token);
-        setStreamClient(client);
-      };
-
-      initStream();
-    }
-  }, [session]);
-
   const handleSubmit = useCallback(async () => {
-    if (!session?.user || !selectedProject || !streamClient) return;
+    if (!session?.user || !selectedProject ) return;
 
     try {
       // Create meeting in database
@@ -69,38 +51,30 @@ export default function MeetingsRequest() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'project_id': selectedProject,
         },
         body: JSON.stringify({
           title,
           meetingDescription: description,
           date: date?.toISOString(),
-          startTime,
-          endTime,
-          attendees,
+          projectID: selectedProject._id,
+          startTime: new Date(`${date?.toISOString().split('T')[0]}T${startTime}:00`).toISOString(),
+          endTime: new Date(`${date?.toISOString().split('T')[0]}T${endTime}:00`).toISOString(),
+          createdBy: session.user._id,
           isInstant,
         }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to create meeting');
-      }
-
-      const { meeting } = await response.json();
-
-      // If instant meeting, join immediately
-      if (isInstant) {
-        const call = streamClient.call('default', meeting.streamCallId);
-        await call.join();
-        // Navigate to meeting room or open meeting UI
-      } else {
-        router.push(`/c/project/${selectedProject}/meetings/details`);
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to create meeting');
+      }else {
+        router.push(`/c/project/${selectedProject.name}/meetings/details`);
       }
 
     } catch (error) {
       console.error('Error creating meeting:', error);
     }
-  }, [date, description, endTime, isInstant, selectedProject, session?.user, startTime, title, attendees, streamClient, router]);
+  }, [date, description, endTime, selectedProject, session?.user, startTime, title, router]);
 
   return (
     <MainContainer role={ROLE}>
@@ -132,6 +106,17 @@ export default function MeetingsRequest() {
               />
             </div>
           </div>
+          <div className="space-y-2">
+        <label className="flex items-center space-x-2">
+          <input
+            type="checkbox"
+            checked={isInstant}
+            onChange={(e) => setIsInstant(e.target.checked)}
+            className="form-checkbox h-5 w-5 text-blue-600"
+          />
+          <span>Is Instant Meeting</span>
+        </label>
+      </div>
           <div className="w-full flex flex-row gap-5">
             <div className="flex flex-col gap-2">
               <Label>Select Date </Label>
@@ -181,8 +166,6 @@ export default function MeetingsRequest() {
             </div>
           </div>
         </div>
-
-        {/* Meeting Requests Preview section remains unchanged */}
       </div>
     </MainContainer>
   );

@@ -11,7 +11,7 @@ function Milestone1({formData, handleChange, setFormData}: {formData: AddProject
     <div className='w-full grid grid-cols-2 gap-4'>
          <NeuroInputField 
         type = 'text'
-        label='Your Company Name'
+        label='Your Company Name*'
         name='companyDetails.officialName'
         value={formData.companyDetails.officialName}
         onChange={handleChange}
@@ -27,22 +27,23 @@ function Milestone1({formData, handleChange, setFormData}: {formData: AddProject
         placeholder='www.company.com'
         required
     />
-    <UploadImage title='Upload Your Company Logo' setFormData={setFormData}
+    <UploadImage title='Upload Your Company Logo*' setFormData={setFormData}
+    isCompanyDetail
     valueName='logo'
     value = {formData.companyDetails.logo ? formData.companyDetails.logo : ''}
      />
-    <NeuroTextarea label='Tell Us About Your Company' name='companyDetails.about' value={formData.companyDetails.about} onChange={handleChange} placeholder='e.g. My company is a big company'/>
+    <NeuroTextarea label='Tell Us About Your Company*' name='companyDetails.about' value={formData.companyDetails.about} onChange={handleChange} placeholder='e.g. My company is a big company'/>
     <NeuroMultiSelect 
         name='companyDetails.workingLocations'
         options={['Tokyo', 'New York', 'London', 'Paris', 'Berlin']}
         selectedOptions={formData.companyDetails.workingLocations}
         onChange={(selected) => setFormData((prev) => ({...prev, companyDetails: {...prev.companyDetails, workingLocations: selected}}))}
         placeholder='Select Working Locations'
-        label='Working Locations'
+        label='Working Locations* (Atleast one)'
     />
         <NeuroInputField 
         type = 'text'
-        label='Company Contact No.'
+        label='Company Contact No.*'
         name='companyDetails.contactNo'
         value={formData.companyDetails.contactNo || ''}
         onChange={(e)=>{
@@ -55,10 +56,10 @@ function Milestone1({formData, handleChange, setFormData}: {formData: AddProject
         placeholder='e.g. 1234567890, 0987654321'
         required
     />
-    <NeuroTextarea label='Company Address Detail' name='companyDetails.address' value={formData.companyDetails.address} onChange={handleChange} placeholder='e.g. Near Plot No. 2, Tokyo, Japan'/>
+    <NeuroTextarea label='Company Address Detail*' name='companyDetails.address' value={formData.companyDetails.address} onChange={handleChange} placeholder='e.g. Near Plot No. 2, Tokyo, Japan'/>
     <NeuroInputField 
         type = 'text'
-        label='Company Size'
+        label='Company Size*'
         name='companyDetails.size'
         value={formData.companyDetails.size || ''}
         onChange={handleChange}

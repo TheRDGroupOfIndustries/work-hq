@@ -1,7 +1,7 @@
 'use client'
 
 import { createContext, useContext, useState, useEffect } from "react";
-import { StreamChat, Channel, ConnectAPIResponse, DefaultGenerics, ConnectionOpen } from 'stream-chat';
+import { StreamChat, Channel} from 'stream-chat';
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 

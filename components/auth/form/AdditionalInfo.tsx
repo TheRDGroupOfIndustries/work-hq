@@ -125,7 +125,7 @@ const AdditionalInfo: React.FC = () => {
         setSuccess(true);
         console.log("Additional info submitted:", data.message);
         if(signUpRole === "client") {
-          router.push("/c/add-project");
+          router.push("/welcome");
         } else if(signUpRole === "developer") {
           router.push("/wakaTime/auth");
         } else {
@@ -151,10 +151,17 @@ const AdditionalInfo: React.FC = () => {
   };
 
   useEffect(() => {
-    if (user?.loginStep === 1) {
-      router.push("/c/add-project");
+    if (user?.loginStep === 1 && signUpRole === "client" ) {
+      if (user?.allProjects?.length === 0)
+      router.push("/c/welcome");
+      else 
+      router.push("/c/all-projects");
+    } else if (user?.loginStep === 1 && signUpRole === "developer") {
+      router.push("/wakaTime/auth");
+    } else if (user?.loginStep === 1) {
+      router.push("/c/all-projects");
     }
-  }, [user?.loginStep, router]);
+  }, [user?.loginStep, router, user?.allProjects?.length, signUpRole]);
 
   return (
     <>

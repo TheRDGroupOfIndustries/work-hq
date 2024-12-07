@@ -9,9 +9,10 @@ import Helpdesk from "@/components/icons/Helpdesk";
 import Meeting from "@/components/icons/Meeting";
 import AssetsAndScope from "@/components/icons/Assets&Scope";
 import { ChartNoAxesColumn } from "lucide-react";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { CustomUser } from "@/lib/types";
 import Image from "next/image";
+import Logout from "@/components/icons/logout";
 // import { Link, useLocation } from "react-router-dom";
 
 export default function DesktopSidebar({ role }: { role: Role }) {
@@ -70,8 +71,8 @@ export default function DesktopSidebar({ role }: { role: Role }) {
     >
       {/* top */}
 
-      <div className="flex text-sm  flex-row gap-4 w-full px-3 py-2">
-        <div className="flex-center h-[60px] w-[60px] shadow-[3px_3px_12px_0px_#D3E1F6] overflow-hidden">
+      <div className="flex text-sm  flex-row gap-4 w-full px-3 py-2 shadow-[3px_3px_12px_0px_#D3E1F6] rounded-xl overflow-hidden">
+        <div className="flex-center h-[60px] w-[60px] shadow-neuro-3 rounded-xl overflow-hidden">
           <Image
             src={
               selectedProjectDetails?.companyDetails?.logo || "/assets/user.png"
@@ -79,7 +80,7 @@ export default function DesktopSidebar({ role }: { role: Role }) {
             alt="profile image"
             width={200}
             height={200}
-            className="w-10 h-10 rounded-full"
+            className="w-full h-full overflow-hidden"
           />
         </div>
         {/* <div className=" h-[60px] w-[60px] bg-[#377be7]"></div> */}
@@ -96,45 +97,44 @@ export default function DesktopSidebar({ role }: { role: Role }) {
       {/* List */}
 
       <div className={`flex flex-col gap-2 mt-5 text-lg font-semibold`}>
-        {list.map(({ id, title, Icon, link }) => (
-          <Link
-            href={`${link}`}
-            key={id}
-            className={` text-desktop  relative cursor-pointer   px-4 py-3 rounded-xl  ${
-              pathname === link
-                ? `${
-                    role === VENDOR
-                      ? "text-white shadow-[3px_3px_10px_0px_#000000,-3px_-3px_10px_0px_#610646]"
-                      : "text-[#155EEF] shadow-[3px_3px_10px_0px_#789BD399,-3px_-3px_10px_0px_#FFFFFF]"
-                  }`
-                : ""
-            } 
+        {list.map(({ id, title, Icon, link }) => {
+          const isActive = decodeURIComponent(pathname) === link;
 
-            ${
-              role === VENDOR
-                ? "hover:shadow-[3px_3px_10px_0px_#000000,-3px_-3px_10px_0px_#610646]"
-                : "hover:shadow-[3px_3px_10px_0px_#789BD399,-3px_-3px_10px_0px_#FFFFFF]"
-            }
-            
-            flex flex-row items-center gap-2 `}
-          >
-            {pathname === link && (
-              <div
-                className={`absolute left-2 top-2 h-[70%] w-[4px] rounded-full ${
-                  role === VENDOR ? "bg-white" : "bg-[#155EEF]"
-                }`}
-              ></div>
-            )}
-            <Icon
-              color={
-                pathname === link
-                  ? `${role === VENDOR ? "white" : "#155EEF"}`
-                  : `${role === VENDOR ? "#A5A5A5" : "#475467"}`
+          return (
+            <Link
+              href={link}
+              key={id}
+              className={`text-desktop relative cursor-pointer px-4 py-3 rounded-xl ${
+                role === VENDOR
+                  ? "hover:shadow-[3px_3px_10px_0px_#000000,-3px_-3px_10px_0px_#610646]"
+                  : "hover:shadow-[3px_3px_10px_0px_#789BD399,-3px_-3px_10px_0px_#FFFFFF]"
               }
-            />
-            {title}
-          </Link>
-        ))}
+              ${
+                isActive
+                  ? role === VENDOR
+                    ? "text-white shadow-[3px_3px_10px_0px_#000000,-3px_-3px_10px_0px_#610646]"
+                    : "text-[#155EEF] shadow-[3px_3px_10px_0px_#789BD399,-3px_-3px_10px_0px_#FFFFFF]"
+                  : ""
+              } flex flex-row items-center gap-2`}
+            >
+              {isActive && (
+                <div
+                  className={`absolute left-2 top-2 h-[70%] w-[4px] rounded-full ${
+                    role === VENDOR ? "bg-white" : "bg-[#155EEF]"
+                  }`}
+                ></div>
+              )}
+              <Icon
+                color={
+                  isActive
+                    ? `${role === VENDOR ? "white" : "#155EEF"}`
+                    : `${role === VENDOR ? "#A5A5A5" : "#475467"}`
+                }
+              />
+              {title}
+            </Link>
+          );
+        })}
       </div>
 
       {/* bottom */}
@@ -166,7 +166,9 @@ export default function DesktopSidebar({ role }: { role: Role }) {
           </div>
         </div>
 
-        <div className="h-[10px] w-[10px] rounded-full  border"></div>
+        <div className="h-[10px] w-[10px] flex items-center justify-center">
+          <Logout onClick={() => signOut()} />
+        </div>
       </Link>
     </div>
   );

@@ -1,3 +1,6 @@
+// import { ProjectDBTypes } from "@/models/Project";
+import { PaymentDBTypes } from "@/models/Payment";
+import { PaymentInfoDBTypes } from "@/models/PaymentInfo";
 import { User as NextAuthUser } from "next-auth";
 
 export interface CustomUser extends NextAuthUser {
@@ -72,12 +75,13 @@ export interface ProjectValues {
   projectID: string;
   projectDetails: {
     projectName: string;
+    logo?: string;
     category: string;
     deadline: Date;
     additionalFiles?: {
       _id: string;
-      title: string;
       url: string;
+      title: string;
       description: string;
       date: Date;
       size: number;
@@ -114,10 +118,13 @@ export interface ProjectValues {
       date: Date;
       totalHours: number;
     }[]; // Derived from developers' hours
-    teams: string[]; // Array of User IDs
-    // tasks: Schema.Types.ObjectId[]; // Ref to Tasks schema
+    teams: string[];
   };
+  createdAt: Date;
 }
+// export interface ProjectValues  extends ProjectDBTypes {
+//   _id: string;
+// }
 
 export interface TaskValues {
   projectID: string;
@@ -130,4 +137,12 @@ export interface TaskValues {
   workingSince?: Date;
   totalHoursSpend?: number;
   createdBy: string;
+}
+
+export interface PaymentInfoValues extends PaymentInfoDBTypes {
+  _id?: string;
+}
+
+export interface PaymentValues extends PaymentDBTypes {
+  _id?: string;
 }
