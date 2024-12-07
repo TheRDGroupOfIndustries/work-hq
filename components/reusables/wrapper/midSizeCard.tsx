@@ -7,7 +7,7 @@ export default function MidSizeCard({
 }) {
   return (
     <div
-      className={`xl:w-[50%] h-[400px]  rounded-xl shadow-neuro-1 flex flex-row items-center justify-center ${className}`}
+      className={`xl:w-[50%]   rounded-xl shadow-neuro-1 flex flex-row items-center justify-center ${className}`}
     >
       {children}
     </div>

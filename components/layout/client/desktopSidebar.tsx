@@ -25,18 +25,21 @@ export default function DesktopSidebar({ role }: { role: Role }) {
     
   } = useProjectContext();
 
+
   const list = [
     {
       id: "1",
       title: "Dashboard",
       Icon: ChartNoAxesColumn,
       link: `/c/project/${selectedProjectDetails?.projectDetails.projectName}/dashboard`,
+      path: 'dashboard'
     },
     {
       id: "2",
       title: "Assets & Scope",
       Icon: AssetsAndScope,
       link: `/c/project/${selectedProjectDetails?.projectDetails.projectName}/assets&scope`,
+      path: 'assets&scope'
     },
     {
       id: "3",
@@ -49,23 +52,26 @@ export default function DesktopSidebar({ role }: { role: Role }) {
       title: "Chats",
       Icon: Chats,
       link: `/c/project/${selectedProjectDetails?.projectDetails.projectName}/chats`,
+      path: 'chats'
     },
     {
       id: "5",
       title: "Payments",
       Icon: AssetsAndScope,
       link: `/c/project/${selectedProjectDetails?.projectDetails.projectName}/payments`,
+      path: 'payments'
     },
     {
       id: "6",
       title: "Helpdesk",
       Icon: Helpdesk,
       link: `/c/project/${selectedProjectDetails?.projectDetails.projectName}/helpdesk`,
+      path: 'helpdesk'
     },
   ];
   return (
     <div
-      className={`sticky    left-0 top-[70px] hidden  lg:w-[250px] h-[calc(100vh-70px)]  p-4 overflow-auto md:flex flex-col 
+      className={`sticky    left-0 top-[70px] hidden  lg:w-[250px] h-[calc(100vh-70px)]  p-4 overflow-y-auto overflow-x-hidden md:flex flex-col 
       ${
         role === VENDOR
           ? "bg-vendor-dark shadow-[3px_3px_12px_0px_#00000099] text-[#A5A5A5]"
@@ -98,12 +104,12 @@ export default function DesktopSidebar({ role }: { role: Role }) {
       {/* List */}
 
       <div className={`flex flex-col gap-2 mt-5 text-lg font-semibold`}>
-        {list.map(({ id, title, Icon, link }) => (
+        {list.map(({ id, title, Icon, link, path }) => (
           <Link
             href={`${link}`}
             key={id}
             className={` text-desktop  relative cursor-pointer   px-4 py-3 rounded-xl  ${
-              pathname === link
+              pathname.includes(path)
                 ? `${
                     role === VENDOR
                       ? "text-white shadow-[3px_3px_10px_0px_#000000,-3px_-3px_10px_0px_#610646]"
@@ -116,7 +122,7 @@ export default function DesktopSidebar({ role }: { role: Role }) {
             
             flex flex-row items-center gap-2 `}
           >
-            {pathname === link && (
+            {pathname.includes(path) && (
               <div
                 className={`absolute left-2 top-2 h-[70%] w-[4px] rounded-full ${
                   role === VENDOR ? "bg-white" : "bg-[#155EEF]"
@@ -125,7 +131,7 @@ export default function DesktopSidebar({ role }: { role: Role }) {
             )}
             <Icon
               color={
-                pathname === link
+                pathname.includes(path)
                   ? `${role === VENDOR ? "white" : "#155EEF"}`
                   : `${role === VENDOR ? "#A5A5A5" : "#475467"}`
               }
@@ -160,8 +166,8 @@ export default function DesktopSidebar({ role }: { role: Role }) {
           </div>
         </div>
 
-        <div className="h-[10px] w-[10px] flex items-center justify-center">
-          <Logout onClick={() => signOut()} />
+        <div className="h-[40px] w-[40px] flex items-center justify-center">
+          <Logout color="#475467" onClick={() => signOut()} />
         </div>
       </Link>
     </div>

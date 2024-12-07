@@ -42,8 +42,8 @@ export default function Dashboard() {
         buttonObjects={headLineButtons}
       />
 
-      <div className="w-full flex flex-row gap-4 ">
-        <div className="w-full flex flex-col xl:flex-row gap-10 overflow-hidden">
+      {/* <div className="w-full flex flex-row gap-4 "> */}
+        <div className="w-full flex flex-col xl:flex-row gap-4 ">
           <ProjectReportCard
             report={dashboardProjectReport}
             totalTasks={100}
@@ -67,7 +67,7 @@ export default function Dashboard() {
             role={ROLE}
           />
         </div>
-      </div>
+      {/* </div> */}
 
       <MidInformationCard />
 

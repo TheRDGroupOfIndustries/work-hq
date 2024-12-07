@@ -132,6 +132,8 @@ const Navbar = ({ role }: { role: Role }) => {
 export default Navbar;
 
 const SelectProject = ({ role }: { role: Role }) => {
+  const router = useRouter();
+
   const {
     // selectedProjectDetails,
     userAllProjects,
@@ -205,47 +207,55 @@ export function ProfileDropDownMenu() {
     
   } = useProjectContext();
 
+  // console.log("user", user);
+
   const list = [
     {
       id: "1",
       title: "Dashboard",
       Icon: ChartNoAxesColumn,
       link: `/c/project/${selectedProjectDetails?.projectDetails.projectName}/dashboard`,
+      path: 'dashboard'
     },
     {
       id: "2",
       title: "Assets & Scope",
       Icon: AssetsAndScope,
       link: `/c/project/${selectedProjectDetails?.projectDetails.projectName}/assets&scope`,
+      path: 'assets&scope'
     },
     {
       id: "3",
       title: "Meetings",
       Icon: Meeting,
       link: `/c/project/${selectedProjectDetails?.projectDetails.projectName}/details`,
+      path: 'details'
     },
     {
       id: "4",
       title: "Chats",
       Icon: Chats,
       link: `/c/project/${selectedProjectDetails?.projectDetails.projectName}/chats`,
+      path: 'chats'
     },
     {
       id: "5",
       title: "Payments",
       Icon: AssetsAndScope,
       link: `/c/project/${selectedProjectDetails?.projectDetails.projectName}/payments`,
+      path: 'payments'
     },
     {
       id: "6",
       title: "Helpdesk",
       Icon: Helpdesk,
       link: `/c/project/${selectedProjectDetails?.projectDetails.projectName}/helpdesk`,
+      path: 'helpdesk'
     },
   ];
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="border-0 text-desktop select-none">
+      <DropdownMenuTrigger className="border-0 outline-none text-desktop select-none">
         <span className="relative">
           <div className="flex-center w-10 h-10 rounded-full bg-[#4872b5] overflow-hidden">
             <Image
@@ -260,7 +270,7 @@ export function ProfileDropDownMenu() {
         </span>
       </DropdownMenuTrigger>
       <DropdownMenuContent className=" ">
-        <DropdownMenuItem>
+        <DropdownMenuItem className="outline-none border-0">
           <Link
             href={"/c/profile"}
             className={` w-full text-desktop  hover:shadow-[3px_3px_10px_0px_#789BD399,-3px_-3px_10px_0px_#FFFFFF]  relative cursor-pointer  px-4 py-3 rounded-xl  ${
@@ -279,22 +289,22 @@ export function ProfileDropDownMenu() {
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        {list.map(({ id, title, Icon, link }) => (
+        {list.map(({ id, title, Icon, link, path }) => (
           <DropdownMenuItem key={id}>
             <Link
               href={`${link}`}
               key={id}
-              className={` w-full text-desktop relative cursor-pointer hover:shadow-[3px_3px_10px_0px_#789BD399,-3px_-3px_10px_0px_#FFFFFF]   px-4 py-3 rounded-xl  ${
-                pathname === link
+              className={` outline-none border-0 w-full text-desktop relative cursor-pointer hover:shadow-[3px_3px_10px_0px_#789BD399,-3px_-3px_10px_0px_#FFFFFF]   px-4 py-3 rounded-xl  ${
+                pathname.includes(path)
                   ? "text-primary-blue shadow-[3px_3px_10px_0px_#789BD399,-3px_-3px_10px_0px_#FFFFFF]"
                   : ""
               } flex flex-row items-center gap-2 `}
             >
-              {pathname === link && (
+              {pathname.includes(path) && (
                 <div className="absolute left-2 top-2 h-[70%] w-[4px] rounded-full bg-[#155EEF]"></div>
               )}
               <Icon
-                color={pathname === link ? "var(--primary-blue)" : "#6A6A6A"}
+                color={pathname.includes(path) ? "var(--primary-blue)" : "#6A6A6A"}
               />
               {title}
             </Link>
