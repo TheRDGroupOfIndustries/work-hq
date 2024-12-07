@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import Image from "next/image";
 import { useProjectContext } from "@/context/ProjectProvider";
 import { ProjectValues } from "@/lib/types";
@@ -45,7 +44,8 @@ interface ProjectTableProps {
 }
 
 const ProjectTable: React.FC<ProjectTableProps> = ({ projects }) => {
-  const { setSelectedProject } = useProjectContext();
+  const { selectedProject, setSelectedProject } = useProjectContext();
+  const router = useRouter();
 
   const [search, setSearch] = useState<string>("");
   const [filterCategory, setFilterCategory] = useState<string>("");
@@ -124,12 +124,17 @@ const ProjectTable: React.FC<ProjectTableProps> = ({ projects }) => {
             filteredProjects.map((project, index) => (
               <tr
                 key={index}
-                onClick={() =>
+                onClick={() => {
                   setSelectedProject({
                     _id: project?._id,
                     name: project?.projectDetails?.projectName,
-                  })
-                }
+                  });
+                  if (selectedProject)
+                    router.push(
+                      `/c/project/${project.projectDetails.projectName}/dashboard` +
+                        ""
+                    );
+                }}
                 className="cursor-pointer border-t rounded-lg hover:bg-transparent hover:shadow-[3px_3px_10px_0px_#789BD399,-5px_-5px_10px_0px_#FFFFFF] ease-in-out duration-200"
               >
                 <td className="px-4 py-2">{index + 1}</td>
@@ -146,15 +151,9 @@ const ProjectTable: React.FC<ProjectTableProps> = ({ projects }) => {
                     className="w-10 h-10 object-contain ml-2 overflow-hidden"
                   />
 
-                  <Link
-                    href={
-                      `/c/project/${project.projectDetails.projectName}/dashboard` +
-                      ""
-                    }
-                    className="font-medium hover:text-blue-500 hover-link"
-                  >
+                  <span className="font-medium hover:text-blue-500 hover-link">
                     {project?.projectDetails?.projectName}
-                  </Link>
+                  </span>
                 </td>
                 <td className="px-4 py-2">
                   <span

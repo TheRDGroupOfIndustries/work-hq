@@ -27,12 +27,14 @@ export default function DesktopSidebar({ role }: { role: Role }) {
       title: "Dashboard",
       Icon: ChartNoAxesColumn,
       link: `/c/project/${selectedProject?.name}/dashboard`,
+      path: "dashboard",
     },
     {
       id: "2",
       title: "Assets & Scope",
       Icon: AssetsAndScope,
       link: `/c/project/${selectedProject?.name}/assets&scope`,
+      path: "assets&scope",
     },
     {
       id: "3",
@@ -45,23 +47,26 @@ export default function DesktopSidebar({ role }: { role: Role }) {
       title: "Chats",
       Icon: Chats,
       link: `/c/project/${selectedProject?.name}/chats`,
+      path: "chats",
     },
     {
       id: "5",
       title: "Payments",
       Icon: AssetsAndScope,
       link: `/c/project/${selectedProject?.name}/payments`,
+      path: "payments",
     },
     {
       id: "6",
       title: "Helpdesk",
       Icon: Helpdesk,
       link: `/c/project/${selectedProject?.name}/helpdesk`,
+      path: "helpdesk",
     },
   ];
   return (
     <div
-      className={`sticky    left-0 top-[70px] hidden  lg:w-[250px] h-[calc(100vh-70px)]  p-4 overflow-auto md:flex flex-col 
+      className={`sticky left-0 top-[70px] hidden lg:w-[250px] h-[calc(100vh-70px)]  p-4 overflow-y-auto overflow-x-hidden md:flex flex-col 
       ${
         role === VENDOR
           ? "bg-vendor-dark shadow-[3px_3px_12px_0px_#00000099] text-[#A5A5A5]"
@@ -166,8 +171,8 @@ export default function DesktopSidebar({ role }: { role: Role }) {
           </div>
         </div>
 
-        <div className="h-[10px] w-[10px] flex items-center justify-center">
-          <Logout onClick={() => signOut()} />
+        <div className="h-[40px] w-[40px] flex items-center justify-center">
+          <Logout color="#475467" onClick={() => signOut()} />
         </div>
       </Link>
     </div>

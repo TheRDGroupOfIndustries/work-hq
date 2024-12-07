@@ -1,10 +1,10 @@
 "use client";
 import AssetsAndScope from "@/components/icons/Assets&Scope";
 import Chats from "@/components/icons/Chats";
-import Helpdesk from "@/components/icons/Helpdesk";
 import Meeting from "@/components/icons/Meeting";
+import { useProjectContext } from "@/context/ProjectProvider";
 import { Role, VENDOR } from "@/types";
-import { ChartNoAxesColumn } from "lucide-react";
+import { AlignStartHorizontal, ChartNoAxesColumn, CreditCard } from "lucide-react";
 import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
 // import { Link, useLocation } from "react-router-dom";
@@ -13,43 +13,55 @@ export default function DesktopSidebar({ role }: { role: Role }) {
   const pathname = usePathname();
   const params = useParams()
 
+  const {
+    selectedProjectDetails,
+    
+  } = useProjectContext();
+
   const list = [
     {
       id: "1",
       title: "Dashboard",
       Icon: ChartNoAxesColumn,
-      link: "/dev/project/something/dashboard",
+      link: `/dev/project/${selectedProjectDetails?.projectDetails.projectName}/dashboard`,
+      path: 'dashboard'
     },
     {
       id: "2",
       title: "Assets & Scope",
       Icon: AssetsAndScope,
-      link: "/dev/project/something/assets&scope",
+      link: `/dev/project/${selectedProjectDetails?.projectDetails.projectName}/assets&scope`,
+      path: 'assets&scope'
     },
     {
       id: "3",
       title: "Project Kanban",
-      Icon: AssetsAndScope,
-      link: "/dev/project/something/kanban",
+      Icon: AlignStartHorizontal,
+      link: `/dev/project/${selectedProjectDetails?.projectDetails.projectName}/kanban`,
+      path: 'kanban'
     },
     {
       id: "4",
       title: "Meetings",
       Icon: Meeting,
-      link: "/dev/project/something/meetings/details",
+      link: `/dev/project/${selectedProjectDetails?.projectDetails.projectName}/details`,
+      path: 'details'
     },
     {
       id: "5",
       title: "Salary",
-      Icon: AssetsAndScope,
-      link: "/dev/project/something/salary",
+      Icon: CreditCard,
+      link: `/dev/project/${selectedProjectDetails?.projectDetails.projectName}/salary`,
+      path: 'salary'
     },
     {
       id: "6",
       title: "Chats",
       Icon: Chats,
-      link: "/dev/project/something/chats",
+      link: `/dev/project/${selectedProjectDetails?.projectDetails.projectName}/chats`,
+      path: 'chats'
     },
+    
   ];
   return (
     <div
@@ -78,7 +90,7 @@ export default function DesktopSidebar({ role }: { role: Role }) {
       {/* List */}
 
       <div className={`flex flex-col gap-2 mt-5 text-lg font-semibold`}>
-        {list.map(({ id, title, Icon, link }) => (
+        {list.map(({ id, title, Icon, link, path }) => (
           <Link
             href={`${link}`}
             key={id}
@@ -96,7 +108,7 @@ export default function DesktopSidebar({ role }: { role: Role }) {
             
             flex flex-row items-center gap-2 `}
           >
-            {pathname === link && (
+            {pathname.includes(path) && (
               <div
                 className={`absolute left-2 top-2 h-[70%] w-[4px] rounded-full ${
                   role === VENDOR ? "bg-white" : "bg-[#155EEF]"
@@ -105,7 +117,7 @@ export default function DesktopSidebar({ role }: { role: Role }) {
             )}
             <Icon
               color={
-                pathname === link
+                pathname.includes(path)
                   ? `${role === VENDOR ? "white" : "#155EEF"}`
                   : `${role === VENDOR ? "#A5A5A5" : "#475467"}`
               }
@@ -118,7 +130,7 @@ export default function DesktopSidebar({ role }: { role: Role }) {
       {/* bottom */}
 
       <Link
-        href={"/c/profile"}
+        href={"/dev/profile"}
         className="flex flex-row items-center justify-between mt-auto cursor-pointer text-sm"
       >
         <div className=" flex flex-row items-center gap-2">
