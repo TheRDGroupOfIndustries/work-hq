@@ -206,6 +206,8 @@ export function ProfileDropDownMenu() {
     
   } = useProjectContext();
 
+  // console.log("user", user);
+
   const list = [
     {
       id: "1",

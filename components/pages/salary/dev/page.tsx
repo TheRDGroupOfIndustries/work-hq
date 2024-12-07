@@ -15,6 +15,7 @@ import YourPaymentDetails from "../components/YourPaymentDetails";
 import SalaryHistory from "../components/SalaryHistory";
 import AdvancePaymentRequest from "../components/AdvancePaymentRequest";
 import EditSalaryMethod from "../components/EditSalaryMethod";
+import RequestAdvancePayment from "../components/RequestAdvancePayment";
 
 export default function Salary() {
   const headLineButtons = [
@@ -28,7 +29,7 @@ export default function Salary() {
       buttonText: "Request Advance Payment",
       type: "withCustomColor",
       onNeedIcon: true,
-      onClick: () => console.log("Export Report"),
+      dialogContent: <RequestAdvancePayment/>
     },
   ] as ButtonObjectType[];
   return (
