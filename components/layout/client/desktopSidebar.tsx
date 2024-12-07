@@ -109,7 +109,7 @@ export default function DesktopSidebar({ role }: { role: Role }) {
             href={`${link}`}
             key={id}
             className={` text-desktop  relative cursor-pointer   px-4 py-3 rounded-xl  ${
-              pathname.includes(path)
+              pathname.includes(path!)
                 ? `${
                     role === VENDOR
                       ? "text-white shadow-[3px_3px_10px_0px_#000000,-3px_-3px_10px_0px_#610646]"
@@ -122,7 +122,7 @@ export default function DesktopSidebar({ role }: { role: Role }) {
             
             flex flex-row items-center gap-2 `}
           >
-            {pathname.includes(path) && (
+            {pathname.includes(path!) && (
               <div
                 className={`absolute left-2 top-2 h-[70%] w-[4px] rounded-full ${
                   role === VENDOR ? "bg-white" : "bg-[#155EEF]"
@@ -131,7 +131,7 @@ export default function DesktopSidebar({ role }: { role: Role }) {
             )}
             <Icon
               color={
-                pathname.includes(path)
+                pathname.includes(path!)
                   ? `${role === VENDOR ? "white" : "#155EEF"}`
                   : `${role === VENDOR ? "#A5A5A5" : "#475467"}`
               }
@@ -158,9 +158,9 @@ export default function DesktopSidebar({ role }: { role: Role }) {
             />
           </div>
 
-          <div className="flex flex-col">
+          <div className="flex flex-col overflow-hidden">
             <span className="font-semibold text-sm">{user?.firstName ?? " "+ " "+ user?.lastName ?? " "}</span>
-            <span className=" text-sm text-[#475467]">
+            <span className=" text-sm text-[#475467] max-w-[140px]">
               {user?.email}
             </span>
           </div>

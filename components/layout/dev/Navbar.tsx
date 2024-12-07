@@ -264,16 +264,16 @@ export function ProfileDropDownMenu() {
         <Link
           href={"/dev/profile"}
           className={` w-full text-desktop  hover:shadow-[3px_3px_10px_0px_#789BD399,-3px_-3px_10px_0px_#FFFFFF]  relative cursor-pointer  px-4 py-3 rounded-xl  ${
-            pathname === "/c/profile"
+            pathname === "/dev/profile"
               ? "text-primary-blue shadow_sidebar_btn_selected"
               : ""
           } flex flex-row items-center gap-2 `}
         >
-          {pathname === "/c/profile" && (
+          {pathname === "/dev/profile" && (
             <div className="absolute left-2 top-2 h-[70%] w-[4px] rounded-full bg-[#155EEF]"></div>
           )}
           <UserRound
-            color={pathname === "/c/profile" ? "#155EEF" : "#6A6A6A"}
+            color={pathname === "/dev/profile" ? "#155EEF" : "#6A6A6A"}
           />
           Profile
         </Link>

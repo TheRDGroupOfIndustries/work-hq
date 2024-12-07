@@ -142,7 +142,7 @@ const SelectProject = ({ role }: { role: Role }) => {
   } = useProjectContext();
 
   // console.log(selectedProjectDetails);
-  const router = useRouter();
+
   const handleSelect = (projectName: string) => {
     const selected = userAllProjects.find(
       (project) => project.projectDetails.projectName === projectName
