@@ -10,6 +10,7 @@ import {
 } from "react";
 import { CustomUser, ProjectValues, TaskValues } from "@/lib/types";
 import Cookies from "js-cookie";
+import { useRouter } from "next/navigation";
 
 interface ProjectContextType {
   selectedProjectDetails: ProjectValues | null;
@@ -19,6 +20,7 @@ interface ProjectContextType {
   setSelectedProject: React.Dispatch<
     React.SetStateAction<{ _id: string; name: string }>
   >;
+  getSelectProjectDetails: (productId: string) => void;
 }
 
 export const ProjectContext = createContext<ProjectContextType | undefined>(
@@ -30,6 +32,7 @@ const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const { data: session } = useSession();
   const user = session?.user as CustomUser;
+  const router = useRouter();
 
   const [userAllProjects, setUserAllProjects] = useState<ProjectValues[]>([]);
   const [selectedProject, setSelectedProject] = useState<{
@@ -67,32 +70,43 @@ const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({
     // }
   }, [user.allProjects, user.myProjects]);
 
+  const getSelectProjectDetails = useCallback(
+    async (projectId: string) => {
+      if (!projectId) return;
+      try {
+        const projectRes = await fetch(
+          `/api/project/get/getByProjectID/${projectId}`
+        );
+        const projectDetailsData = await projectRes.json();
+
+        if (!projectDetailsData.success || projectDetailsData.status === 404)
+          router.replace("/c/all-projects");
+
+        const taskRes = await fetch(
+          `/api/task/get/getByProjectID/${projectId}`
+        );
+        const taskData = await taskRes.json();
+        setProjectDetails(projectDetailsData.project as ProjectValues);
+        setProjectTasks(taskData.project as TaskValues);
+
+        setSelectedProject({
+          _id: projectDetailsData.project._id || "",
+          name: projectDetailsData.project.projectName || "",
+        });
+      } catch (error) {
+        console.error("Error fetching project details:", error);
+      }
+    },
+    [router]
+  );
+
   useEffect(() => {
     fetchUserProjects();
   }, [fetchUserProjects]);
 
   useEffect(() => {
-    const selectedProjectDetails = userAllProjects.find(async (project) => {
-      if (project._id === selectedProject._id) {
-        const projectRes = await fetch(
-          `/api/project/get/getByProjectID/${project._id}`
-        );
-        const taskRes = await fetch(
-          `/api/task/get/getByProjectID/${project._id}`
-        );
-        const projectDetailsData = await projectRes.json();
-        const taskData = await taskRes.json();
-        setProjectDetails(projectDetailsData.project as ProjectValues);
-        setProjectTasks(taskData.project as TaskValues);
-      }
-    });
-
-    if (selectedProjectDetails) {
-      setProjectDetails(selectedProjectDetails);
-    } else {
-      setProjectDetails(null);
-    }
-  }, [selectedProject, userAllProjects]);
+    getSelectProjectDetails(selectedProject._id);
+  }, [getSelectProjectDetails, selectedProject._id]);
 
   return (
     <ProjectContext.Provider
@@ -102,6 +116,7 @@ const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({
         userAllProjects,
         selectedProject,
         setSelectedProject,
+        getSelectProjectDetails,
       }}
     >
       {children}

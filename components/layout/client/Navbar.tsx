@@ -135,6 +135,7 @@ const SelectProject = ({ role }: { role: Role }) => {
     userAllProjects,
     selectedProject,
     setSelectedProject,
+    selectedProjectDetails,
   } = useProjectContext();
 
   // console.log(selectedProjectDetails);
@@ -162,7 +163,9 @@ const SelectProject = ({ role }: { role: Role }) => {
         <p
           className={`h-full flex text-desktop flex-row gap-5 items-center cursor-pointer py-5 px-4`}
         >
-          {selectedProject?.name || "Select a Project"}
+          {selectedProject?.name ||
+            selectedProjectDetails?.projectDetails?.projectName ||
+            "Select a Project"}
         </p>
       </SelectTrigger>
       <SelectContent className="shadow-[3px_3px_10px_0px_#789BD399,-3px_-3px_10px_0px_#FFFFFF] text-desktop mt-5">
@@ -175,9 +178,7 @@ const SelectProject = ({ role }: { role: Role }) => {
                 value={project.projectDetails.projectName}
                 onClick={() => {
                   handleSelect(project.projectDetails.projectName);
-                  router.push(
-                    `/c/project/${project?.projectDetails?.projectName}/dashboard`
-                  );
+                  router.push(`/c/project/${project?._id}/dashboard`);
                 }}
               >
                 {project.projectDetails.projectName}
@@ -194,8 +195,7 @@ export function ProfileDropDownMenu() {
   const { data: session } = useSession();
   const user = session?.user as CustomUser;
 
-  const { selectedProjectDetails } = useProjectContext();
-
+  const { selectedProject } = useProjectContext();
   // console.log("user", user);
 
   const list = [
@@ -203,45 +203,46 @@ export function ProfileDropDownMenu() {
       id: "1",
       title: "Dashboard",
       Icon: ChartNoAxesColumn,
-      link: `/c/project/${selectedProjectDetails?.projectDetails.projectName}/dashboard`,
+      link: `/c/project/${selectedProject?._id}/dashboard`,
       path: "dashboard",
     },
     {
       id: "2",
       title: "Assets & Scope",
       Icon: AssetsAndScope,
-      link: `/c/project/${selectedProjectDetails?.projectDetails.projectName}/assets&scope`,
+      link: `/c/project/${selectedProject?._id}/assets&scope`,
       path: "assets&scope",
     },
     {
       id: "3",
       title: "Meetings",
       Icon: Meeting,
-      link: `/c/project/${selectedProjectDetails?.projectDetails.projectName}/details`,
+      link: `/c/project/${selectedProject?._id}/details`,
       path: "details",
     },
     {
       id: "4",
       title: "Chats",
       Icon: Chats,
-      link: `/c/project/${selectedProjectDetails?.projectDetails.projectName}/chats`,
+      link: `/c/project/${selectedProject?._id}/chats`,
       path: "chats",
     },
     {
       id: "5",
       title: "Payments",
       Icon: AssetsAndScope,
-      link: `/c/project/${selectedProjectDetails?.projectDetails.projectName}/payments`,
+      link: `/c/project/${selectedProject?._id}/payments`,
       path: "payments",
     },
     {
       id: "6",
       title: "Helpdesk",
       Icon: Helpdesk,
-      link: `/c/project/${selectedProjectDetails?.projectDetails.projectName}/helpdesk`,
+      link: `/c/project/${selectedProject?._id}/helpdesk`,
       path: "helpdesk",
     },
   ];
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="border-0 outline-none text-desktop select-none">
