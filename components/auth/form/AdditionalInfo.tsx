@@ -7,8 +7,7 @@ import { Button } from "@/components/ui/button";
 import InputField from "@/components/ui/InputField"; // Adjust the import path as necessary
 import { useSession } from "next-auth/react";
 import { CustomUser } from "@/lib/types"; // Adjust the import path as necessary
-import { useSelector } from "react-redux";
-import { RootState } from "@/redux/rootReducer";
+import { useUser } from "@/context/UserProvider";
 
 export const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 export const phonePattern = /^\d{10}$/;
@@ -36,13 +35,11 @@ const AdditionalInfo: React.FC = () => {
   const [disableBtn, setDisableBtn] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
-  const selector = useSelector((state: RootState) => state.auth);
 
-  const signUpRole = selector.signUpRole;
   const emailInputRef = useRef<HTMLInputElement>(null);
   const phoneInputRef = useRef<HTMLInputElement>(null);
   const passwordInputRef = useRef<HTMLInputElement>(null);
-
+  const {SignUpRole : signUpRole } = useUser();
   useEffect(() => {
     if (user?.role === "client" && !user?.phone) {
       setPhone("");

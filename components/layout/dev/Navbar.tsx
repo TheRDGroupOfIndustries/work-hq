@@ -32,7 +32,7 @@ import {
   ChartNoAxesColumn,
   CreditCard,
   // ChevronDown,
-  Plus,
+  // Plus,
   Search,
   Settings,
   UserRound,
@@ -70,7 +70,7 @@ const Navbar = ({ role }: { role: Role }) => {
           >
             All Projects
           </Link>
-          {pathname !== "/c/all-projects" && (
+          {/* {pathname !== "/c/all-projects" && (
             <span
               className={`text-desktop cursor-pointer flex flex-row items-center py-3 px-3 gap-2   rounded-xl ${
                 role === VENDOR
@@ -84,7 +84,7 @@ const Navbar = ({ role }: { role: Role }) => {
               />{" "}
               Add Project
             </span>
-          )}
+          )} */}
         </div>
       </div>
 
@@ -132,13 +132,13 @@ export default Navbar;
 
 const SelectProject = ({ role }: { role: Role }) => {
   const {
-    selectedProjectDetails,
+    // selectedProjectDetails,
     userAllProjects,
     selectedProject,
     setSelectedProject,
   } = useProjectContext();
 
-  console.log(selectedProjectDetails);
+  // console.log(selectedProjectDetails);
 
   const handleSelect = (projectName: string) => {
     const selected = userAllProjects.find(

@@ -9,7 +9,7 @@ export default function Deployment({
   link,
   role,
 }: {
-  link: string;
+  link?: string;
   role: Role;
 }) {
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -24,6 +24,7 @@ export default function Deployment({
         } `}
       >
         <div className=" w-full h-full flex flex-row overflow-hidden ">
+
           <div
             className={`relative transition-all ease-in-out duration-300 w-fit lg:block rounded-[30px] overflow-hidden h-full   
             ${isChatOpen ? "hidden" : "block"} 
@@ -34,6 +35,7 @@ export default function Deployment({
               : "shadow-[10px_10px_20px_0px_#c2d9ff66_inset,-5px_-5px_15px_0px_#c2d9ff66_inset]"
             } `}
           >
+            {link ? 
             <iframe
               // style="border: 1px solid rgba(0, 0, 0, 0.1);"
               width="100%"
@@ -41,7 +43,10 @@ export default function Deployment({
               src={link}
               // allowfullscreen
             ></iframe>
-
+            : <div className="w-full h-full flex flex-col items-center justify-center">
+              <p className="text-lg font-semibold text-[#858585]">No Deployment Found</p>
+            </div>
+          }
             <div className="absolute left-[45px] bottom-[35px] flex flex-row gap-4 ">
               <div className="h-[40px] w-[40px] bg-black flex flex-row items-center justify-center cursor-pointer ">
                 <Link color="white" size={20} />

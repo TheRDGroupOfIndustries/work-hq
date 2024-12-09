@@ -5,31 +5,16 @@ import { useRouter } from "next/navigation";
 // import { Button } from "@/components/ui/button";
 import { useEffect } from "react";
 import { CustomUser } from "@/lib/types";
-import { useDispatch, useSelector } from "react-redux";
-import { setSignUpRole } from "@/redux/slices/authSlice";
-import Cookies from "js-cookie";
-import { RootState } from "@/redux/rootReducer";
+import { useUser } from "@/context/UserProvider";
 
 export default function Home() {
   const { data: session, status } = useSession();
   const user = session?.user as CustomUser;
   const router = useRouter();
-  const dispatch = useDispatch();
-
-  const SignUpRole = useSelector((state: RootState) => state.auth.signUpRole);
+  const {SignUpRole} = useUser();
 
   useEffect(() => {
-    if (!SignUpRole) {
-      const signUpRoleCookie = Cookies.get("SignUpRole");
-      dispatch(setSignUpRole(signUpRoleCookie ? signUpRoleCookie : "client"));
-    }
-  }, [dispatch, SignUpRole]);
-
-  useEffect(() => {
-    // if (prevSessionRef.current !== session) {
     console.log("session", session);
-    //   prevSessionRef.current = session;
-    // }
   }, [session]);
 useEffect(() => {
   console.log("Sign Up Role", SignUpRole);
@@ -46,7 +31,12 @@ useEffect(() => {
     } else if (SignUpRole === "developer" && !user?.wakaTime?.access_token) {
       router.replace("/wakaTime/auth");
     } else {
-      router.replace("/c/all-projects");
+      if (SignUpRole === "developer") {
+        router.replace("/dev/all-projects");
+      } else {
+        router.replace("/c/all-projects");
+
+      }
     }
   }
 }, [status, user, router, SignUpRole]);

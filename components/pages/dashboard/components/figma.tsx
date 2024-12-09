@@ -5,7 +5,7 @@ import { Role, VENDOR } from "@/types";
 import { Link, MessageCircleMore, SendHorizontal, X } from "lucide-react";
 import { useState } from "react";
 
-export default function Figma({ link, role }: { link: string; role: Role }) {
+export default function Figma({ link, role }: { link?: string; role: Role }) {
   const [isChatOpen, setIsChatOpen] = useState(true);
   return (
     <div className="w-full flex flex-col gap-6 mt-6 select-none">
@@ -28,6 +28,7 @@ export default function Figma({ link, role }: { link: string; role: Role }) {
                 : "shadow-[10px_10px_20px_0px_#c2d9ff66_inset,-5px_-5px_15px_0px_#c2d9ff66_inset]"
             } `}
           >
+            {link ? (
             <iframe
               // style="border: 1px solid rgba(0, 0, 0, 0.1);"
               className="  z-[-2] w-full h-full "
@@ -36,7 +37,13 @@ export default function Figma({ link, role }: { link: string; role: Role }) {
               src={link}
               // allowfullscreen
             ></iframe>
-
+            ) : (
+              <div className="w-full h-full flex flex-col items-center justify-center">
+                <p className="text-lg font-semibold text-[#858585]">
+                  No Figma Design Found
+                </p>
+              </div>
+            )}
             <div className="absolute left-[45px] bottom-[35px] flex flex-row gap-4 ">
               <div className="h-[40px] w-[40px] bg-black flex flex-row items-center justify-center cursor-pointer ">
                 <Link color="white" size={20} />

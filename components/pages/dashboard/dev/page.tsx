@@ -8,6 +8,7 @@ import Figma from "../components/figma";
 // import Headline from "./components/headline";
 import Headline from "@/components/reusables/components/headline";
 import MidInformationCard from "../components/midInformationCard";
+import axios from "axios";
 import ProjectInfo from "../components/projectInfo";
 import {
   WorkStatusLoggedIn,
@@ -16,8 +17,13 @@ import {
 } from "../components/WorkStatus";
 import YourPerformanceSpendHour from "@/components/reusables/components/YourPerformanceSpendHour";
 import { YourCompletedTasks, YourCurrentTasks } from "../components/YourTasks";
+import { useSession } from "next-auth/react";
+import { CustomUser } from "@/lib/types";
+import { useEffect } from "react";
 
 export default function HomePage() {
+  const {data: session} = useSession();
+  const user = session?.user as CustomUser;
   const headLineButtons = [
     {
       buttonText: "Export Report",
@@ -26,6 +32,18 @@ export default function HomePage() {
     },
   ];
 
+  useEffect(() => {
+    if (user?.loginStep === 1) {
+      console.log("User", user);
+      const fetchData = async () => {
+      const response = await axios.get('/api/wakaTime/get_current_user', {
+        params: { accessToken: user.wakaTime?.access_token },
+      });
+      console.log("response data: ",response.data);
+    }
+    fetchData();
+    }
+  }, [user]);
   return (
     <MainContainer role={ROLE}>
       <Headline

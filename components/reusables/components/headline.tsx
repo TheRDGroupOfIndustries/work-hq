@@ -3,7 +3,6 @@
 import SquareButton from "@/components/reusables/wrapper/squareButton";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Role, VENDOR } from "@/types";
-import { color } from "framer-motion";
 import { Plus } from "lucide-react";
 
 

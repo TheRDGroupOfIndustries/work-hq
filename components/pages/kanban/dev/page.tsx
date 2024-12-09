@@ -13,12 +13,9 @@ import { ROLE } from "@/tempData";
 import { motion } from "framer-motion";
 import { ChartLine } from "lucide-react";
 import { useRef, useState } from "react";
-
 import Image from "next/image";
-
 import Container from "@/components/reusables/wrapper/Container";
 import { Button } from "@/components/ui/button";
-
 
 export type TaskStatus = "todo" | "in-progress" | "completed" | "refactoring";
 
