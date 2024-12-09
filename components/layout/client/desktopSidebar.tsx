@@ -102,7 +102,7 @@ export default function DesktopSidebar({ role }: { role: Role }) {
       {/* List */}
 
       <div className={`flex flex-col gap-2 mt-5 text-lg font-semibold`}>
-        {list.map(({ id, title, Icon, link }) => {
+        {list.map(({ id, title, Icon, link, path }) => {
           const isActive = decodeURIComponent(pathname) === link;
 
           return (

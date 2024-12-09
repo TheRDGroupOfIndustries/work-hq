@@ -1,5 +1,5 @@
 "use client";
-import DesktopSidebar from "@/components/layout/client/desktopSidebar";
+import DesktopSidebar from "@/components/layout/dev/desktopSidebar";
 import { useProjectContext } from "@/context/ProjectProvider";
 import { ROLE } from "@/tempData";
 
@@ -8,10 +8,10 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { selectedProject } = useProjectContext();
-  if (!selectedProject._id) {
-    return <>{children}</>;
-  }
+  // const { selectedProject } = useProjectContext();
+  // if (!selectedProject._id) {
+  //   return <>{children}</>;
+  // }
   return (
     <>
       <div className=" min-h-[calc(100vh-80px)] h-full   flex flex-row">

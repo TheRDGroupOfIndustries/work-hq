@@ -3,9 +3,12 @@
 import SquareButton from "@/components/reusables/wrapper/squareButton";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Role, VENDOR } from "@/types";
+import { color } from "framer-motion";
 import { Plus } from "lucide-react";
 
-type ButtonType = "lightGray" | "withCustomColor" | undefined;
+
+
+type ButtonType = "lightGray" | "withCustomColor"| "withCustomTextColor" | undefined;
 
 export interface ButtonObjectType {
   buttonText: string;
@@ -23,7 +26,7 @@ export default function Headline({
   buttonObjects,
   role,
 }: {
-  title?: string;
+  title: string;
   subTitle?: string;
   buttonObjects?: ButtonObjectType[];
   role: Role;
@@ -142,16 +145,27 @@ export default function Headline({
                   );
                 case "withCustomColor":
                   return (
-                    <WithCustomColor
-                      onClick={onClick}
-                      icon={icon}
-                      color={color || "#3277FF"}
-                      buttonText={buttonText}
-                      onNeedIcon={onNeedIcon}
-                      role={role}
-                    />
+                        <WithCustomColor
+                          onClick={onClick}
+                          icon={icon}
+                          color={color || "#3277FF"}
+                          buttonText={buttonText}
+                          onNeedIcon={onNeedIcon}
+                          role={role}
+                        />
                   );
-                default:
+                  case "withCustomTextColor": 
+                  return (
+                        <WithCustomTextColor
+                          onClick={onClick}
+                          icon={icon}
+                          color={color || "#3277FF"}
+                          buttonText={buttonText}
+                          onNeedIcon={onNeedIcon}
+                          role={role}
+                        />
+                  )
+                default: 
                   return (
                     <DefaultButton
                       onClick={onClick}
@@ -223,6 +237,7 @@ function WithCustomColor({
   buttonText,
   onNeedIcon,
   role,
+  color
 }: {
   onClick: () => void;
   icon?: React.ReactNode;
@@ -233,7 +248,7 @@ function WithCustomColor({
 }) {
   return (
     <SquareButton
-      className={`!text-white bg-[#3277FF] !shadow-neuro-9`}
+      className={`!text-white bg-[#3277FF] !shadow-neuro-9 ${color}`}
       role={role}
       onClick={onClick}
     >
@@ -242,6 +257,37 @@ function WithCustomColor({
     </SquareButton>
   );
 }
+
+function WithCustomTextColor({
+  onClick,
+  icon,
+  buttonText,
+  onNeedIcon,
+  role,
+  color
+}: {
+  onClick: () => void;
+  icon?: React.ReactNode;
+  buttonText: string;
+  onNeedIcon: boolean;
+  role: Role;
+  color?: string;
+}) {
+  return (
+    <SquareButton
+      className={` ${color}`}
+      role={role}
+      onClick={onClick}
+    >
+      {icon ? icon : onNeedIcon ? null : <Plus color="white" />}
+      {buttonText}
+    </SquareButton>
+  );
+}
+
+
+
+
 
 // "use client";
 // import SquareButton from "@/components/reusables/wrapper/squareButton";

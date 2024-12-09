@@ -1,13 +1,14 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { CustomUser } from "@/lib/types";
 // import { Button } from "@/components/ui/button";
 import AssetsAndScope from "@/components/icons/Assets&Scope";
 import Chats from "@/components/icons/Chats";
+import Helpdesk from "@/components/icons/Helpdesk";
 import Meeting from "@/components/icons/Meeting";
 import {
   DropdownMenu,
@@ -27,10 +28,8 @@ import {
 import { useProjectContext } from "@/context/ProjectProvider";
 import { Role, VENDOR } from "@/types";
 import {
-  AlignStartHorizontal,
   Bell,
   ChartNoAxesColumn,
-  CreditCard,
   // ChevronDown,
   Plus,
   Search,
@@ -42,7 +41,7 @@ import {
 
 const Navbar = ({ role }: { role: Role }) => {
   const pathname = usePathname();
-
+  // const router = useRouter();
   return (
     <nav
       className={`sticky  left-0 top-0 w-full h-[70px]     flex flex-row items-center justify-between z-50 ${
@@ -51,6 +50,7 @@ const Navbar = ({ role }: { role: Role }) => {
           : "bg-primary-sky-blue shadow-[0px_3px_12px_0px_#d3e1f6]"
       }`}
     >
+
       {/* left */}
       <div className="flex flex-row items-center gap-3 sm:gap-9 text-lg font-semibold px-5">
         <h1 className="text-2xl font-semibold">Logo</h1>
@@ -71,7 +71,8 @@ const Navbar = ({ role }: { role: Role }) => {
             All Projects
           </Link>
           {pathname !== "/c/all-projects" && (
-            <span
+            <Link
+              href="/c/add-project"
               className={`text-desktop cursor-pointer flex flex-row items-center py-3 px-3 gap-2   rounded-xl ${
                 role === VENDOR
                   ? "text-white shadow-[3px_3px_10px_0px_#000000,-3px_-3px_10px_0px_#610646] bg-[#360227] "
@@ -83,7 +84,7 @@ const Navbar = ({ role }: { role: Role }) => {
                 className=""
               />{" "}
               Add Project
-            </span>
+            </Link>
           )}
         </div>
       </div>
@@ -131,14 +132,16 @@ const Navbar = ({ role }: { role: Role }) => {
 export default Navbar;
 
 const SelectProject = ({ role }: { role: Role }) => {
+  const router = useRouter();
+
   const {
-    selectedProjectDetails,
+    // selectedProjectDetails,
     userAllProjects,
     selectedProject,
     setSelectedProject,
   } = useProjectContext();
 
-  console.log(selectedProjectDetails);
+  // console.log(selectedProjectDetails);
 
   const handleSelect = (projectName: string) => {
     const selected = userAllProjects.find(
@@ -151,6 +154,7 @@ const SelectProject = ({ role }: { role: Role }) => {
       });
     }
   };
+  // const pathName = usePathname();
 
   // if (!selectedProject._id && pathName !== "/c/add-project") router.push("/c/all-projects");
 
@@ -177,7 +181,12 @@ const SelectProject = ({ role }: { role: Role }) => {
               <SelectItem
                 key={index}
                 value={project.projectDetails.projectName}
-                onClick={() => handleSelect(project.projectDetails.projectName)}
+                onClick={() => {
+                  handleSelect(project.projectDetails.projectName);
+                  router.push(
+                    `/c/project/${project?.projectDetails?.projectName}/dashboard`
+                  );
+                }}
               >
                 {project.projectDetails.projectName}
               </SelectItem>
@@ -198,109 +207,110 @@ export function ProfileDropDownMenu() {
     
   } = useProjectContext();
 
+  // console.log("user", user);
+
   const list = [
     {
       id: "1",
       title: "Dashboard",
       Icon: ChartNoAxesColumn,
-      link: `/dev/project/${selectedProjectDetails?.projectDetails.projectName}/dashboard`,
+      link: `/c/project/${selectedProjectDetails?.projectDetails.projectName}/dashboard`,
       path: 'dashboard'
     },
     {
       id: "2",
       title: "Assets & Scope",
       Icon: AssetsAndScope,
-      link: `/dev/project/${selectedProjectDetails?.projectDetails.projectName}/assets&scope`,
+      link: `/c/project/${selectedProjectDetails?.projectDetails.projectName}/assets&scope`,
       path: 'assets&scope'
     },
     {
       id: "3",
-      title: "Project Kanban",
-      Icon: AlignStartHorizontal,
-      link: `/dev/project/${selectedProjectDetails?.projectDetails.projectName}/kanban`,
-      path: 'kanban'
-    },
-    {
-      id: "4",
       title: "Meetings",
       Icon: Meeting,
-      link: `/dev/project/${selectedProjectDetails?.projectDetails.projectName}/details`,
+      link: `/c/project/${selectedProjectDetails?.projectDetails.projectName}/details`,
       path: 'details'
     },
     {
+      id: "4",
+      title: "Chats",
+      Icon: Chats,
+      link: `/c/project/${selectedProjectDetails?.projectDetails.projectName}/chats`,
+      path: 'chats'
+    },
+    {
       id: "5",
-      title: "Salary",
-      Icon: CreditCard,
-      link: `/dev/project/${selectedProjectDetails?.projectDetails.projectName}/salary`,
-      path: 'salary'
+      title: "Payments",
+      Icon: AssetsAndScope,
+      link: `/c/project/${selectedProjectDetails?.projectDetails.projectName}/payments`,
+      path: 'payments'
     },
     {
       id: "6",
-      title: "Chats",
-      Icon: Chats,
-      link: `/dev/project/${selectedProjectDetails?.projectDetails.projectName}/chats`,
-      path: 'chats'
+      title: "Helpdesk",
+      Icon: Helpdesk,
+      link: `/c/project/${selectedProjectDetails?.projectDetails.projectName}/helpdesk`,
+      path: 'helpdesk'
     },
-    
   ];
   return (
     <DropdownMenu>
-    <DropdownMenuTrigger className="border-0 outline-none text-desktop select-none">
-      <span className="relative">
-        <div className="flex-center w-10 h-10 rounded-full bg-[#4872b5] overflow-hidden">
-          <Image
-            src={user?.profileImage || user?.image || "/assets/user.png"}
-            alt="profile image"
-            width={200}
-            height={200}
-            className="w-10 h-10 rounded-full"
-          />
-        </div>
-        <div className="h-4 w-4 bg-[#25ff30] border-2 border-white rounded-full absolute bottom-0 right-0"></div>
-      </span>
-    </DropdownMenuTrigger>
-    <DropdownMenuContent className=" ">
-      <DropdownMenuItem className="outline-none border-0">
-        <Link
-          href={"/dev/profile"}
-          className={` w-full text-desktop  hover:shadow-[3px_3px_10px_0px_#789BD399,-3px_-3px_10px_0px_#FFFFFF]  relative cursor-pointer  px-4 py-3 rounded-xl  ${
-            pathname === "/dev/profile"
-              ? "text-primary-blue shadow_sidebar_btn_selected"
-              : ""
-          } flex flex-row items-center gap-2 `}
-        >
-          {pathname === "/dev/profile" && (
-            <div className="absolute left-2 top-2 h-[70%] w-[4px] rounded-full bg-[#155EEF]"></div>
-          )}
-          <UserRound
-            color={pathname === "/dev/profile" ? "#155EEF" : "#6A6A6A"}
-          />
-          Profile
-        </Link>
-      </DropdownMenuItem>
-      <DropdownMenuSeparator />
-      {list.map(({ id, title, Icon, link, path }) => (
-        <DropdownMenuItem key={id}>
+      <DropdownMenuTrigger className="border-0 outline-none text-desktop select-none">
+        <span className="relative">
+          <div className="flex-center w-10 h-10 rounded-full bg-[#4872b5] overflow-hidden">
+            <Image
+              src={user?.profileImage || user?.image || "/assets/user.png"}
+              alt="profile image"
+              width={200}
+              height={200}
+              className="w-10 h-10 rounded-full"
+            />
+          </div>
+          <div className="h-4 w-4 bg-[#25ff30] border-2 border-white rounded-full absolute bottom-0 right-0"></div>
+        </span>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className=" ">
+        <DropdownMenuItem className="outline-none border-0">
           <Link
-            href={`${link}`}
-            key={id}
-            className={` outline-none border-0 w-full text-desktop relative cursor-pointer hover:shadow-[3px_3px_10px_0px_#789BD399,-3px_-3px_10px_0px_#FFFFFF]   px-4 py-3 rounded-xl  ${
-              pathname.includes(path)
-                ? "text-primary-blue shadow-[3px_3px_10px_0px_#789BD399,-3px_-3px_10px_0px_#FFFFFF]"
+            href={"/ceo/profile"}
+            className={` w-full text-desktop  hover:shadow-[3px_3px_10px_0px_#789BD399,-3px_-3px_10px_0px_#FFFFFF]  relative cursor-pointer  px-4 py-3 rounded-xl  ${
+              pathname === "/c/profile"
+                ? "text-primary-blue shadow_sidebar_btn_selected"
                 : ""
             } flex flex-row items-center gap-2 `}
           >
-            {pathname.includes(path) && (
+            {pathname === "/c/profile" && (
               <div className="absolute left-2 top-2 h-[70%] w-[4px] rounded-full bg-[#155EEF]"></div>
             )}
-            <Icon
-              color={pathname.includes(path) ? "var(--primary-blue)" : "#6A6A6A"}
+            <UserRound
+              color={pathname === "/c/profile" ? "#155EEF" : "#6A6A6A"}
             />
-            {title}
+            Profile
           </Link>
         </DropdownMenuItem>
-      ))}
-    </DropdownMenuContent>
-  </DropdownMenu>
+        <DropdownMenuSeparator />
+        {list.map(({ id, title, Icon, link, path }) => (
+          <DropdownMenuItem key={id}>
+            <Link
+              href={`${link}`}
+              key={id}
+              className={` outline-none border-0 w-full text-desktop relative cursor-pointer hover:shadow-[3px_3px_10px_0px_#789BD399,-3px_-3px_10px_0px_#FFFFFF]   px-4 py-3 rounded-xl  ${
+                pathname.includes(path)
+                  ? "text-primary-blue shadow-[3px_3px_10px_0px_#789BD399,-3px_-3px_10px_0px_#FFFFFF]"
+                  : ""
+              } flex flex-row items-center gap-2 `}
+            >
+              {pathname.includes(path) && (
+                <div className="absolute left-2 top-2 h-[70%] w-[4px] rounded-full bg-[#155EEF]"></div>
+              )}
+              <Icon
+                color={pathname.includes(path) ? "var(--primary-blue)" : "#6A6A6A"}
+              />
+              {title}
+            </Link>
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
