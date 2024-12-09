@@ -13,12 +13,9 @@ import Headline, {
 } from "@/components/reusables/components/headline";
 import MidInformationCard from "../components/midInformationCard";
 import ProjectInfo from "../components/projectInfo";
-import { useRouter } from "next/navigation";
 
 export default function Dashboard() {
-  const { selectedProject, selectedProjectDetails } = useProjectContext();
-  const router = useRouter();
-  // console.log(selectedProjectDetails);
+  const { selectedProjectDetails } = useProjectContext();
 
   // const chartData =
   //   selectedProjectDetails?.developmentDetails?.projectHours?.map((entry) => ({
@@ -34,7 +31,6 @@ export default function Dashboard() {
     },
   ] as ButtonObjectType[];
 
-  if (!selectedProject._id) router.push("/c/all-projects");
   return (
     <MainContainer role={ROLE}>
       <Headline

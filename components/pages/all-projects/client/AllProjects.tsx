@@ -130,10 +130,7 @@ const ProjectTable: React.FC<ProjectTableProps> = ({ projects }) => {
                     name: project?.projectDetails?.projectName,
                   });
                   if (selectedProject)
-                    router.push(
-                      `/c/project/${project.projectDetails.projectName}/dashboard` +
-                        ""
-                    );
+                    router.push(`/c/project/${project._id}/dashboard` + "");
                 }}
                 className="cursor-pointer border-t rounded-lg hover:bg-transparent hover:shadow-[3px_3px_10px_0px_#789BD399,-5px_-5px_10px_0px_#FFFFFF] ease-in-out duration-200"
               >
@@ -151,7 +148,7 @@ const ProjectTable: React.FC<ProjectTableProps> = ({ projects }) => {
                     className="w-10 h-10 object-contain ml-2 overflow-hidden"
                   />
 
-                  <span className="font-medium hover:text-blue-500 hover-link">
+                  <span className="font-medium">
                     {project?.projectDetails?.projectName}
                   </span>
                 </td>

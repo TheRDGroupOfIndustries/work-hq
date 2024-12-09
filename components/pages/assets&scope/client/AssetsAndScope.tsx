@@ -8,12 +8,10 @@ import FilesList from "../components/filesList";
 import ProjectScope from "../components/projectScope";
 import TasksList from "../components/tasksList";
 import Headline from "@/components/reusables/components/headline";
-import { useProjectContext } from "@/context/ProjectProvider";
-import { useRouter } from "next/navigation";
+// import { useProjectContext } from "@/context/ProjectProvider";
 
 export default function AssetsAndScope() {
-  const router = useRouter();
-  const { selectedProject } = useProjectContext();
+  // const { selectedProjectDetails } = useProjectContext();
 
   // console.log(selectedProjectDetails);
 
@@ -30,7 +28,6 @@ export default function AssetsAndScope() {
       onClick: () => console.log("Export Scope"),
     },
   ];
-  if (!selectedProject._id) router.push("/c/all-projects");
 
   return (
     <MainContainer role={ROLE}>

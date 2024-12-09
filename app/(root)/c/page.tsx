@@ -5,9 +5,6 @@ import { redirect } from "next/navigation";
 export default async function HomePage() {
   const session = await getServerSession();
   if (!session) redirect("/auth/c-sign-in");
-  return (
-    <main>
-      client page
-    </main>
-  );
+  redirect(`/c/all-projects`);
+  return <main>client page</main>;
 }

@@ -4,64 +4,62 @@ import Chats from "@/components/icons/Chats";
 import Meeting from "@/components/icons/Meeting";
 import { useProjectContext } from "@/context/ProjectProvider";
 import { Role, VENDOR } from "@/types";
-import { AlignStartHorizontal, ChartNoAxesColumn, CreditCard } from "lucide-react";
+import {
+  AlignStartHorizontal,
+  ChartNoAxesColumn,
+  CreditCard,
+} from "lucide-react";
 import Link from "next/link";
-import { useParams, usePathname } from "next/navigation";
-// import { Link, useLocation } from "react-router-dom";
+import { usePathname } from "next/navigation";
 
 export default function DesktopSidebar({ role }: { role: Role }) {
   const pathname = usePathname();
-  const params = useParams()
 
-  const {
-    selectedProjectDetails,
-    
-  } = useProjectContext();
+  const { selectedProjectDetails } = useProjectContext();
 
   const list = [
     {
       id: "1",
       title: "Dashboard",
       Icon: ChartNoAxesColumn,
-      link: `/dev/project/${selectedProjectDetails?.projectDetails.projectName}/dashboard`,
-      path: 'dashboard'
+      link: `/dev/project/${selectedProjectDetails?._id}/dashboard`,
+      path: "dashboard",
     },
     {
       id: "2",
       title: "Assets & Scope",
       Icon: AssetsAndScope,
-      link: `/dev/project/${selectedProjectDetails?.projectDetails.projectName}/assets&scope`,
-      path: 'assets&scope'
+      link: `/dev/project/${selectedProjectDetails?._id}/assets&scope`,
+      path: "assets&scope",
     },
     {
       id: "3",
       title: "Project Kanban",
       Icon: AlignStartHorizontal,
-      link: `/dev/project/${selectedProjectDetails?.projectDetails.projectName}/kanban`,
-      path: 'kanban'
+      link: `/dev/project/${selectedProjectDetails?._id}/kanban`,
+      path: "kanban",
     },
     {
       id: "4",
       title: "Meetings",
       Icon: Meeting,
-      link: `/dev/project/${selectedProjectDetails?.projectDetails.projectName}/details`,
-      path: 'details'
+      link: `/dev/project/${selectedProjectDetails?._id}/details`,
+      path: "details",
     },
     {
       id: "5",
       title: "Salary",
       Icon: CreditCard,
-      link: `/dev/project/${selectedProjectDetails?.projectDetails.projectName}/salary`,
-      path: 'salary'
+      link: `/dev/project/${selectedProjectDetails?._id}/salary`,
+      path: "salary",
     },
     {
       id: "6",
       title: "Chats",
       Icon: Chats,
-      link: `/dev/project/${selectedProjectDetails?.projectDetails.projectName}/chats`,
-      path: 'chats'
+      link: `/dev/project/${selectedProjectDetails?._id}/chats`,
+      path: "chats",
     },
-    
   ];
   return (
     <div
@@ -82,7 +80,7 @@ export default function DesktopSidebar({ role }: { role: Role }) {
             role === VENDOR ? "text-white" : "text-dark-gray"
           } `}
         >
-          <span>Project 1</span>
+          <span>{selectedProjectDetails?.projectDetails.projectName}</span>
           <span>Progress - 58%</span>
         </div>
       </div>
@@ -104,7 +102,11 @@ export default function DesktopSidebar({ role }: { role: Role }) {
                 : ""
             } 
 
-            ${role === VENDOR ? "hover:shadow-[3px_3px_10px_0px_#000000,-3px_-3px_10px_0px_#610646]" : "hover:shadow-[3px_3px_10px_0px_#789BD399,-3px_-3px_10px_0px_#FFFFFF]" }
+            ${
+              role === VENDOR
+                ? "hover:shadow-[3px_3px_10px_0px_#000000,-3px_-3px_10px_0px_#610646]"
+                : "hover:shadow-[3px_3px_10px_0px_#789BD399,-3px_-3px_10px_0px_#FFFFFF]"
+            }
             
             flex flex-row items-center gap-2 `}
           >
