@@ -15,7 +15,7 @@ export default function AssetsAndScope() {
     { buttonText: "Export Scope", onNeedIcon: false, onClick: () => console.log("Export Scope") },
   ];
   return (
-    <MainContainer role={ROLE}>
+    <MainContainer>
       <Headline role={ROLE} title="Assets & Scope" subTitle="Project" buttonObjects={headLineButtons} />
       <div className="w-full flex flex-row gap-4 ">
         <div className="w-full flex flex-col xl:flex-row gap-10">
