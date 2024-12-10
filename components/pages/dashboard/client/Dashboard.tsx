@@ -13,9 +13,41 @@ import Headline, {
 } from "@/components/reusables/components/headline";
 import MidInformationCard from "../components/midInformationCard";
 import ProjectInfo from "../components/projectInfo";
+import ProjectCompletion from "@/components/icons/ProjectCompletion";
+import WorkingTeamCount from "@/components/icons/WorkingTeamCount";
+import Deadline from "@/components/icons/Deadline";
+import { formatDateString } from "@/lib/utils";
 
 export default function Dashboard() {
   const { selectedProjectDetails } = useProjectContext();
+  
+
+  const midCardData = [
+    {
+      title: "Project Completion",
+      icon: ProjectCompletion ,
+      data: "58%",
+    },
+    {
+      title: "Working Team Count",
+      icon: WorkingTeamCount,
+      data: selectedProjectDetails?.developmentDetails?.teams?.length ?? 0,
+    },
+    {
+      title: "Expected deadline",
+      icon: Deadline,
+      data: selectedProjectDetails?.projectDetails?.deadline
+        ? formatDateString(
+            selectedProjectDetails?.projectDetails?.deadline.toString()
+          )
+        : "No deadline set",
+      day: selectedProjectDetails?.projectDetails?.deadline
+        ? new Date(
+            selectedProjectDetails?.projectDetails?.deadline
+          ).toLocaleString("en-US", { weekday: "long" })
+        : "",
+    },
+  ];
 
   // const chartData =
   //   selectedProjectDetails?.developmentDetails?.projectHours?.map((entry) => ({
@@ -67,7 +99,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <MidInformationCard />
+      <MidInformationCard midCardData={midCardData} />
 
       {selectedProjectDetails?.developmentDetails?.figma?.link && (
         <Figma

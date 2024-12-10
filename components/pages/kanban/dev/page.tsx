@@ -16,6 +16,7 @@ import { motion } from "framer-motion";
 import { ChartLine, Ellipsis } from "lucide-react";
 import Image from "next/image";
 import { useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 
 // Define possible task statuses
 export type TaskStatus = "todo" | "in-progress" | "completed" | "refactoring";
@@ -110,6 +111,8 @@ const initialColumns: Column[] = [
 export default function Kanban() {
   // State for search input
   const [search, setSearch] = useState("");
+
+  const router = useRouter()
 
   // Headline action buttons configuration
   const headLineButtons = [
@@ -243,14 +246,16 @@ export default function Kanban() {
         </Select>
 
         {/* User avatars section */}
-        <div className="flex -space-x-2 ml-auto">
+        <div
+        onClick={()=>{router.push("/dev/project/need-to-add-project/team-members")}}
+        className="flex -space-x-2 ml-auto">
           {/* Render user avatars */}
           {Array.from({ length: 4 }).map((_, i) => (
             <Image
               key={i}
               src={`/assets/user.png`}
               alt={`User ${i + 1}`}
-              className="rounded-full size-12 border-2 border-background"
+              className="cursor-pointer rounded-full size-12 border-2 border-background"
               width={32}
               height={32}
             />
@@ -259,7 +264,7 @@ export default function Kanban() {
           <Button
             size="icon"
             variant="outline"
-            className="rounded-full size-12 border-2 border-background"
+            className="cursor-pointer rounded-full size-12 border-2 border-background"
           >
             +3
           </Button>
