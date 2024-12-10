@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 import { Pie, PieChart } from "recharts";
 import MidSizeCard from "../wrapper/midSizeCard";
 
-interface Report {
+export interface TaskStatusReport {
   completed: number;
   onGoing: number;
   pending: number;
@@ -37,7 +37,7 @@ export default function ProjectReportCard({
   totalTasks,
   role,
 }: {
-  report: Report;
+  report: TaskStatusReport;
   role: Role;
   totalTasks?: string | number;
 }) {
@@ -81,13 +81,13 @@ export function Chart({
   report,
   isVendor,
 }: {
-  report: Report;
+  report: TaskStatusReport;
   isVendor: boolean;
 }) {
   const chartData = [
     {
       status: "Completed",
-      noOfTasks: report.completed,
+      noOfTasks: report?.completed || 0,
       fill: `${
         isVendor
           ? "var(--vendor-pie-chart-color-1)"
@@ -96,7 +96,7 @@ export function Chart({
     },
     {
       status: "On going",
-      noOfTasks: report.onGoing,
+      noOfTasks: report?.onGoing || 0,
       fill: `${
         isVendor
           ? "var(--vendor-pie-chart-color-2)"
@@ -105,7 +105,7 @@ export function Chart({
     },
     {
       status: "Pending",
-      noOfTasks: report.pending,
+      noOfTasks: report?.pending || 0,
       fill: `${
         isVendor
           ? "var(--vendor-pie-chart-color-3)"
@@ -114,7 +114,7 @@ export function Chart({
     },
     {
       status: "Refactoring",
-      noOfTasks: report.refactoring,
+      noOfTasks: report?.refactoring || 0,
       fill: `${
         isVendor
           ? "var(--vendor-pie-chart-color-4)"
@@ -148,7 +148,13 @@ function Title({ totalTasks }: { totalTasks?: string | number }) {
     </div>
   );
 }
-function SideBar({ report, isVendor }: { report: Report; isVendor: boolean }) {
+function SideBar({
+  report,
+  isVendor,
+}: {
+  report: TaskStatusReport;
+  isVendor: boolean;
+}) {
   return (
     <div className="text-base flex flex-col font-medium  w-full ">
       <div className="flex flex-row   items-center justify-between ">
@@ -165,7 +171,7 @@ function SideBar({ report, isVendor }: { report: Report; isVendor: boolean }) {
           <div className="">Completed</div>
         </div>
         <div className="flex flex-row text-[#615E83] items-center">
-          {report.completed}
+          {report?.completed || 0}
         </div>
       </div>
 
@@ -183,7 +189,7 @@ function SideBar({ report, isVendor }: { report: Report; isVendor: boolean }) {
           <div className="">On going</div>
         </div>
         <div className="flex flex-row text-[#615E83] items-center">
-          {report.onGoing}
+          {report?.onGoing || 0}
         </div>
       </div>
 
@@ -201,7 +207,7 @@ function SideBar({ report, isVendor }: { report: Report; isVendor: boolean }) {
           <div className="">Pending</div>
         </div>
         <div className="flex flex-row text-[#615E83] items-center">
-          {report.pending}
+          {report?.pending || 0}
         </div>
       </div>
 
@@ -219,7 +225,7 @@ function SideBar({ report, isVendor }: { report: Report; isVendor: boolean }) {
           <div className="">Refactoring</div>
         </div>
         <div className="flex flex-row text-[#615E83] items-center">
-          {report.refactoring}
+          {report?.refactoring || 0}
         </div>
       </div>
     </div>

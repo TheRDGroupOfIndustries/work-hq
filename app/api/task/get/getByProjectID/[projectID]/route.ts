@@ -2,7 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import connectToMongoDB from "@/utils/db";
 import Task from "@/models/Task";
 
-export const GET = async (request: NextRequest, { params }: { params: { projectID: string } }) => {
+export const GET = async (
+  request: NextRequest,
+  { params }: { params: { projectID: string } }
+) => {
   const { projectID } = params;
 
   if (!projectID) {
@@ -17,6 +20,14 @@ export const GET = async (request: NextRequest, { params }: { params: { projectI
 
   try {
     const tasks = await Task.find({ projectID });
+
+    if (tasks.length === 0) {
+      return NextResponse.json({
+        status: 404,
+        success: false,
+        error: "No tasks found for this project ID",
+      });
+    }
 
     return NextResponse.json({
       status: 200,

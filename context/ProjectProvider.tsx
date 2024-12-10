@@ -13,7 +13,7 @@ import { useRouter } from "next/navigation";
 
 interface ProjectContextType {
   selectedProjectDetails: ProjectValues | null;
-  selectedProjectTasks: TaskValues | null;
+  selectedProjectTasks: TaskValues[];
   userAllProjects: ProjectValues[];
   selectedProject: { _id: string; name: string };
   setSelectedProject: React.Dispatch<
@@ -40,9 +40,7 @@ const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({
   }>({ _id: "", name: "" });
   const [selectedProjectDetails, setProjectDetails] =
     useState<ProjectValues | null>(null);
-  const [selectedProjectTasks, setProjectTasks] = useState<TaskValues | null>(
-    null
-  );
+  const [selectedProjectTasks, setProjectTasks] = useState<TaskValues[]>([]);
 
   const fetchUserProjects = useCallback(async () => {
     if (user?.allProjects && user.allProjects.length > 0) {
@@ -84,7 +82,7 @@ const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({
         );
         const taskData = await taskRes.json();
         setProjectDetails(projectDetailsData.project as ProjectValues);
-        setProjectTasks(taskData.project as TaskValues);
+        setProjectTasks(taskData.project as TaskValues[]);
 
         setSelectedProject({
           _id: projectDetailsData.project._id || "",

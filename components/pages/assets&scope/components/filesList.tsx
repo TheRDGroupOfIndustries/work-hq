@@ -219,7 +219,7 @@ const DataTableFile = ({
                     />
                   </TableCell>
                   <TableCell>{file.title}</TableCell>
-                  <TableCell>{file.size}</TableCell>
+                  <TableCell>{file.size.toLocaleString()}KB</TableCell>
                   <TableCell>
                     {formatDateString(file.date.toString())}
                   </TableCell>

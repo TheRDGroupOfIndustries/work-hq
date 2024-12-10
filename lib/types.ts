@@ -127,22 +127,23 @@ export interface ProjectValues {
 // }
 
 export interface TaskValues {
+  _id: string;
   projectID: string;
+  createdBy: string;
   taskNo: number;
   issueSubject: string;
   estimatedTime?: number;
   assignedTo?: string;
-  status: "completed" | "pending" | "inProgress" | "refactoring";
-  createdAt: Date;
+  status: "completed" | "pending" | "inProgress" | "refactoring" | string;
   workingSince?: Date;
   totalHoursSpend?: number;
-  createdBy: string;
+  createdAt: string;
 }
 
 export interface PaymentInfoValues extends PaymentInfoDBTypes {
-  _id?: string;
+  _id: string;
 }
 
 export interface PaymentValues extends PaymentDBTypes {
-  _id?: string;
+  _id: string;
 }

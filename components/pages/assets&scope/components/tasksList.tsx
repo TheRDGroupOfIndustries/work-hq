@@ -1,10 +1,6 @@
 "use client";
 
-import Container from "@/components/reusables/wrapper/Container";
-import { EllipsisVertical } from "lucide-react";
-
-import Filter from "@/components/icons/Filter";
-import SortBy from "@/components/icons/SortBy";
+import { Role } from "@/types";
 import {
   Table,
   TableBody,
@@ -13,37 +9,20 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Role } from "@/types";
 import SquareButton from "@/components/reusables/wrapper/squareButton";
+import Container from "@/components/reusables/wrapper/Container";
+import Filter from "@/components/icons/Filter";
+import SortBy from "@/components/icons/SortBy";
+import { EllipsisVertical } from "lucide-react";
+import { TaskValues } from "@/lib/types";
 
-const dataFilesTasks = [
-  {
-    id: 1,
-    task: "Navbar with Extensive categories",
-    description: "This is the description here about the task...",
-    status: "In Progress",
-    createdOn: "Jan 4, 2022",
-    assignedTo: "Gojo Satoru",
-  },
-  {
-    id: 2,
-    task: "Hero section with three animation sections",
-    description: "This is the description here about the task...",
-    status: "Completed",
-    createdOn: "Jan 4, 2022",
-    assignedTo: "Dazai Osamu",
-  },
-  {
-    id: 3,
-    task: "Add to cart with similar products section",
-    description: "This is the description here about the task...",
-    status: "Pending   ",
-    createdOn: "Jan 4, 2022",
-    assignedTo: "Sukuna Sama",
-  },
-];
-
-export default function TasksList({role}: {role: Role}) {
+export default function TasksList({
+  role,
+  tasks,
+}: {
+  role: Role;
+  tasks: TaskValues[];
+}) {
   return (
     <Container>
       <div className="flex flex-row items-center justify-between">
@@ -52,7 +31,7 @@ export default function TasksList({role}: {role: Role}) {
             {"Tasks Lists"}
           </h3>
           <p className="text-[#6A6A6A] text-base font-normal">
-            Total Tasks - 07
+            Total Tasks - {tasks?.length}
           </p>
         </div>
         <div className="flex flex-col sm:flex-row items-center gap-5">
@@ -64,12 +43,12 @@ export default function TasksList({role}: {role: Role}) {
                 console.log("Download");
               }}
             >
-                <SortBy />
-                Sort By
+              <SortBy />
+              Sort By
             </SquareButton>
           </div>
           <div className="w-full flex flex-row items-center justify-end">
-          <SquareButton
+            <SquareButton
               role={role}
               className="!text-[#6A6A6A]  "
               onClick={() => {
@@ -82,12 +61,12 @@ export default function TasksList({role}: {role: Role}) {
           </div>
         </div>
       </div>
-      <DataTableTasks />
+      <DataTableTasks tasks={tasks} />
     </Container>
   );
 }
 
-function DataTableTasks() {
+const DataTableTasks = ({ tasks }: { tasks: TaskValues[] }) => {
   return (
     <div className="w-full overflow-auto">
       <Table>
@@ -102,32 +81,67 @@ function DataTableTasks() {
           </TableRow>
         </TableHeader>
         <TableBody className="text-[#3A3A3A] text-base border-0 mb-5 px-10 overflow-auto ">
-          {dataFilesTasks.map((row, index) => (
-            <TableRow
-              key={row.id}
-              className={`h-[60px]  text-[#1E1B39] hover:bg-transparent hover:shadow-[3px_3px_10px_0px_#789BD399,-5px_-5px_10px_0px_#FFFFFF] rounded-lg mb-5 border-l-[20px] border-transparent border-b-0 `}
-            >
-              <TableCell className=" ">{`${index + 1}.`}</TableCell>
-              <TableCell>
-                <div className="flex flex-col min-w-[200px]">
-                  <p className="font-semibold">{row.task}</p>
-                  <p className="text-[#6A6A6A]">{row.description}</p>
-                </div>
-              </TableCell>
-              <TableCell>{row.status}</TableCell>
-              <TableCell>{row.createdOn}</TableCell>
-              <TableCell>{row.assignedTo}</TableCell>
-              <TableCell>
-                <EllipsisVertical
-                  size={16}
-                  color="#1E1B39"
-                  className="cursor-pointer"
-                />
+          {tasks?.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={6} className="text-center text-gray-500">
+                No tasks available.
               </TableCell>
             </TableRow>
-          ))}
+          ) : (
+            tasks?.map((row, index) => (
+              <TableRow
+                key={index}
+                className={`h-[60px]  text-[#1E1B39] hover:bg-transparent hover:shadow-[3px_3px_10px_0px_#789BD399,-5px_-5px_10px_0px_#FFFFFF] rounded-lg mb-5 border-l-[20px] border-transparent border-b-0 `}
+              >
+                <TableCell className=" ">{`${index + 1}.`}</TableCell>
+                <TableCell>
+                  <div className="flex flex-col min-w-[200px]">
+                    <p className="font-semibold">{row.issueSubject}</p>
+                    {/* <p className="text-[#6A6A6A]">{row.description}</p> */}
+                  </div>
+                </TableCell>
+                <TableCell>{row.status}</TableCell>
+                <TableCell>{row.createdAt}</TableCell>
+                <TableCell>{row.assignedTo}</TableCell>
+                <TableCell>
+                  <EllipsisVertical
+                    size={16}
+                    color="#1E1B39"
+                    className="cursor-pointer"
+                  />
+                </TableCell>
+              </TableRow>
+            ))
+          )}
         </TableBody>
       </Table>
     </div>
   );
-}
+};
+
+// const dataFilesTasks = [
+//   {
+//     id: 1,
+//     task: "Navbar with Extensive categories",
+//     description: "This is the description here about the task...",
+//     status: "In Progress",
+//     createdOn: "Jan 4, 2022",
+//     assignedTo: "Gojo Satoru",
+//   },
+//   {
+//     id: 2,
+//     task: "Hero section with three animation sections",
+//     description: "This is the description here about the task...",
+//     status: "Completed",
+//     createdOn: "Jan 4, 2022",
+//     assignedTo: "Dazai Osamu",
+//   },
+//   {
+//     id: 3,
+//     task: "Add to cart with similar products section",
+//     description: "This is the description here about the task...",
+//     status: "Pending   ",
+//     createdOn: "Jan 4, 2022",
+//     assignedTo: "Sukuna Sama",
+//   },
+// ];
