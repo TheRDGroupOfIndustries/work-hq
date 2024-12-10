@@ -7,91 +7,220 @@ import {
 } from "@/components/ui/chart";
 import { dashbordHoursCount } from "@/tempData";
 import { Role, VENDOR } from "@/types";
-import { ChevronDown, TrendingDown, TrendingUp, Upload } from "lucide-react";
+import { TrendingDown, TrendingUp, Upload } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { Area, AreaChart, CartesianGrid, Line, XAxis, YAxis } from "recharts";
 
+interface CardData {
+  totalRevenue: {
+    value: number;
+    percentage: number;
+    isUp: boolean;
+    exportReport: () => void;
+  };
+  payrollExpenses: {
+    value: number;
+    percentage: number;
+    isUp: boolean;
+    exportReport: () => void;
+  };
+  totalWorkHours: {
+    value: number;
+    percentage: number;
+    isUp: boolean;
+    exportReport: () => void;
+  };
+}
+type SelectedCard = "Total Revenue" | "Payroll Expenses" | "Total Work Hours";
+
 export default function CompanyStatusSummary() {
+  const [selectedCard, setSelectedCard] =
+    useState<SelectedCard>("Total Revenue");
+
+  const [cardData] = useState({
+    totalRevenue: {
+      value: 44400,
+      percentage: 7.6,
+      isUp: true,
+      exportReport: () => {},
+    },
+    payrollExpenses: {
+      value: 44400,
+      percentage: 7.6,
+      isUp: true,
+      exportReport: () => {},
+    },
+    totalWorkHours: {
+      value: 44400,
+      percentage: 7.6,
+      isUp: false,
+      exportReport: () => {},
+    },
+  });
   return (
     <Container>
       <div className="w-full flex flex-row items-center justify-between">
         <h2 className="text-lg font-semibold">Company Status Summary</h2>
         <button className=" font-semibold">View All</button>
       </div>
-      <Status />
+      <Status
+        selectedCard={selectedCard}
+        setSelectedCard={setSelectedCard}
+        cardData={cardData}
+      />
       <SpendHour data={dashbordHoursCount} />
       <div className="w-full flex items-center justify-center">
         <span className="text-light-gray text-lg font-semibold uppercase my-1">
-          Total Revenue
+          {selectedCard}
         </span>
       </div>
     </Container>
   );
 }
 
-function Status() {
+function Status({
+  cardData,
+  selectedCard,
+  setSelectedCard,
+}: {
+  cardData: CardData;
+  selectedCard: SelectedCard;
+  setSelectedCard: (card: SelectedCard) => void;
+}) {
   return (
     <div className="w-full  grid grid-cols-3 gap-4">
       <div className="flex flex-col gap-4">
-        <Container>
+        <Container
+          onClick={() => {
+            setSelectedCard("Total Revenue");
+          }}
+          className="cursor-pointer"
+        >
           <div className="h-fit w-full flex flex-col gap-2">
             <h1 className="text-base text-light-gray font-normal ">
               Total Revenue
             </h1>
             <div className="flex flex-col gap-3  font-normal">
-              <StatusCardUP />
+              <StatusCardUPAndDown cardData={cardData.totalRevenue} />
               <div className="h-[1px] w-full bg-gray-400"></div>
               <div className="flex flex-row text-base items-center w-full">
                 <button className="self-end ml-auto mt-1 text-base flex flex-row items-center gap-2 text-primary-blue">
-                  <Upload size={16} color="var(--primary-blue)" /> Export Report
+                  <Upload
+                    size={16}
+                    color="var(--primary-blue)"
+                    onClick={() => cardData.totalRevenue.exportReport()}
+                  />{" "}
+                  Export Report
                 </button>
               </div>
             </div>
           </div>
         </Container>
-        <div className="h-[8px] w-[98%] bg-primary-blue mx-auto rounded-full"></div>
+        {selectedCard === "Total Revenue" && (
+          <div className="h-[8px] w-[98%] bg-primary-blue mx-auto rounded-full"></div>
+        )}
       </div>
 
       <div className="flex flex-col gap-4">
-        <Container>
+        <Container
+          onClick={() => {
+            setSelectedCard("Payroll Expenses");
+          }}
+          className="cursor-pointer"
+        >
           <div className="h-fit w-full flex flex-col gap-2">
             <h1 className="text-base text-light-gray font-normal ">
-              Total Revenue
+              Payroll Expenses
             </h1>
             <div className="flex flex-col gap-3  font-normal">
-              <StatusCardUP />
+              <StatusCardUPAndDown cardData={cardData.payrollExpenses} />
               <div className="h-[1px] w-full bg-gray-400"></div>
               <div className="flex flex-row text-base items-center w-full">
                 <button className="self-end ml-auto mt-1 text-base flex flex-row items-center gap-2 text-primary-blue">
-                  <Upload size={16} color="var(--primary-blue)" /> Export Report
+                  <Upload
+                    onClick={() => cardData.payrollExpenses.exportReport()}
+                    size={16}
+                    color="var(--primary-blue)"
+                  />{" "}
+                  Export Report
                 </button>
               </div>
             </div>
           </div>
         </Container>
-        {/* <div className="h-[8px] w-[98%] bg-primary-blue mx-auto rounded-full"></div> */}
+        {selectedCard === "Payroll Expenses" && (
+          <div className="h-[8px] w-[98%] bg-primary-blue mx-auto rounded-full"></div>
+        )}
+      </div>
+
+      <div className="flex flex-col gap-4">
+        <Container
+          onClick={() => {
+            setSelectedCard("Total Work Hours");
+          }}
+          className="cursor-pointer"
+        >
+          <div className="h-fit w-full flex flex-col gap-2">
+            <h1 className="text-base text-light-gray font-normal ">
+              Total Work Hours
+            </h1>
+            <div className="flex flex-col gap-3  font-normal">
+              <StatusCardUPAndDown cardData={cardData.totalWorkHours} />
+              <div className="h-[1px] w-full bg-gray-400"></div>
+              <div className="flex flex-row text-base items-center w-full">
+                <button className="self-end ml-auto mt-1 text-base flex flex-row items-center gap-2 text-primary-blue">
+                  <Upload
+                    onClick={() => cardData.totalWorkHours.exportReport()}
+                    size={16}
+                    color="var(--primary-blue)"
+                  />{" "}
+                  Export Report
+                </button>
+              </div>
+            </div>
+          </div>
+        </Container>
+        {selectedCard === "Total Work Hours" && (
+          <div className="h-[8px] w-[98%] bg-primary-blue mx-auto rounded-full"></div>
+        )}
       </div>
     </div>
   );
 }
 
-function StatusCardUP() {
+function StatusCardUPAndDown({
+  cardData,
+}: {
+  cardData: {
+    value: number;
+    percentage: number;
+    isUp: boolean;
+  };
+}) {
+  function formatValue(value: number): string {
+    if (value >= 1000) {
+      return `${(value / 1000).toFixed(1)}k`;
+    }
+    return value.toString();
+  }
   return (
     <div className="flex flex-row text-base items-center w-full justify-between h-full">
-      <span className="text-dark-gray font-bold text-3xl">44.4K</span>
-      <div className="h-[30px] w-[80px] text-[#067647] border border-[#067647] bg-[#DDFFEA] text-sm rounded-md flex flex-row items-center justify-center gap-1">
-        <TrendingUp size={18} color="#067647" /> +7.6%
-      </div>
-    </div>
-  );
-}
-
-function StatusCardDown() {
-  return (
-    <div className="flex flex-row text-base items-center w-full justify-between h-full">
-      <span className="text-dark-gray font-bold text-3xl">44.4K</span>
-      <div className="h-[30px] w-[80px] text-[#B42318] border border-[#B4231880] bg-[#FFEFEE] text-sm rounded-md flex flex-row items-center justify-center gap-1">
-        <TrendingDown size={18} color="#B42318" /> +7.6%
+      <span className={`text-dark-gray font-bold text-3xl `}>
+      {formatValue(cardData.value)}
+      </span>
+      <div
+        className={` h-[30px] w-[80px] ${
+          cardData.isUp ? "text-[#067647]" : "text-[#B42318]"
+        } border ${
+          cardData.isUp ? "border-[#06764780]" : "border-[#B4231880]"
+        } bg-[#DDFFEA] text-sm rounded-md flex flex-row items-center justify-center gap-1 `}
+      >
+        {cardData.isUp ? (
+          <TrendingUp size={18} color="#067647" />
+        ) : (
+          <TrendingDown size={18} color="#B42318" />
+        )}{" "}
+        {`${cardData.isUp ? cardData.percentage : -cardData.percentage}%`}
       </div>
     </div>
   );
@@ -99,11 +228,11 @@ function StatusCardDown() {
 
 // Chart
 
-interface Data {
+interface ChartData {
   parameter: string;
   hours: number;
 }
-export function SpendHour({ data, role }: { data: Data[]; role?: Role }) {
+export function SpendHour({ data, role }: { data: ChartData[]; role?: Role }) {
   const [isVendor, setIsVendor] = useState(false);
 
   useEffect(() => {
@@ -122,7 +251,7 @@ export function SpendHour({ data, role }: { data: Data[]; role?: Role }) {
   );
 }
 
-function Chart({ data, isVendor }: { data: Data[]; isVendor: boolean }) {
+function Chart({ data, isVendor }: { data: ChartData[]; isVendor: boolean }) {
   const chartConfig = {
     hours: {
       label: "Hours",

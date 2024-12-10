@@ -68,7 +68,7 @@ const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({
         console.error("Error fetching user projects:", error);
       }
     // }
-  }, [user.allProjects, user.myProjects]);
+  }, [user?.allProjects, user?.myProjects]);
 
   const getSelectProjectDetails = useCallback(
     async (projectId: string) => {

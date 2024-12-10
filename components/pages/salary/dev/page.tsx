@@ -11,11 +11,11 @@ import React from "react";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { VENDOR } from "@/types";
-import YourPaymentDetails from "../components/YourPaymentDetails";
 import SalaryHistory from "../components/SalaryHistory";
 import AdvancePaymentRequest from "../components/AdvancePaymentRequest";
 import EditSalaryMethod from "../components/EditSalaryMethod";
 import RequestAdvancePayment from "../components/RequestAdvancePayment";
+import PaymentDetails from "@/components/reusables/components/paymentDetails";
 
 export default function Salary() {
   const headLineButtons = [
@@ -87,7 +87,7 @@ export default function Salary() {
                   : "data-[state=active]:border-primary-blue"
               } `} value="advancePaymentRequest">Advance Payment Request</TabsTrigger>        
         </TabsList>
-        <TabsContent value="paymentDetail"><YourPaymentDetails/></TabsContent>
+        <TabsContent value="paymentDetail"><PaymentDetails/></TabsContent>
         <TabsContent value="salaryHistory"><SalaryHistory/></TabsContent>
         <TabsContent value="advancePaymentRequest"><AdvancePaymentRequest/></TabsContent>
       </Tabs>
