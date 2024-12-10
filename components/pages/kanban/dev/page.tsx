@@ -9,16 +9,18 @@ import {
   SelectTrigger,
 } from "@/components/ui/select";
 
-import { ROLE } from "@/tempData";
-import { motion } from "framer-motion";
-import { ChartLine } from "lucide-react";
-import { useRef, useState } from "react";
-import Image from "next/image";
 import Container from "@/components/reusables/wrapper/Container";
 import { Button } from "@/components/ui/button";
+import { ROLE } from "@/tempData";
+import { motion } from "framer-motion";
+import { ChartLine, Ellipsis } from "lucide-react";
+import Image from "next/image";
+import { useRef, useState } from "react";
 
+// Define possible task statuses
 export type TaskStatus = "todo" | "in-progress" | "completed" | "refactoring";
 
+// Interface for individual task details
 export interface Task {
   id: string;
   title: string;
@@ -30,12 +32,14 @@ export interface Task {
   };
 }
 
+// Interface for kanban board columns
 export interface Column {
   id: TaskStatus;
   title: string;
   tasks: Task[];
 }
 
+// Initial data for kanban board columns
 const initialColumns: Column[] = [
   {
     id: "todo",
@@ -104,7 +108,10 @@ const initialColumns: Column[] = [
 ];
 
 export default function Kanban() {
+  // State for search input
   const [search, setSearch] = useState("");
+
+  // Headline action buttons configuration
   const headLineButtons = [
     {
       buttonText: "Export All Tasks",
@@ -113,39 +120,59 @@ export default function Kanban() {
     },
   ];
 
+  // State management for kanban board columns
   const [columns, setColumns] = useState<Column[]>(initialColumns);
+
+  // State to track the currently dragged task
   const [draggingTaskId, setDraggingTaskId] = useState<string | null>(null);
+
+  // State to track the source column of the dragged task
   const [draggingColumnId, setDraggingColumnId] = useState<TaskStatus | null>(
     null
   );
+
+  // Ref to store the entire dragged task object
   const draggedTask = useRef<Task | null>(null);
 
+  // Handler for when drag operation starts
   const onDragStart = (task: Task, columnId: TaskStatus) => {
+    // Set the current dragging task's ID and column
     setDraggingTaskId(task.id);
     setDraggingColumnId(columnId);
+    // Store the entire task object in the ref
     draggedTask.current = task;
   };
 
+  // Handler for when a task is dragged over a different column
   const onDragOver = (columnId: TaskStatus) => {
+    // Prevent unnecessary updates if dragging within the same column
     if (draggingColumnId === columnId) return;
 
+    // Update columns state to move the task
     setColumns((prevColumns) => {
+      // Create a deep copy of columns to avoid direct mutation
       const newColumns = prevColumns.map((col) => ({
         ...col,
         tasks: [...col.tasks],
       }));
+
+      // Find source and destination columns
       const sourceColumn = newColumns.find(
         (col) => col.id === draggingColumnId
       );
       const destColumn = newColumns.find((col) => col.id === columnId);
 
+      // Perform task transfer between columns
       if (sourceColumn && destColumn && draggedTask.current) {
         const taskIndex = sourceColumn.tasks.findIndex(
           (task) => task.id === draggingTaskId
         );
         if (taskIndex !== -1) {
+          // Remove task from source column
           const [task] = sourceColumn.tasks.splice(taskIndex, 1);
+          // Add task to destination column with updated status
           destColumn.tasks.push({ ...task, status: columnId });
+          // Update dragging column ID
           setDraggingColumnId(columnId);
         }
       }
@@ -154,20 +181,27 @@ export default function Kanban() {
     });
   };
 
+  // Handler for when drag operation ends
   const onDragEnd = () => {
+    // Reset all dragging-related states
     setDraggingTaskId(null);
     setDraggingColumnId(null);
     draggedTask.current = null;
   };
+
   return (
     <MainContainer role={ROLE}>
+      {/* Page header with title and action buttons */}
       <Headline
         role={ROLE}
         title="Project Overview"
         subTitle="Project"
         buttonObjects={headLineButtons}
       />
+
+      {/* Search and filter controls */}
       <div className="flex flex-wrap gap-4">
+        {/* Search input */}
         <input
           type="text"
           value={search}
@@ -175,6 +209,8 @@ export default function Kanban() {
           placeholder="Search..."
           className="w-[200px] text-base h-[40px] outline-none shadow-neuro-3 bg-transparent rounded-lg px-4"
         />
+
+        {/* Filter dropdown */}
         <Select>
           <SelectTrigger className="w-fit te outline-none gap-1 bg-transparent">
             <div className="w-full text-[#697077] flex flex-row gap-1 items-center justify-end">
@@ -190,6 +226,7 @@ export default function Kanban() {
           </SelectContent>
         </Select>
 
+        {/* Insights dropdown */}
         <Select>
           <SelectTrigger className="w-fit te outline-none gap-1 bg-transparent">
             <div className="w-full text-[#697077] flex flex-row gap-1 items-center justify-end">
@@ -205,7 +242,9 @@ export default function Kanban() {
           </SelectContent>
         </Select>
 
+        {/* User avatars section */}
         <div className="flex -space-x-2 ml-auto">
+          {/* Render user avatars */}
           {Array.from({ length: 4 }).map((_, i) => (
             <Image
               key={i}
@@ -216,6 +255,7 @@ export default function Kanban() {
               height={32}
             />
           ))}
+          {/* Additional users button */}
           <Button
             size="icon"
             variant="outline"
@@ -226,6 +266,7 @@ export default function Kanban() {
         </div>
       </div>
 
+      {/* Kanban board columns */}
       <motion.div
         layout
         className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
@@ -241,18 +282,18 @@ export default function Kanban() {
             }}
           >
             <Container>
+              {/* Column header with title and task count */}
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-semibold">{column.title}</h2>
                 <span className="rounded-full bg-muted px-2 py-1 text-sm">
                   {column.tasks.length.toString().padStart(2, "0")}
                 </span>
               </div>
-              <motion.div
-                layout
-                className="min-h-[500px]"
-              >
-                {column.tasks.map((task) => (
+              {/* Tasks within the column */}
+              <motion.div layout className="min-h-[500px]">
+                {column.tasks.map((task, index) => (
                   <TaskCard
+                    index={index}
                     key={task.id}
                     task={task}
                     onDragStart={() => onDragStart(task, column.id)}
@@ -268,12 +309,16 @@ export default function Kanban() {
   );
 }
 
+// Props interface for TaskCard component
 interface TaskCardProps {
   task: Task;
+  index: number;
   onDragStart: () => void;
   onDragEnd: () => void;
 }
-function TaskCard({ task, onDragStart, onDragEnd }: TaskCardProps) {
+
+// Individual task card component
+function TaskCard({ task, onDragStart, onDragEnd, index }: TaskCardProps) {
   return (
     <motion.div
       layout
@@ -284,7 +329,25 @@ function TaskCard({ task, onDragStart, onDragEnd }: TaskCardProps) {
       className="mb-4 cursor-grab active:cursor-grabbing"
     >
       <Container>
-        <div></div>
+        {/* TODO: Add task card content */}
+        <div className="flex flex-col w-full">
+          <div className="flex flex-row items-center justify-between">
+            <div className="">
+              <Image
+                src={
+                   "/assets/user.png"
+                }
+                alt="Profile Image"
+                width="20"
+                height="20"
+                className="w-8 h-8 rounded-full object-cover overflow-hidden"
+              />
+            </div>
+            <Ellipsis color='var(--light-gray)'/>
+          </div>
+          <p className="text-sm text-light-gray">{task.title}</p>
+          <span>{`Task - ${index + 1}`}</span>
+        </div>
       </Container>
     </motion.div>
   );
