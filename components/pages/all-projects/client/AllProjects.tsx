@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import { useProjectContext } from "@/context/ProjectProvider";
 import { ProjectValues } from "@/lib/types";
 import { ROLE } from "@/tempData";
@@ -15,6 +14,7 @@ import {
 import Filter from "@/components/icons/Filter";
 import Headline from "@/components/reusables/components/headline";
 import MainContainer from "@/components/reusables/wrapper/mainContainer";
+import AllProjectListTable from "@/components/reusables/components/AllProjectListTable";
 
 export default function AllProjects() {
   const { userAllProjects } = useProjectContext();
@@ -45,7 +45,6 @@ interface ProjectTableProps {
 
 const ProjectTable: React.FC<ProjectTableProps> = ({ projects }) => {
   const { selectedProject, setSelectedProject } = useProjectContext();
-  const router = useRouter();
 
   const [search, setSearch] = useState<string>("");
   const [filterCategory, setFilterCategory] = useState<string>("");
@@ -109,7 +108,7 @@ const ProjectTable: React.FC<ProjectTableProps> = ({ projects }) => {
         </Select>
       </div>
 
-      <table className="w-full text-left border-collapse">
+      {/* <table className="w-full text-left border-collapse">
         <thead>
           <tr className="bg-transparent text-dark-gray border-b border-gray-300">
             <th className="px-4 py-2"></th>
@@ -181,7 +180,9 @@ const ProjectTable: React.FC<ProjectTableProps> = ({ projects }) => {
             </tr>
           )}
         </tbody>
-      </table>
+      </table> */}
+
+      <AllProjectListTable list={filteredProjects} selectedProject={selectedProject} setSelectedProject={setSelectedProject} />
     </div>
   );
 };

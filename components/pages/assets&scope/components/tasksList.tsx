@@ -103,7 +103,7 @@ function DataTableTasks() {
         </TableHeader>
         <TableBody className="text-[#3A3A3A] text-base border-0 mb-5 px-10 overflow-auto ">
           {dataFilesTasks.map((row, index) => (
-            <TableRow
+            <TableCell
               key={row.id}
               className={`h-[60px]  text-[#1E1B39] hover:bg-transparent hover:shadow-[3px_3px_10px_0px_#789BD399,-5px_-5px_10px_0px_#FFFFFF] rounded-lg mb-5 border-l-[20px] border-transparent border-b-0 `}
             >
@@ -124,7 +124,7 @@ function DataTableTasks() {
                   className="cursor-pointer"
                 />
               </TableCell>
-            </TableRow>
+            </TableCell>
           ))}
         </TableBody>
       </Table>
