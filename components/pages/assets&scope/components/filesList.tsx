@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
-import { Role, VENDOR } from "@/types";
+import UploadFiles from "@/components/reusables/components/UploadFiles";
+import Container from "@/components/reusables/wrapper/Container";
+import SquareButton from "@/components/reusables/wrapper/squareButton";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import {
   Table,
   TableBody,
@@ -11,12 +13,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import Container from "@/components/reusables/wrapper/Container";
-import SquareButton from "@/components/reusables/wrapper/squareButton";
-import { Upload } from "lucide-react";
 import { useProjectContext } from "@/context/ProjectProvider";
 import { formatDateString } from "@/lib/utils";
+import { Role, VENDOR } from "@/types";
 import { removeMultipleFiles } from "@/utils/actions/fileUpload.action";
+import { Upload } from "lucide-react";
+import { useState } from "react";
 
 export default function FilesList({ role }: { role: Role }) {
   const { selectedProjectDetails } = useProjectContext();
@@ -132,17 +134,24 @@ export default function FilesList({ role }: { role: Role }) {
             </SquareButton>
           </div>
           <div className="w-full flex flex-row items-center justify-end">
-            <SquareButton
-              role={role}
-              onClick={() => console.log("upload more files")}
-            >
-              <Upload
-                color={
-                  role === VENDOR ? "var(--vendor-dark)" : "var(--primary-blue)"
-                }
-              />
-              Upload
-            </SquareButton>
+            <Dialog>
+              <DialogTrigger asChild>
+                <SquareButton
+                  role={role}
+                  onClick={() => console.log("upload more files")}
+                >
+                  <Upload
+                    color={
+                      role === VENDOR
+                        ? "var(--vendor-dark)"
+                        : "var(--primary-blue)"
+                    }
+                  />
+                  Upload
+                </SquareButton>
+              </DialogTrigger>
+              <DialogContent><UploadFiles/></DialogContent>
+            </Dialog>
           </div>
         </div>
       </div>
