@@ -1,10 +1,15 @@
 'use client';
 import Headline from "@/components/reusables/components/headline";
-import Container from "@/components/reusables/wrapper/Container";
 import MainContainer from "@/components/reusables/wrapper/mainContainer";
 import { ROLE } from "@/tempData";
 import React from "react";
 import CompanyStatusSummary from "../components/companyStatusSummary";
+import StatusCardsHeadline from "../components/StatusCardsHeadline";
+import MidInformationCard from "../components/midInformationCard";
+import TotalProject from "@/components/icons/TotalProject";
+import TotalEmployees from "@/components/icons/TotalEmployees";
+import TotalClientsAndVendors from "@/components/icons/TotalClientsAndVendors";
+import EmployeesAndClientList from "../components/EmployeesAndClientList";
 
 export default function Dashboard() {
   const headLineButtons = [
@@ -14,6 +19,39 @@ export default function Dashboard() {
       onClick: () => console.log("Export Report"),
     },
   ];
+
+  const midCardData = [
+    {
+      title: "Tptal Project",
+      icon: TotalProject ,
+      data: "58",
+    },
+    {
+      title: "Total Employees",
+      icon: TotalEmployees,
+      data: 55,
+    },
+    {
+      title: "Total Client/Vendors",
+      icon: TotalClientsAndVendors,
+      data: "8",
+    },
+  ];
+
+  const list = [
+    {
+      name: "John Doe",
+      info: "Project Manager",
+    },
+    {
+      name: "John Doe",
+      info: "Project Manager",
+    },
+    {
+      name: "John Doe",
+      info: "Project Manager",
+    },
+  ]
   return (
     <MainContainer>
       <Headline
@@ -22,64 +60,16 @@ export default function Dashboard() {
         subTitle="Project"
         buttonObjects={headLineButtons}
       />
-      <Status/>
+      <StatusCardsHeadline/>
       <CompanyStatusSummary/>
+      <MidInformationCard client={false} midCardData={midCardData}  />
+      <div className="flex flex-row gap-4">
+        <EmployeesAndClientList list={list} redirect="/dev/project/have-todo-here/" title="Employees List"/>
+        <EmployeesAndClientList list={list} redirect="" title="Employees List"/>
+      </div>
     </MainContainer>
   );
 }
 
-function Status() {
-  return (
-    <div className="w-full grid grid-cols-3 gap-4">
-      <Container>
-        <div className="h-full w-full flex flex-col gap-2">
-          <h1 className="text-base font-semibold">Today's Status</h1>
-          <div className="flex flex-col  font-normal">
-            <div className="flex flex-row text-base items-center w-full justify-between">
-              <span className="text-light-gray">Working Employees</span>
-              <span className="text-light-gray">04</span>
-            </div>
-            <div className="flex flex-row text-base items-center w-full justify-between">
-              <span className="text-light-gray">Working Hours</span>
-              <span className="text-light-gray">04 hours</span>
-            </div>
-          </div>
-        </div>
-      </Container>
-
-      <Container>
-        <div className="h-full w-full flex flex-col gap-2">
-          <h1 className="text-base font-semibold">All Project Status</h1>
-          <div className="flex flex-col  font-normal">
-            <div className="flex flex-row text-base items-center w-full justify-between">
-              <span className="text-light-gray">Current Figma Links</span>
-              <span className="text-light-gray">04</span>
-            </div>
-            <div className="flex flex-row text-base items-center w-full justify-between">
-              <span className="text-light-gray">Live Deployment Links</span>
-              <span className="text-light-gray">04</span>
-            </div>
-          </div>
-        </div>
-      </Container>
-
-      <Container>
-        <div className="h-full w-full flex flex-col gap-2">
-          <h1 className="text-base font-semibold">Today Meetings</h1>
-          <div className="flex flex-col  font-normal">
-            <div className="flex flex-row text-base items-center w-full justify-between">
-              <span className="text-light-gray">Meetings to attend</span>
-              <span className="text-light-gray">04</span>
-            </div>
-            <div className="flex flex-row text-base items-center w-full justify-between">
-              <span className="text-light-gray">Meetings completed</span>
-              <span className="text-light-gray">04</span>
-            </div>
-          </div>
-        </div>
-      </Container>
-    </div>
-  );
-}
 
 

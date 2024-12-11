@@ -12,43 +12,43 @@ export default function Announcement({size}: {size?: number}) {
       <path
         d="M16.4076 17.1004C18.3195 16.0795 19.9124 15.7191 22.226 14.0743C24.5397 12.4296 26.9199 8.68435 27.3598 8.61306C27.4259 8.60236 28.1237 10.7913 28.1737 10.95C29.2462 14.3659 29.9795 17.6184 30.5494 21.1356C30.7803 22.5605 30.7238 24.0028 30.9488 25.3917C31.0156 25.8035 30.9296 26.1592 30.9197 26.5539C30.916 26.7058 31.1302 27.0517 30.9928 27.0049C30.2391 26.7483 29.3307 25.9417 28.4515 25.6421C24.9006 24.4327 21.4043 23.8928 17.7592 24.1246"
         stroke="#155EEF"
-        stroke-width="2.307"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="2.307"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M18.942 31.4426C17.7955 29.6673 17.1317 27.5581 16.61 25.4403C15.9828 22.894 15.4408 17.5424 15.0495 17.1343C13.9611 15.9991 5.88371 19.622 5.67903 20.6756C5.54043 21.3903 5.76996 22.5336 5.81353 23.2712C5.84864 23.8679 5.97978 25.6924 6.29714 26.2556C6.37451 26.3929 11.8676 25.9422 12.3946 26.3568C12.597 26.5162 13.9509 30.6515 14.7307 31.5025C15.9079 32.7873 17.2733 33.0655 17.9565 32.4254"
         stroke="#00359E"
-        stroke-width="2.307"
-        stroke-linecap="round"
+        strokeWidth="2.307"
+        strokeLinecap="round"
       />
       <path
         opacity="0.503384"
         d="M34.0601 5.19058C33.1318 5.68543 32.4574 6.91098 31.3869 7.08444"
         stroke="#155EEF"
-        stroke-width="2.307"
-        stroke-linecap="round"
+        strokeWidth="2.307"
+        strokeLinecap="round"
       />
       <path
         opacity="0.503384"
         d="M37.4665 12.5074C36.1817 12.4204 34.7751 12.9234 33.5324 13.3071"
         stroke="#155EEF"
-        stroke-width="2.307"
-        stroke-linecap="round"
+        strokeWidth="2.307"
+        strokeLinecap="round"
       />
       <path
         opacity="0.503384"
         d="M39 20.3077C37.9572 19.8155 37.0175 20.0478 36.0044 20.2119"
         stroke="#155EEF"
-        stroke-width="2.307"
-        stroke-linecap="round"
+        strokeWidth="2.307"
+        strokeLinecap="round"
       />
       <path
         opacity="0.503384"
         d="M38.7208 28.099C37.8349 27.7097 36.9073 27.4066 35.9824 27.082"
         stroke="#155EEF"
-        stroke-width="2.307"
-        stroke-linecap="round"
+        strokeWidth="2.307"
+        strokeLinecap="round"
       />
     </svg>
   );

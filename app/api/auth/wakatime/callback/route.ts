@@ -95,10 +95,8 @@ export const GET = async (req: NextRequest) => {
     await user.save();
     console.log("Saved user:", user);
     // Respond with success
-    return new NextResponse(
-      JSON.stringify({ message: "WakaTime data updated successfully.", wakaTime: user.wakaTime }),
-      { status: 200 }
-    );
+    return NextResponse.redirect('http://localhost:3000/dev/all-projects');
+
   } catch (error) {
     console.error("Error updating WakaTime data:", error);
     return new NextResponse(

@@ -4,12 +4,12 @@ export interface UserDBTypes {
   username?: string; // Uniquely generated
   firstName: string;
   lastName?: string;
-  wakaTime?:{
+  wakaTime?: {
     user_id: string;
     access_token: string;
     refresh_token: string;
     expires_at: Date;
-  }
+  };
   profileImage?: string;
   authIntegrated?: string[]; // Auth providers integrated
   email: string;
@@ -25,15 +25,16 @@ export interface UserDBTypes {
 
   // Developer-specific fields
   workStatus?: "loggedIn" | "loggedOut" | "onBreak";
-  workingHoursRanges?: { 
-    date:Date;
-    timeRange: {startTime: string; endTime: string}[] 
+  workingHoursRanges?: {
+    date: Date;
+    timeRange: { startTime: string; endTime: string }[];
   }[]; // Working hours array
   joiningDate?: Date;
   position?: string[]; // Developer positions
   myProjects?: Schema.Types.ObjectId[]; // Reference to projects
   totalSpendHours?: { date: Date; totalHours: number; loggedInTime: number }[];
   performance?: { month: number; year: number; performance: number };
+  managerID?: Schema.Types.ObjectId; // Populated based on Projects schema (linked)
 
   // Vendor-specific fields
   vendorBasedProjects?: Schema.Types.ObjectId[]; // Fetched from Projects schema
@@ -50,14 +51,14 @@ const userSchema = new Schema<UserDBTypes>(
       refresh_token: { type: String, required: false },
       expires_at: { type: Date, required: false },
     },
-    username: { type: String, required: false},
+    username: { type: String, required: false },
     profileImage: { type: String, required: false },
-    authIntegrated : [{ type: String, required: false }],
+    authIntegrated: [{ type: String, required: false }],
     firstName: { type: String, required: true },
-    lastName: { type: String, required: false},
+    lastName: { type: String, required: false },
     email: { type: String, required: false },
     phone: { type: String, required: false },
-    loginStep: { type: Number, enum: [0, 1, 3],default: 0 },
+    loginStep: { type: Number, enum: [0, 1, 3], default: 0 },
     role: {
       type: String,
       required: true,
@@ -72,7 +73,11 @@ const userSchema = new Schema<UserDBTypes>(
     allProjects: [{ type: Schema.Types.ObjectId, ref: "Project" }],
 
     // Developer fields
-    workStatus: { type: String, enum: ["loggedIn", "loggedOut", "onBreak"] },
+    workStatus: {
+      type: String,
+      enum: ["loggedIn", "loggedOut", "onBreak"],
+      default: "loggedOut",
+    },
     workingHoursRanges: [
       {
         date: { type: Date },
@@ -89,7 +94,12 @@ const userSchema = new Schema<UserDBTypes>(
         loggedInTime: { type: Number },
       },
     ],
-    performance: { month: { type: Number }, year: { type: Number }, performance: { type: Number } },
+    performance: {
+      month: { type: Number },
+      year: { type: Number },
+      performance: { type: Number },
+    },
+    managerID: { type: Schema.Types.ObjectId, ref: "User" },
 
     // Vendor-based project references
     vendorBasedProjects: [{ type: Schema.Types.ObjectId, ref: "Project" }],
@@ -98,7 +108,6 @@ const userSchema = new Schema<UserDBTypes>(
 );
 
 // Ensure the model doesn't overwrite existing models in a development environment
-const User =
-  models && (models.User || model<UserDBTypes>("User", userSchema));
+const User = models && (models.User || model<UserDBTypes>("User", userSchema));
 
 export default User;

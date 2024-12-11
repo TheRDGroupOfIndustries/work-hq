@@ -2,6 +2,8 @@ import { Schema, model, models } from "mongoose";
 
 export interface PaymentDBTypes {
   paymentTitle: string;
+  projectID: Schema.Types.ObjectId;
+  isRequested: boolean;
   status:
     | "requested"
     | "fulfilled"
@@ -30,6 +32,8 @@ export interface PaymentDBTypes {
 const paymentSchema = new Schema<PaymentDBTypes>(
   {
     paymentTitle: { type: String, required: true },
+    projectID: { type: Schema.Types.ObjectId, ref: "User", required: false },
+    isRequested: { type: Boolean, required: false, default: false },
     status: {
       type: String,
       required: true,

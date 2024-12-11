@@ -117,7 +117,7 @@
   }
   .text-border-thick {
     -webkit-text-fill-color: transparent;
-    -webkit-text-stroke-width: 2px;
+    -webkit-text-strokeWidth: 2px;
     /* -webkit-text-stroke-color: #000; */
   }
   .drop-shadow-lg-custom {

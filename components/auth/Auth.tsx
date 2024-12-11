@@ -5,31 +5,20 @@ import { usePathname} from "next/navigation";
 import Link from "next/link";
 import { Button } from "../ui/button";
 import { FcGoogle } from "react-icons/fc";
-import { useEffect } from "react";
 import { FaGithub, FaLinkedin } from "react-icons/fa";
 import { authFormPages } from "@/lib/sections/authFormPages";
-import { useDispatch } from "react-redux";
-import { setSignUpRole } from "@/redux/slices/authSlice";
 import Cookies from "js-cookie";
 import BackgrounImg from "@/public/SignUp.png";
 import Image from "next/image";
 import Logo from "@/public/logo.png";
+import { useUser } from "@/context/UserProvider";
 // import { RootState } from "@/redux/rootReducer";
 
 const Auth: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const pathname = usePathname();
   const { status } = useSession();
 
-  const dispatch = useDispatch();
-
-  // Get signUpRole from Redux store
-  // const signUpRole = useSelector((state:RootState) => state.auth.signUpRole);
-
-  useEffect(() => {
-    const signUpRoleCookie = Cookies.get("SignUpRole");
-    dispatch(setSignUpRole(signUpRoleCookie ? signUpRoleCookie : "client"));
-  }, [dispatch]);
-
+  const {setSignUpRole} = useUser();
   // Find the current form page based on the pathname
   const currentPage = authFormPages.find(page => pathname.includes(page.href));
 
@@ -42,8 +31,8 @@ const Auth: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Function to handle OAuth login with custom query parameters
   const handleOAuthSignIn = (provider: string) => {
     if (currentPage) {
-      dispatch(setSignUpRole(currentPage.role));
       Cookies.set("SignUpRole", currentPage.role? currentPage.role : "client");
+      setSignUpRole(currentPage.role? currentPage.role : "client");
     }
     signIn(provider);
   };

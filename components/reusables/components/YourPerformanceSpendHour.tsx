@@ -30,7 +30,7 @@ export default function YourPerformanceSpendHour({
     }
   }, [role]);
   return (
-    <div className="rounded-xl shadow-neuro-1 h-[400px] flex flex-row items-center justify-center mt-5">
+    <div className="rounded-xl shadow-neuro-1 h-[400px] flex flex-row items-center justify-center mt-5 mb-5">
       <div className="w-full h-full flex flex-col gap-2 py-5">
         <Title totalHours={totalHours} />
 
@@ -147,7 +147,9 @@ function Title({ totalHours }: { totalHours?: string | number }) {
   return (
     <div className=" flex flex-row items-center justify-between px-5">
       <div className=" flex flex-col">
-        <h2 className="text-lg font-semibold">{"Your Performance (Spend Hours)"}</h2>
+        <h2 className="text-lg font-semibold">
+          {"Your Performance (Spend Hours)"}
+        </h2>
         <p className="text-light-gray text-sm font-normal">{`Total Hours - ${totalHours}`}</p>
       </div>
 

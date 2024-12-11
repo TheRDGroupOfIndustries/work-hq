@@ -45,6 +45,7 @@ export interface CustomUser extends NextAuthUser {
   myProjects?: string[]; // Reference to projects
   totalSpendHours?: { date: Date; totalHours: number; loggedInTime: number }[];
   performance?: { month: number; year: number; performance: number };
+  managerID?: string; // Manger reference to know about the dev working on this manager
 
   // Vendor-specific fields
   vendorBasedProjects?: string[];
@@ -146,4 +147,9 @@ export interface PaymentInfoValues extends PaymentInfoDBTypes {
 
 export interface PaymentValues extends PaymentDBTypes {
   _id: string;
+}
+
+export interface SpecificProjectlayoutProps {
+  children: React.ReactNode;
+  params: { _id: string };
 }

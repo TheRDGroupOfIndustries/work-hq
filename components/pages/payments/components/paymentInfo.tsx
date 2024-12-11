@@ -24,7 +24,7 @@ export default function PaymentInfo() {
     fetchCompanyDetail();
   }, []);
 
-  console.log(companyDetail);
+  // console.log(companyDetail);
 
   return (
     <div className="p-5 flex flex-col gap-3">

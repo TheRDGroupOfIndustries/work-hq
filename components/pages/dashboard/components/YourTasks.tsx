@@ -1,67 +1,94 @@
-import MidSizeCard from "@/components/reusables/wrapper/midSizeCard";
-import { ArrowRight } from "lucide-react";
-import { useParams, useRouter } from "next/navigation";
+import Container from "@/components/reusables/wrapper/Container";
+import { useProjectContext } from "@/context/ProjectProvider";
+import { MoveRight } from "lucide-react";
+import { useRouter } from "next/navigation";
 import React from "react";
 
-export function YourCurrentTasks() {
-  const navigate = useRouter()
-  const params = useParams();
+interface List {
+  task: string;
+}
+
+export default function YourTasks({
+  title,
+  list,
+}: {
+  title: string;
+  list: List[];
+}) {
+  const router = useRouter();
+  const { selectedProjectDetails } = useProjectContext();
   return (
-    <MidSizeCard className="h-[550px] ">
-      <div className="h-full w-full flex flex-col gap-2 p-5">
-        <div className="flex flex-row items-center justify-between">
+    <Container>
+      <div className="flex flex-col w-full h-fit max-h-[500px] gap-4">
+        <div className="w-full flex-between flex-row">
           <div className="flex flex-col">
-            <h1 className="text-lg font-medium text-dark-gray ">
-              Your Current Tasks
-            </h1>
+            <h2 className="uppercase text-lg font-semibold">{title}</h2>
+
             <p className="text-base font-normal text-[#6A6A6A] Total current - 24">
-              Total current - 24
+              Total current - {list?.length}
             </p>
           </div>
-          <ArrowRight className=" cursor-pointer" onClick={()=>{navigate.push( `/dev/project/${params.name}/kanban`)}} size={30}  />
+          <MoveRight
+            onClick={() => {
+              router.push(
+                `/dev/project/${selectedProjectDetails?.projectDetails?.projectName}/kanban`
+              );
+            }}
+            className="cursor-pointer"
+            color="var(--light-gray)"
+          />
         </div>
-        <div className="flex flex-col gap-2 px-2">
-            <Line/>
-            <Line/>
-            <Line/>
+        <div className="w-full flex flex-col gap-1 px-2">
+          {list?.map((item, index) => (
+            <Line key={index} index={index} list={item} />
+          ))}
         </div>
       </div>
-    </MidSizeCard>
+    </Container>
   );
 }
 
-export function YourCompletedTasks() {
-  const navigate = useRouter()
-  const params = useParams();
-  return (
-    <MidSizeCard className="h-[550px] ">
-      <div className="h-full w-full flex flex-col gap-2 p-5">
-        <div className="flex flex-row items-center justify-between">
-          <div className="flex flex-col">
-            <h1 className="text-lg font-medium text-dark-gray ">
-              Your Completed Tasks
-            </h1>
-            <p className="text-base font-normal text-[#6A6A6A] Total current - 24">
-              Total current - 24
-            </p>
-          </div>
-          <ArrowRight className=" cursor-pointer" onClick={()=>{navigate.push( `/dev/project/${params.name}/kanban`)}} size={30}  />
-        </div>
-        <div className="flex flex-col gap-2 px-2">
-            <Line/>
-            <Line/>
-            <Line/>
-        </div>
-      </div>
-    </MidSizeCard>
-  );
-}
+// export function YourCompletedTasks() {
+//   const navigate = useRouter();
+//   const params = useParams();
+//   return (
+//     <MidSizeCard className="h-[550px] ">
+//       <div className="h-full w-full flex flex-col gap-2 p-5">
+//         <div className="flex flex-row items-center justify-between">
+//           <div className="flex flex-col">
+//             <h1 className="text-lg font-medium text-dark-gray ">
+//               Your Completed Tasks
+//             </h1>
+//             <p className="text-base font-normal text-[#6A6A6A] Total current - 24">
+//               Total current - 24
+//             </p>
+//           </div>
+//           <ArrowRight
+//             className=" cursor-pointer"
+//             onClick={() => {
+//               navigate.push(`/dev/project/${params.name}/kanban`);
+//             }}
+//             size={30}
+//           />
+//         </div>
+//         <div className="flex flex-col gap-2 px-2">
+//           <Line />
+//           <Line />
+//           <Line />
+//         </div>
+//       </div>
+//     </MidSizeCard>
+//   );
+// }
 
-function Line () {
-    return (
-        <div className="grid text-base text-dark-gray  grid-cols-[30px_1fr] p-2 rounded-lg hover:shadow-neuro-3">
-            <span>1.</span>
-            <p>Create Navigation pane for categories</p>
-        </div>
-    )
+function Line({ index, list }: { key: number; index: number; list: List }) {
+  return (
+    <div
+      key={index}
+      className="grid text-base text-dark-gray  grid-cols-[20px_1fr] p-2 rounded-lg hover:shadow-neuro-3 items-center"
+    >
+      <span>{index + 1}.</span>
+      <span className="text-dark-gray leading-5 text-base">{list.task}</span>
+    </div>
+  );
 }

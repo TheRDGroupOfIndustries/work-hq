@@ -9,6 +9,7 @@ import {
   useState,
 } from "react";
 import { CustomUser, ProjectValues, TaskValues } from "@/lib/types";
+import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 
 interface ProjectContextType {
@@ -43,14 +44,16 @@ const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({
   const [selectedProjectTasks, setProjectTasks] = useState<TaskValues[]>([]);
 
   const fetchUserProjects = useCallback(async () => {
-    if (user?.allProjects && user.allProjects.length > 0) {
+    // if (user?.allProjects && user.allProjects.length > 0) {
       try {
+        const SignUpRole = Cookies.get("SignUpRole");
+        console.log("Sign up role fetching: ", SignUpRole);
         const res = await fetch("/api/project/get/user-projects", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ userProjectsIds: user.allProjects }),
+          body: JSON.stringify({ userProjectsIds: SignUpRole ==='developer'? user.myProjects : user.allProjects }),
         });
 
         const data = await res.json();
@@ -62,8 +65,8 @@ const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({
       } catch (error) {
         console.error("Error fetching user projects:", error);
       }
-    }
-  }, [user?.allProjects]);
+    // }
+  }, [user?.allProjects, user?.myProjects]);
 
   const getSelectProjectDetails = useCallback(
     async (projectId: string) => {

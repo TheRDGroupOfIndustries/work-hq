@@ -5,6 +5,7 @@ import { ThemeProvider as NextThemesProvider } from "next-themes";
 import AuthSessionProvider from "@/context/SessionProvider";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
+import { UserProvider } from "@/context/UserProvider";
 
 const geistSans = localFont({
   src: "../fonts/GeistVF.woff",
@@ -41,7 +42,9 @@ export default async function RootLayout({
             defaultTheme="light"
             enableSystem
           >
+            <UserProvider>
             {children}
+            </UserProvider>
             <Toaster />
           </NextThemesProvider>
         </AuthSessionProvider>

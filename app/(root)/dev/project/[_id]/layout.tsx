@@ -1,7 +1,7 @@
 import { ROLE } from "@/tempData";
-import Project from "@/components/layout/client/project/Project";
-import DesktopSidebar from "@/components/layout/client/desktopSidebar";
 import { SpecificProjectlayoutProps } from "@/lib/types";
+import Project from "@/components/layout/client/project/Project";
+import DesktopSidebar from "@/components/layout/dev/desktopSidebar";
 
 export default function SpecificProjectlayout({
   params,

@@ -15,7 +15,7 @@ export const POST = async (req: NextRequest) => {
       .sort({ _id: -1 })
       .lean(); // optional: return plain js objects instead of Mongoose documents
 
-    // console.log(projects);
+    console.log(projects);
 
     return NextResponse.json({
       status: 200,

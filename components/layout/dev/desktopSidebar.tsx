@@ -41,24 +41,24 @@ export default function DesktopSidebar({ role }: { role: Role }) {
     },
     {
       id: "4",
+      title: "Chats",
+      Icon: Chats,
+      link: `/dev/project/${selectedProjectDetails?._id}/chats`,
+      path: "chats",
+    },
+    {
+      id: "5",
       title: "Meetings",
       Icon: Meeting,
       link: `/dev/project/${selectedProjectDetails?._id}/details`,
       path: "details",
     },
     {
-      id: "5",
+      id: "6",
       title: "Salary",
       Icon: CreditCard,
       link: `/dev/project/${selectedProjectDetails?._id}/salary`,
       path: "salary",
-    },
-    {
-      id: "6",
-      title: "Chats",
-      Icon: Chats,
-      link: `/dev/project/${selectedProjectDetails?._id}/chats`,
-      path: "chats",
     },
   ];
   return (

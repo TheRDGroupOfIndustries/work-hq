@@ -11,35 +11,55 @@ import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ROLE } from "@/tempData";
 import { VENDOR } from "@/types";
-import { IndianRupee, Mail, MessageCircleMore, MessageCircleMoreIcon, Phone, SquarePen } from "lucide-react";
+import {
+  IndianRupee,
+  Mail,
+  MessageCircleMore,
+  MessageCircleMoreIcon,
+  Phone,
+  SquarePen,
+} from "lucide-react";
 import { useState } from "react";
 
-const notification = [
+interface NOTIFICATION {
+  _id: string;
+  title: string;
+  description: string;
+  date : string
+  type: "announcement" | "message" | "payment";
+}
+
+// This for test
+const notification: NOTIFICATION[] = [
   {
-    id: "vzcb",
-    title: "Task Completed",
-    description: "You have completed 30 tasks",
+    _id: "vzcb",
+    title: "You have successfully credited your month salary!!",
+    description: `Hello Ashri, we have successfully transferred your salary to your
+          provided account ending with XXXX XXXX 0192. No need for thanks ;`,
     type: "payment",
+    date : "2 Feb 2024, 10:10"
   },
   {
-    id: "vs",
-    title: "Task Completed",
-    description: "You have completed 30 tasks",
-    icon: <MessageCircleMore />,
-    type: "message",
-  },
-  {
-    id: "15",
+    _id: "vs",
     title: "Task Completed",
     description: "You have completed 30 tasks",
     type: "message",
+    date : "2 Feb 2024, 10:10"
   },
-  
   {
-    id: "saf",
+    _id: "15",
+    title: "Task Completed",
+    description: "You have completed 30 tasks",
+    type: "message",
+    date : "2 Feb 2024, 10:10"
+  },
+
+  {
+    _id: "saf",
     title: "Task Completed",
     description: "You have completed 30 tasks",
     type: "announcement",
+    date : "2 Feb 2024, 10:10"
   },
 ];
 
@@ -195,32 +215,36 @@ function PersonalInfo() {
 function Notifications() {
   return (
     <div className="flex flex-col w-full">
-       { notification.map((item) => (<NotificationCard key={item.id} item={item} />))}
+      {notification.map((item) => (
+        <NotificationCard key={item._id} item={item} />
+      ))}
     </div>
   );
 }
 
-function NotificationCard({item}) {
+function NotificationCard({ item }: { item: NOTIFICATION }) {
   return (
     <div className="flex flex-row w-full rounded-xl  gap-4 p-4 hover:shadow-neuro-3 ">
       <div className="w-[100px]  flex flex-row items-center justify-center">
         <div className="h-[80px] w-[80px] bg-white rounded-full flex items-center justify-center">
-        { item.type === "message" && <MessageCircleMoreIcon size={40}/>}
-        {item.type === "payment" && <IndianRupee size={40}/>}
-        {item.type === "announcement" && <Announcement size={40}/>}
+          {item.type === "message" && <MessageCircleMoreIcon size={40} />}
+          {item.type === "payment" && <IndianRupee size={40} />}
+          {item.type === "announcement" && <Announcement size={40} />}
         </div>
-        
       </div>
       <div className="flex flex-col">
-        <h1 className={` ${item.type === "payment" ? "text-primary-green" : "text-primary-blue"} text-base font-semibold`}>
-          You have successfully credited your month salary!!
+        <h1
+          className={` ${
+            item.type === "payment" ? "text-primary-green" : "text-primary-blue"
+          } text-base font-semibold`}
+        >
+        {item.title}
         </h1>
         <p className=" text-[#344054] text-base font-normal">
-          Hello Ashri, we have successfully transferred your salary to your
-          provided account ending with XXXX XXXX 0192. No need for thanks ;
+          {item.description}
         </p>
         <span className=" self-end text-[#6A6A6A] text-base font-normal">
-          2 Feb 2024, 10:10
+          {item.date}
         </span>
       </div>
     </div>
