@@ -44,7 +44,7 @@ export default function Dashboard() {
 
   const currentTask = selectedProjectTasks
     ?.filter(
-      (task) => task?.status !== "completed" && task?.status !== "cancelled"
+      (task) => task?.status === "inProgress" || task?.status !== "pending"
     )
     .map((task) => ({ task: task?.issueSubject }));
 

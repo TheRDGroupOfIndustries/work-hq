@@ -2,9 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import connectToMongoDB from "@/utils/db";
 import PaymentInfo from "@/models/PaymentInfo";
 
-export const PUT = async (request: NextRequest, { params }: { params: { userID: string } }) => {
+export const PUT = async (
+  request: NextRequest,
+  { params }: { params: { userID: string } }
+) => {
   const { userID } = params;
-  const { qrCode, ifsc, accountNo, upiID, phoneNo, bankName } = await request.json();
+  const { qrCode, ifsc, accountNo, upiID, phoneNo, bankName, isCompanyDetail } =
+    await request.json();
 
   if (!userID || !ifsc || !accountNo || !bankName) {
     return NextResponse.json({
@@ -17,22 +21,28 @@ export const PUT = async (request: NextRequest, { params }: { params: { userID: 
   await connectToMongoDB();
 
   try {
-    const paymentInfo = await PaymentInfo.findOne({ userID });
+    let paymentInfo = await PaymentInfo.findOne({ userID });
 
     if (!paymentInfo) {
-      return NextResponse.json({
-        status: 404,
-        success: false,
-        error: "User payment info not found",
+      paymentInfo = new PaymentInfo({
+        userID,
+        qrCode,
+        ifsc,
+        accountNo,
+        upiID,
+        phoneNo,
+        bankName,
+        isCompanyDetail: isCompanyDetail ? true : false,
       });
+    } else {
+      paymentInfo.qrCode = qrCode || paymentInfo.qrCode;
+      paymentInfo.ifsc = ifsc;
+      paymentInfo.accountNo = accountNo;
+      paymentInfo.upiID = upiID || paymentInfo.upiID;
+      paymentInfo.phoneNo = phoneNo || paymentInfo.phoneNo;
+      paymentInfo.bankName = bankName;
+      paymentInfo.isCompanyDetail = isCompanyDetail;
     }
-
-    paymentInfo.qrCode = qrCode || paymentInfo.qrCode;
-    paymentInfo.ifsc = ifsc;
-    paymentInfo.accountNo = accountNo;
-    paymentInfo.upiID = upiID || paymentInfo.upiID;
-    paymentInfo.phoneNo = phoneNo || paymentInfo.phoneNo;
-    paymentInfo.bankName = bankName;
 
     const updatedPaymentInfo = await paymentInfo.save();
 

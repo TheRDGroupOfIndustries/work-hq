@@ -13,55 +13,60 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
+import { PaymentValues } from "@/lib/types";
+import { formatDateString } from "@/lib/utils";
 import { MoreVertical } from "lucide-react";
 import React from "react";
 
-const dataFilesTasks = [
-  {
-    id: 1,
-    requestName: "Financial Issue",
-    discription: "This is the description here about the task...",
-    status: "Pending",
-    requestedOn: "Jan 4, 2022",
-    amount: "5000",
-  },
-  {
-    id: 2,
-    requestName: "Financial Issue",
-    discription: "This is the description here about the task...",
-    status: "Fulfilled",
-    requestedOn: "Jan 4, 2022",
-    amount: "5000",
-  },
-  {
-    id: 3,
-    requestName: "Financial Issue",
-    discription: "This is the description here about the task...",
-    status: "Approved",
-    requestedOn: "Jan 4, 2022",
-    amount: "5000",
-  },
-  {
-    id: 4,
-    requestName: "Financial Issue",
-    discription: "This is the description here about the task...",
-    status: "Rejected",
-    requestedOn: "Jan 4, 2022",
-    amount: "5000",
-  },
-];
+// const dataFilesTasks = [
+//   {
+//     id: 1,
+//     requestName: "Financial Issue",
+//     discription: "This is the description here about the task...",
+//     status: "Pending",
+//     requestedOn: "Jan 4, 2022",
+//     amount: "5000",
+//   },
+//   {
+//     id: 2,
+//     requestName: "Financial Issue",
+//     discription: "This is the description here about the task...",
+//     status: "Fulfilled",
+//     requestedOn: "Jan 4, 2022",
+//     amount: "5000",
+//   },
+//   {
+//     id: 3,
+//     requestName: "Financial Issue",
+//     discription: "This is the description here about the task...",
+//     status: "Approved",
+//     requestedOn: "Jan 4, 2022",
+//     amount: "5000",
+//   },
+//   {
+//     id: 4,
+//     requestName: "Financial Issue",
+//     discription: "This is the description here about the task...",
+//     status: "Rejected",
+//     requestedOn: "Jan 4, 2022",
+//     amount: "5000",
+//   },
+// ];
 
-export default function AdvancePaymentRequest() {
+export default function AdvancePaymentRequest({
+  advancePaymentRequest,
+}: {
+  advancePaymentRequest: PaymentValues[];
+}) {
   return (
     <Container className="p-4 flex flex-col gap-4">
       <h1 className="text-base font-semibold">Total request - 03</h1>
-      <DataTableTasks />
+      <DataTableTasks payments={advancePaymentRequest} />
     </Container>
   );
 }
 
-function DataTableTasks() {
+function DataTableTasks({ payments }: { payments: PaymentValues[] }) {
   return (
     <div className="w-full">
       <Table>
@@ -75,29 +80,34 @@ function DataTableTasks() {
           </TableRow>
         </TableHeader>
         <TableBody className="text-[#3A3A3A] max-h-[400px] text-base border-0 mb-5 px-10 overflow-hidden  ">
-          {dataFilesTasks.map((row, index) => (
+          {payments.map((row, index) => (
             <TableRow
-              key={row.id}
+              key={index || row._id}
               className={`h-[60px]  text-[#1E1B39] hover:shadow-neuro-3  rounded-lg mb-5 border-l-[20px] border-transparent border-b-0 `}
             >
               <TableCell className=" ">{`${index + 1}.`}</TableCell>
               <TableCell>
                 <div className="flex flex-col text-[#1E1B39] text-base font-medium">
-                  <p>{row.requestName}</p>
+                  <p>{row.paymentTitle}</p>
                   <p className="text-[#344054] line-clamp-1">
-                    {row.discription}
+                    {row.requestDescription}
                   </p>
                 </div>
               </TableCell>
               <TableCell
                 className={`
-                  ${row.status === "Approved" && "text-blue-600"}
-                  ${row.status === "Fulfilled" && "text-green-600"}
-                  ${row.status === "Pending" && "text-yellow-600"}
-                  ${row.status === "Rejected" && "text-red-600"}
+                  ${row.status === "approved" && "text-blue-600"}
+                  ${row.status === "fulfilled" && "text-green-600"}
+                  ${row.status === "requested" && "text-yellow-600"}
+                  ${row.status === "rejected" && "text-red-600"}
+                  ${row.status === "cancelled" && "text-red-600"}
                   `}
-              >{row.status}</TableCell>
-              <TableCell>{row.requestedOn}</TableCell>
+              >
+                {row.status}
+              </TableCell>
+              <TableCell>
+                {formatDateString(row.requestedDate + "") || "N/A"}
+              </TableCell>
               <TableCell>{row.amount}</TableCell>
               <TableCell>
                 <DropdownMenu>

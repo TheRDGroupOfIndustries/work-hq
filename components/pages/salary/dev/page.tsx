@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { ROLE } from "@/tempData";
 import { VENDOR } from "@/types";
 import { SquarePen } from "lucide-react";
@@ -16,8 +16,39 @@ import EditSalaryMethod from "../components/EditSalaryMethod";
 import RequestAdvancePayment from "../components/RequestAdvancePayment";
 import PaymentDetails from "@/components/reusables/components/paymentDetails";
 import { Label } from "@/components/ui/label";
+import { CustomUser, PaymentValues } from "@/lib/types";
+import { useSession } from "next-auth/react";
+import { formatDateString } from "@/lib/utils";
 
 export default function Salary() {
+  const { data: session } = useSession();
+  const user = session?.user as CustomUser;
+
+  const [payments, setPayments] = useState<PaymentValues[]>([]);
+
+  useEffect(() => {
+    const fetchUpcomingSalaryDetails = async () => {
+      if (!user?.id) return;
+      const response = await fetch(`/api/payment/get/getByUserID/${user?.id}`);
+      const data = await response.json();
+
+      setPayments(data.payments);
+    };
+    fetchUpcomingSalaryDetails();
+  }, [user?.id, payments]);
+
+  const upcomingSalaryDetails: PaymentValues | undefined = payments.find(
+    (payment: PaymentValues) => payment.status === "upcoming"
+  );
+
+  const salaryHistory: PaymentValues[] = payments.filter(
+    (payment: PaymentValues) => payment.status === "fulfilled"
+  );
+
+  const advancePaymentRequest: PaymentValues[] = payments.filter(
+    (payment: PaymentValues) => payment.isRequested
+  );
+
   const headLineButtons = [
     {
       buttonText: "Edit Method",
@@ -32,6 +63,7 @@ export default function Salary() {
       dialogContent: <RequestAdvancePayment />,
     },
   ] as ButtonObjectType[];
+
   return (
     <MainContainer>
       <Headline
@@ -40,35 +72,45 @@ export default function Salary() {
         subTitle="Project / profile"
         buttonObjects={headLineButtons}
       />
-
+      Rs.
       <Container>
         <div className="w-full grid grid-cols-2 gap-4">
           <div className="w-full flex flex-col  border-r border-dark-gray">
             <h1 className="text-lg font-medium">Upcoming Salary</h1>
             <p className="text-base font-normal">
               Total Amount:{" "}
-              <span className="font-semibold text-2xl">Rs. 50,000</span>
+              <span className="font-semibold text-2xl">
+                ₹ {upcomingSalaryDetails?.amount.toLocaleString() || "N/A"}
+              </span>
             </p>
           </div>
 
           <div className="w-full flex flex-col">
             <div className="w-[80%] text-base text-dark-gray mx-auto grid grid-cols-2 gap-2">
               <Label>Title:</Label>
-              <Label>January Month Salary</Label>
+              <Label className="text-right">
+                {upcomingSalaryDetails?.paymentTitle || "N/A"}
+              </Label>
 
               <Label>Total Amount:</Label>
-              <Label>Rs. 50,000</Label>
+              <Label className="text-right">
+                ₹ {upcomingSalaryDetails?.amount.toLocaleString() || "N/A"}
+              </Label>
 
               <Label>Bonus:</Label>
-              <Label>Rs. 10,000</Label>
+              <Label className="text-green-600 text-right">
+                ₹ {upcomingSalaryDetails?.bonus?.toLocaleString() || "N/A"}
+              </Label>
 
               <Label>Salary Date:</Label>
-              <Label>24th January, 2022</Label>
+              <Label className="text-right">
+                {formatDateString(upcomingSalaryDetails?.paymentDate + "") ||
+                  "N/A"}
+              </Label>
             </div>
           </div>
         </div>
       </Container>
-
       <Tabs defaultValue="paymentDetail" className="mt-5">
         <TabsList className="flex rounded-none h-[65px]  shadow-neuro-4 rounded-t-xl flex-row items-center justify-around w-full  bg-transparent text-base font-semibold text-black px-0 my-">
           <TabsTrigger
@@ -106,10 +148,12 @@ export default function Salary() {
           <PaymentDetails title="Payment Details" />
         </TabsContent>
         <TabsContent value="salaryHistory">
-          <SalaryHistory />
+          <SalaryHistory payments={salaryHistory} />
         </TabsContent>
         <TabsContent value="advancePaymentRequest">
-          <AdvancePaymentRequest />
+          <AdvancePaymentRequest
+            advancePaymentRequest={advancePaymentRequest}
+          />
         </TabsContent>
       </Tabs>
     </MainContainer>

@@ -18,7 +18,7 @@ const formatDuration = (duration: number) => {
 const DevWorkStatus: React.FC = () => {
   const { data: session } = useSession();
   const user = session?.user as CustomUser;
-//   console.log(user);
+  //   console.log(user);
   const [status, setStatus] = React.useState<
     "loggedOut" | "loggedIn" | "onBreak"
   >(user?.workStatus || "loggedOut");
@@ -63,6 +63,22 @@ const DevWorkStatus: React.FC = () => {
     }
   };
 
+  const getCurrentDayHours = () => {
+    const today = new Date().toISOString().split("T")[0]; // Get current date in YYYY-MM-DD format
+    const todayHours = user?.totalSpendHours?.find(
+      (entry) => new Date(entry.date).toISOString().split("T")[0] === today
+    );
+    return todayHours ? todayHours.totalHours : 0;
+  };
+
+  const getCurrentDayLoggedInTime = () => {
+    const today = new Date().toISOString().split("T")[0];
+    const todayHours = user?.totalSpendHours?.find(
+      (entry) => new Date(entry.date).toISOString().split("T")[0] === today
+    );
+    return todayHours ? todayHours.loggedInTime : 0;
+  };
+
   const workStatusMap = {
     loggedOut: {
       title: "NOT LOGGED IN",
@@ -80,13 +96,14 @@ const DevWorkStatus: React.FC = () => {
       title: "LOGGED IN",
       titleColor: "text-[#34C759]",
       message: `You have been working for ${formatDuration(
-        Date.now() - new Date(localStorage.getItem("loginTime") || "").getTime()
-      )} since ${new Date(
-        localStorage.getItem("loginTime") || ""
-      ).toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      })}. Feeling tired? You can always have a short break.`,
+        getCurrentDayHours()
+      )} today since ${new Date(getCurrentDayLoggedInTime()).toLocaleTimeString(
+        [],
+        {
+          hour: "2-digit",
+          minute: "2-digit",
+        }
+      )}. Feeling tired? You can always have a short break.`,
       buttons: [
         {
           label: "Logout from work",
@@ -119,13 +136,14 @@ const DevWorkStatus: React.FC = () => {
       title: "HAVING A BREAK AND A KITKAT",
       titleColor: "text-primary-blue",
       message: `You have been working for ${formatDuration(
-        Date.now() - new Date(localStorage.getItem("loginTime") || "").getTime()
-      )} since ${new Date(
-        localStorage.getItem("loginTime") || ""
-      ).toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      })}. You have been on break for ${formatDuration(
+        getCurrentDayHours()
+      )} today since ${new Date(getCurrentDayLoggedInTime()).toLocaleTimeString(
+        [],
+        {
+          hour: "2-digit",
+          minute: "2-digit",
+        }
+      )}. You have been on break for ${formatDuration(
         breakStartTime ? Date.now() - breakStartTime : 0
       )}. Feeling tired? You can always have a short break.`,
       buttons: [

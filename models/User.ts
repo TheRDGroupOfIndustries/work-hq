@@ -1,7 +1,7 @@
 import { Schema, model, models } from "mongoose";
 
 export interface UserDBTypes {
-  username?: string; // Uniquely generated
+  username?: string;
   firstName: string;
   lastName?: string;
   wakaTime?: {
@@ -11,10 +11,10 @@ export interface UserDBTypes {
     expires_at: Date;
   };
   profileImage?: string;
-  authIntegrated?: string[]; // Auth providers integrated
+  authIntegrated?: string[];
   email: string;
   phone: string;
-  loginStep?: number; // 0: Registration using phone or email, 1: userName, password & additonal info , 3: Create first project
+  loginStep?: number;
   role: "client" | "vendorClient" | "developer" | "vendor" | "manager" | "ceo"; // Role enum
   password?: string;
 
@@ -38,9 +38,6 @@ export interface UserDBTypes {
 
   // Vendor-specific fields
   vendorBasedProjects?: Schema.Types.ObjectId[]; // Fetched from Projects schema
-
-  // Fields for managers and CEOs (minimal role-specific fields)
-  // No additional fields for these roles at the moment
 }
 
 const userSchema = new Schema<UserDBTypes>(

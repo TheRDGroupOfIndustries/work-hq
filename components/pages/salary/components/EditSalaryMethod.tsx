@@ -1,32 +1,39 @@
 "use client";
+
+import { useSession } from "next-auth/react";
+import React, { useState, FormEvent, ChangeEvent } from "react";
+import Image from "next/image";
 import SquareButton from "@/components/reusables/wrapper/squareButton";
 import { DialogClose } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import Image from "next/image";
-import React, { useState, FormEvent, ChangeEvent } from "react";
-
+import { CustomUser } from "@/lib/types";
+import { uploadNewFile } from "@/utils/actions/fileUpload.action";
+import { Loader2 } from "lucide-react";
 
 interface SalaryMethod {
   upiId: string;
   ifscCode: string;
   phoneNumber: string;
   accountNumber: string;
-  qrCode?: string; // optional, as it's a URL
+  qrCode?: string;
+  bankName: string;
 }
 
 export default function EditSalaryMethod() {
-  // Typed state with initial values
+  const { data: session } = useSession();
+  const user = session?.user as CustomUser;
+
   const [salaryMethod, setSalaryMethod] = useState<SalaryMethod>({
     upiId: "",
     ifscCode: "",
     phoneNumber: "",
     accountNumber: "",
-    qrCode: "", // url
+    qrCode: "",
+    bankName: "",
   });
 
   const [previewUrl, setPreviewUrl] = useState<string>("");
-  const [qrCode, setQrCode] = useState<File | null>(null);
-
+  const [uploadingPreview, setUploadingPreview] = useState<boolean>(false);
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setSalaryMethod((prev) => ({
@@ -34,40 +41,62 @@ export default function EditSalaryMethod() {
       [name]: value,
     }));
   };
-  
-  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      setQrCode(file);
-      setPreviewUrl(URL.createObjectURL(file));
+    if (!file) return;
+
+    setUploadingPreview(true);
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const uploadResponse = await uploadNewFile(formData);
+      if (uploadResponse?.url) {
+        setPreviewUrl(uploadResponse.url);
+        setSalaryMethod((prevData) => ({
+          ...prevData,
+          qrCode: uploadResponse.url,
+        }));
+      } else {
+        alert("File upload failed. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      alert("Failed to upload file. Please try again later.");
+    } finally {
+      setUploadingPreview(false);
     }
   };
 
-  // Typed submit handler
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // Prepare FormData
-    const formData = new FormData();
-    formData.append("upiId", salaryMethod.upiId);
-    formData.append("ifscCode", salaryMethod.ifscCode);
-    formData.append("phoneNumber", salaryMethod.phoneNumber);
-    formData.append("accountNumber", salaryMethod.accountNumber);
-    
-    // Safely append QR code if it exists
-    if (qrCode) {
-      formData.append("qrCode", qrCode);
-    }
+    // Prepare JSON payload
+    const payload = {
+      qrCode: salaryMethod.qrCode,
+      ifsc: salaryMethod.ifscCode,
+      accountNo: salaryMethod.accountNumber,
+      upiID: salaryMethod.upiId,
+      phoneNo: salaryMethod.phoneNumber,
+      bankName: salaryMethod.bankName,
+    };
 
-    // Send data to backend
     try {
-      const response = await fetch("/api/salary-method", {
-        method: "POST",
-        body: formData,
-      });
+      const response = await fetch(
+        `/api/PaymentInfo/update/userDetail/${user?._id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
 
       if (!response.ok) {
-        throw new Error("Failed to submit data");
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to submit data");
       }
 
       const result = await response.json();
@@ -80,11 +109,12 @@ export default function EditSalaryMethod() {
   };
 
   // Fields to render dynamically
-  const formFields: Array<keyof Omit<SalaryMethod, 'qrCode'>> = [
-    "upiId", 
-    "ifscCode", 
-    "phoneNumber", 
-    "accountNumber"
+  const formFields: Array<keyof Omit<SalaryMethod, "qrCode">> = [
+    "upiId",
+    "ifscCode",
+    "phoneNumber",
+    "accountNumber",
+    "bankName",
   ];
 
   return (
@@ -93,26 +123,34 @@ export default function EditSalaryMethod() {
       className="z-10 w-[733px] m-4 bg-background flex flex-col gap-6 rounded-3xl p-5 lg:p-6"
       onSubmit={handleSubmit}
     >
-      <h1 className="text-2xl font-semibold text-dark-gray">Edit Salary Method</h1>
+      <h1 className="text-2xl font-semibold text-dark-gray">
+        Edit Salary Method
+      </h1>
       <div className="flex flex-col gap-3">
         <div className="w-full flex flex-col gap-3">
           <Label className="text-base font-medium text-gray-800">QR Code</Label>
           <div className="w-full h-[200px] bg-gray-400 relative">
-            <input
-              type="file"
-              name="qrCode"
-              accept="image/*"
-              className="w-full opacity-[1] absolute h-full top-0 left-0 right-0 bottom-0 text-base outline-none shadow-neuro-3 bg-transparent rounded-lg px-4"
-              onChange={handleFileChange}
-              required
-            />
+            {uploadingPreview ? (
+              <div className="w-full h-full flex items-center justify-center">
+                Uploading QR Code <Loader2 className="w-6 h-6 animate-spin" />
+              </div>
+            ) : (
+              <input
+                type="file"
+                name="qrCode"
+                accept="image/*"
+                className="w-full opacity-[1] absolute h-full top-0 left-0 right-0 bottom-0 text-base outline-none shadow-neuro-3 bg-transparent rounded-lg px-4"
+                onChange={handleFileChange}
+                required
+              />
+            )}
             {previewUrl && (
-              <Image 
-                src={previewUrl} 
-                alt="QR Code Preview" 
-                width={1920} 
-                height={1080} 
-                className="w-full h-full object-cover" 
+              <Image
+                src={previewUrl}
+                alt="QR Code Preview"
+                width={1920}
+                height={1080}
+                className="w-full h-full object-cover"
               />
             )}
           </div>
@@ -120,7 +158,9 @@ export default function EditSalaryMethod() {
 
         {formFields.map((field) => (
           <div key={field} className="w-full flex flex-col gap-3">
-            <Label className="text-base font-medium text-gray-800">{field.toUpperCase()}</Label>
+            <Label className="text-base font-medium text-gray-800">
+              {field.toUpperCase()}
+            </Label>
             <input
               type="text"
               name={field}
@@ -135,7 +175,9 @@ export default function EditSalaryMethod() {
       </div>
       <div className="flex flex-row gap-2 justify-end">
         <DialogClose asChild>
-          <SquareButton className="text-[#6A6A6A] w-fit self-end">Cancel</SquareButton>
+          <SquareButton className="text-[#6A6A6A] w-fit self-end">
+            Cancel
+          </SquareButton>
         </DialogClose>
         <button
           type="submit"
