@@ -2,7 +2,7 @@ import AllTransactionsHistoryTable from "@/components/reusables/components/AllTr
 import Container from "@/components/reusables/wrapper/Container";
 import React from "react";
 
-export default function AllTransactionsHistory() {
+export default function EmployeeAllTransactionsHistory() {
   // run logic
   return (
     <Container>

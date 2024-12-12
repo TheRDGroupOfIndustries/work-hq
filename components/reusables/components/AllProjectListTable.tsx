@@ -32,7 +32,7 @@ export default function AllProjectListTable({
     <Table>
       <TableHeader className="text-gray-600 border-0">
         <TableRow className="border-0 hover:bg-transparent border-r-[20px] border-l-[20px] border-transparent border-b-0">
-          <TableHead className=""></TableHead>
+          <TableHead className="w-[60px]"></TableHead>
           <TableHead>Project Name</TableHead>
           <TableHead>Status</TableHead>
           <TableHead>Created</TableHead>

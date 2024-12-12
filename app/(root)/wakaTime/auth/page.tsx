@@ -1,7 +1,9 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { CustomUser } from "@/lib/types";
 import { useSession } from "next-auth/react";
+import { redirect } from "next/navigation";
 import { useEffect } from "react";
 
 const CLIENT_ID = 'Rtq2awbhLAs6cYVUZmOPgF1L'; // Replace with your WakaTime client ID
@@ -15,6 +17,9 @@ const connectToWakaTime = () => {
 
 function WakaTimeAuthPage() {
   const {data: session} = useSession();
+  const user = session?.user as CustomUser
+  
+  if( user.role === "client") redirect('/c/all-projects');
   useEffect (() => {
     if (session) {
       console.log('User:', session.user);

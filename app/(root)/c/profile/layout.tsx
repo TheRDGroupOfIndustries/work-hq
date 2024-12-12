@@ -9,7 +9,6 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const { selectedProjectDetails } = useProjectContext();
-  console.log(selectedProjectDetails?._id);
   if (selectedProjectDetails?._id !== null) {
     return (
       <div className=" min-h-[calc(100vh-80px)] h-full   flex flex-row">

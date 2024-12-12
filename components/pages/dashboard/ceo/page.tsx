@@ -17,6 +17,7 @@ import MidInformationCard from "../components/midInformationCard";
 import StatusCardsHeadline from "../components/StatusCardsHeadline";
 import HelpDeskTicketsListTable, { Ticket } from "@/components/reusables/components/HelpDeskTicketsListTable";
 import { useSession } from "next-auth/react";
+import AllTransactionsHistoryTable from "@/components/reusables/components/AllTransactionsHistoryTable";
 
 export default function Dashboard() {
   const headLineButtons = [
@@ -177,7 +178,9 @@ function PayrollList() {
             className="cursor-pointer"
           />
         </div>
-        <div className="w-full flex flex-col gap-4 px-2"></div>
+        <div className="w-full flex flex-col gap-4 px-2">
+        <AllTransactionsHistoryTable payments={[]} />
+        </div>
       </div>
     </Container>
   );

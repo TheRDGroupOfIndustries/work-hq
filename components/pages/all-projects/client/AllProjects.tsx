@@ -182,7 +182,7 @@ const ProjectTable: React.FC<ProjectTableProps> = ({ projects }) => {
         </tbody>
       </table> */}
 
-      <AllProjectListTable list={filteredProjects} selectedProject={selectedProject} setSelectedProject={setSelectedProject} />
+      <AllProjectListTable list={filteredProjects} selectedProject={selectedProject} routeTo='c' setSelectedProject={setSelectedProject} />
     </div>
   );
 };

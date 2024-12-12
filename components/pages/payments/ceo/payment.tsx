@@ -5,6 +5,8 @@ import { SquarePen } from 'lucide-react';
 import React from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AllTransactionsHistory from '../components/allTransactionsHistory';
+import EmployeeAllTransactionsHistory from '../components/employeeAllTransactionHistory';
+import ClientAllTransactionsHistory from '../components/clientAllTransactionHistory';
 export default function Payment() {
   const headLineButtons = [
     {
@@ -64,10 +66,10 @@ export default function Payment() {
           <AllTransactionsHistory/>
         </TabsContent>
         <TabsContent value="clientPayments">
-          
+          <ClientAllTransactionsHistory/>
         </TabsContent>
         <TabsContent value="employeeSalaries">
-          
+          <EmployeeAllTransactionsHistory/>
         </TabsContent>
         <TabsContent value="advancePaymentRequest">
           

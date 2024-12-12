@@ -16,8 +16,9 @@ import {
 import { formatDateString } from "@/lib/utils";
 import { MoreVertical } from 'lucide-react';
 import Image from 'next/image';
+import { PaymentValues } from '@/lib/types';
 
-export default function AllTransactionsHistoryTable({payments = []}:) {
+export default function AllTransactionsHistoryTable({payments = []}:{payments:PaymentValues[]}) {
   return (
     <Table>
         <TableHeader className=" text-gray-600 border-0">
@@ -48,10 +49,10 @@ export default function AllTransactionsHistoryTable({payments = []}:) {
                   />
                   <div className="flex flex-col">
                     <span className="text-dark-gray leading-5 light-graytext-base">
-                      kk
+                    Client 2 Name
                     </span>
                     <span className="line-clamp-1 text-sm text-light-gray">
-                    kk
+                    Position
                     </span>
                   </div>
                 </div>
