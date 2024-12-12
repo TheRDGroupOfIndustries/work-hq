@@ -7,20 +7,6 @@ import MainContainer from "@/components/reusables/wrapper/mainContainer";
 import Headline from "@/components/reusables/components/headline";
 import { ROLE } from "@/tempData";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
   Select,
   SelectContent,
   SelectItem,
@@ -30,11 +16,9 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { format } from "date-fns";
-import { MoreVertical } from 'lucide-react';
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import RaiseTicket from "../components/raiseTicket";
+import HelpDeskTicketsListTable from "@/components/reusables/components/HelpDeskTicketsListTable";
 
 interface Ticket {
   _id: string;
@@ -52,7 +36,7 @@ export default function Helpdesk() {
   const [issueType, setIssueType] = useState<string>("all");
   const [priority, setPriority] = useState<string>("all");
   const [dateRange, setDateRange] = useState<{ from: Date | undefined, to: Date | undefined }>({ from: undefined, to: undefined });
-  const [selectedRows, setSelectedRows] = useState<string[]>([]);
+  // const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const { data: session } = useSession();
   const { name: projectName } = useParams();
 
@@ -69,7 +53,7 @@ export default function Helpdesk() {
         } catch (error) {
           console.error('Error fetching tickets:', error);
         }
-      }
+      }     
     };
 
     fetchTickets();
@@ -87,25 +71,25 @@ export default function Helpdesk() {
     return matchesSearch && matchesIssueType && matchesPriority && matchesDateRange;
   });
 
-  const handleSelectAll = (checked: boolean) => {
-    if (checked) {
-      setSelectedRows(filteredTickets.map((ticket) => ticket._id));
-    } else {
-      setSelectedRows([]);
-    }
-  };
+  // const handleSelectAll = (checked: boolean) => {
+  //   if (checked) {
+  //     setSelectedRows(filteredTickets.map((ticket) => ticket._id));
+  //   } else {
+  //     setSelectedRows([]);
+  //   }
+  // };
 
-  const handleSelectRow = (ticketId: string, checked: boolean) => {
-    if (checked) {
-      setSelectedRows([...selectedRows, ticketId]);
-    } else {
-      setSelectedRows(selectedRows.filter((rowId) => rowId !== ticketId));
-    }
-  };
+  // const handleSelectRow = (ticketId: string, checked: boolean) => {
+  //   if (checked) {
+  //     setSelectedRows([...selectedRows, ticketId]);
+  //   } else {
+  //     setSelectedRows(selectedRows.filter((rowId) => rowId !== ticketId));
+  //   }
+  // };
 
-  const isRowSelected = (ticketId: string) => selectedRows.includes(ticketId);
-  const isAllSelected =
-    filteredTickets.length > 0 && selectedRows.length === filteredTickets.length;
+  // const isRowSelected = (ticketId: string) => selectedRows.includes(ticketId);
+  // const isAllSelected =
+  //   filteredTickets.length > 0 && selectedRows.length === filteredTickets.length;
 
     const headLineButtons = [
       { buttonText: "Raise Ticket", lightGrayColor: false, onNeedIcon: true, onClick: () => console.log("Export Report"), dialogContent: <RaiseTicket/> },
@@ -177,7 +161,7 @@ export default function Helpdesk() {
       </div>
 
       <div className="shadow-[5px_5px_10px_0px_#789BD399,-5px_-5px_10px_0px_#FFFFFF] rounded-xl mt-5 p-2">
-        <Table>
+        {/* <Table>
           <TableHeader>
             <TableRow>
               <TableHead className="w-[53px]">
@@ -245,7 +229,11 @@ export default function Helpdesk() {
               </TableRow>
             ))}
           </TableBody>
-        </Table>
+        </Table> */}
+
+
+          
+        <HelpDeskTicketsListTable filteredTickets={filteredTickets} />
       </div>
     </MainContainer>
   );

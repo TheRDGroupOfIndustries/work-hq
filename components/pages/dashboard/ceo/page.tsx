@@ -10,11 +10,13 @@ import { useProjectContext } from "@/context/ProjectProvider";
 import { ROLE } from "@/tempData";
 import { MoveRight } from "lucide-react";
 import { useRouter } from "next/navigation";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import CompanyStatusSummary from "../components/companyStatusSummary";
 import EmployeesAndClientList from "../components/EmployeesAndClientList";
 import MidInformationCard from "../components/midInformationCard";
 import StatusCardsHeadline from "../components/StatusCardsHeadline";
+import HelpDeskTicketsListTable, { Ticket } from "@/components/reusables/components/HelpDeskTicketsListTable";
+import { useSession } from "next-auth/react";
 
 export default function Dashboard() {
   const headLineButtons = [
@@ -115,7 +117,28 @@ function ProjectList() {
 }
 
 function HelpdeskTicketsList() {
+  const { data: session } = useSession();
   const router = useRouter();
+  const [tickets, setTickets] = useState<Ticket[]>([]);
+
+  useEffect(() => {
+    const fetchTickets = async () => {
+      if (session?.user?._id) {
+        try {
+          const response = await fetch(`/api/ticket/get`);
+          if (!response.ok) {
+            throw new Error('Failed to fetch tickets');
+          }
+          const data = await response.json();
+          setTickets(data.tickets || []);
+        } catch (error) {
+          console.error('Error fetching tickets:', error);
+        }
+      }     
+    };
+
+    fetchTickets();
+  }, [session]);
   return (
     <Container>
       <div className="flex flex-col w-full h-[500px] gap-4">
@@ -131,7 +154,9 @@ function HelpdeskTicketsList() {
             className="cursor-pointer"
           />
         </div>
-        <div className="w-full flex flex-col gap-4 px-2"></div>
+        <div className="w-full flex flex-col gap-4 px-2">
+        <HelpDeskTicketsListTable filteredTickets={tickets} />
+        </div>
       </div>
     </Container>
   );

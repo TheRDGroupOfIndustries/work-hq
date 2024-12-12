@@ -37,6 +37,8 @@ const chartConfig = {
 export default function EmployeesSummary() {
   const [isVendor] = useState(false);
 
+  
+
    const report = {
     fullstack: 22,
     frontend: 44,
