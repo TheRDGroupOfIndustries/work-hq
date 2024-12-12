@@ -23,7 +23,7 @@ export default function EmployeesAndClientList({
     <Container>
       <div className="flex flex-col w-full h-[500px] gap-4">
         <div className="w-full flex flex-row items-center justify-between">
-          <h2 className="uppercase text-lg font-medium">{title}</h2>
+          <h2 className="uppercase  text-lg font-semibold">{title}</h2>
           <MoveRight
             onClick={() => {
               router.push(redirect);

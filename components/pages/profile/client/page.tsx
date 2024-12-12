@@ -1,21 +1,23 @@
 "use client";
 import Logout from "@/components/icons/logout";
+import Headline from "@/components/reusables/components/headline";
 import Container from "@/components/reusables/wrapper/Container";
 import MainContainer from "@/components/reusables/wrapper/mainContainer";
 import SquareButton from "@/components/reusables/wrapper/squareButton";
 import { Label } from "@/components/ui/label";
-import { Mail, MessageCircleMore, Phone, SquarePen } from "lucide-react";
-import { ROLE } from "@/tempData";
-import Headline from "@/components/reusables/components/headline";
-import { signOut, useSession } from "next-auth/react";
 import { CustomUser, ProjectValues } from "@/lib/types";
+import { ROLE } from "@/tempData";
+import { Mail, MessageCircleMore, Phone, SquarePen } from "lucide-react";
+import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 export default function Profile() {
   const { data: session } = useSession();
-  const user = session?.user as CustomUser;
+  const [disableInput, setDisableInput] = useState(true);
+  // const user = session?.user as CustomUser;
+  const [user, setUser] = useState<CustomUser | null>(null);
   const [signingOut, setSigningOut] = useState(false);
   const [pendingProjects, setPendingProjects] = useState<string>();
   const [ongoingProjects, setOngoingProjects] = useState<string>("00");
@@ -68,6 +70,10 @@ export default function Profile() {
     setOngoingProjects(ongoing);
     setCompletedProjects(completed);
   }, [allProjects]);
+
+  useEffect(() => {
+    setUser(session?.user as CustomUser);
+  }, [session?.user]);
   return (
     <MainContainer>
       <Headline role={ROLE} title="Profile" subTitle="Project / Chats" />
@@ -102,8 +108,12 @@ export default function Profile() {
             </div>
           </div>
 
-          <SquareButton className="w-fit self-end sm:self-center">
-            <SquarePen color="#155EEF" /> Edit Profile
+          <SquareButton
+            className="w-fit self-end sm:self-center"
+            onClick={() => setDisableInput(!disableInput)}
+          >
+            <SquarePen color="#155EEF" />{" "}
+            {disableInput ? "Edit Profile" : "Save"}
           </SquareButton>
         </div>
 
@@ -169,10 +179,13 @@ export default function Profile() {
             </Label>
             <input
               type="text"
-              disabled
+              disabled={disableInput}
               value={user?.firstName}
+              onChange={(e) =>
+                setUser({ ...user, firstName: e.target.value } as CustomUser)
+              }
               placeholder="e.g. Johan"
-              className="w-full text-base h-[40px] outline-none shadow-[3px_3px_3px_0px_#789BD399,-3px_-3px_5px_0px_#FFFFFF] bg-transparent rounded-lg px-4"
+              className={`w-full text-base h-[40px] outline-none shadow-[3px_3px_3px_0px_#789BD399,-3px_-3px_5px_0px_#FFFFFF] bg-transparent rounded-lg px-4 ${disableInput ? "text-light-gray" : "text-dark-gray"} `}
               required
             />
           </div>
@@ -183,9 +196,12 @@ export default function Profile() {
             <input
               value={user?.lastName}
               type="text"
-              disabled
+              disabled={disableInput}
+              onChange={(e) =>
+                setUser({ ...user, lastName: e.target.value } as CustomUser)
+              }
               placeholder="e.g. Doe"
-              className="w-full text-base h-[40px] outline-none shadow-[3px_3px_3px_0px_#789BD399,-3px_-3px_5px_0px_#FFFFFF] bg-transparent rounded-lg px-4"
+              className={`w-full text-base h-[40px] outline-none shadow-[3px_3px_3px_0px_#789BD399,-3px_-3px_5px_0px_#FFFFFF] bg-transparent rounded-lg px-4 ${disableInput ? "text-light-gray" : "text-dark-gray"} `}
               required
             />
           </div>
@@ -193,10 +209,10 @@ export default function Profile() {
             <Label className="text-base font-medium text-gray-800">Role</Label>
             <input
               type="text"
-              disabled
+              disabled={disableInput}
               value={user?.role}
               placeholder="e.g. Client"
-              className="w-full text-base h-[40px] outline-none shadow-[3px_3px_3px_0px_#789BD399,-3px_-3px_5px_0px_#FFFFFF] bg-transparent rounded-lg px-4"
+              className={`w-full text-base h-[40px] outline-none shadow-[3px_3px_3px_0px_#789BD399,-3px_-3px_5px_0px_#FFFFFF] bg-transparent rounded-lg px-4 ${disableInput ? "text-light-gray" : "text-dark-gray"} `}
               required
             />
           </div>
@@ -206,10 +222,13 @@ export default function Profile() {
             </Label>
             <input
               type="number"
-              disabled
+              disabled={disableInput}
               value={user?.phone ?? " "}
+              onChange={(e) =>
+                setUser({ ...user, phone: e.target.value } as CustomUser)
+              }
               placeholder="e.g. +91 1234567890"
-              className="w-full text-base h-[40px] outline-none shadow-[3px_3px_3px_0px_#789BD399,-3px_-3px_5px_0px_#FFFFFF] bg-transparent rounded-lg px-4"
+              className={`w-full text-base h-[40px] outline-none shadow-[3px_3px_3px_0px_#789BD399,-3px_-3px_5px_0px_#FFFFFF] bg-transparent rounded-lg px-4 ${disableInput ? "text-light-gray" : "text-dark-gray"} `}
               required
             />
           </div>
@@ -218,11 +237,12 @@ export default function Profile() {
               Password
             </Label>
             <input
-              type="password"
-              disabled
-              value={"********"}
+              type={disableInput ? "password" : "password"}
+              disabled={true}
+              // onChange={(e) => setUser({ ...user, password: e.target.value } as CustomUser)}
+              value={user?.password ?? " "}
               placeholder="e.g. Doe"
-              className="w-full text-base h-[40px] outline-none shadow-[3px_3px_3px_0px_#789BD399,-3px_-3px_5px_0px_#FFFFFF] bg-transparent rounded-lg px-4"
+              className={`w-full text-base h-[40px] outline-none shadow-[3px_3px_3px_0px_#789BD399,-3px_-3px_5px_0px_#FFFFFF] bg-transparent rounded-lg px-4 ${disableInput ? "text-light-gray" : "text-dark-gray"} `}
               required
             />
           </div>

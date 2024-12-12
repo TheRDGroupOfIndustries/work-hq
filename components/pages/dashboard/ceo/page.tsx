@@ -1,15 +1,20 @@
-'use client';
+"use client";
+import TotalClientsAndVendors from "@/components/icons/TotalClientsAndVendors";
+import TotalEmployees from "@/components/icons/TotalEmployees";
+import TotalProject from "@/components/icons/TotalProject";
+import AllProjectListTable from "@/components/reusables/components/AllProjectListTable";
 import Headline from "@/components/reusables/components/headline";
+import Container from "@/components/reusables/wrapper/Container";
 import MainContainer from "@/components/reusables/wrapper/mainContainer";
+import { useProjectContext } from "@/context/ProjectProvider";
 import { ROLE } from "@/tempData";
+import { MoveRight } from "lucide-react";
+import { useRouter } from "next/navigation";
 import React from "react";
 import CompanyStatusSummary from "../components/companyStatusSummary";
-import StatusCardsHeadline from "../components/StatusCardsHeadline";
-import MidInformationCard from "../components/midInformationCard";
-import TotalProject from "@/components/icons/TotalProject";
-import TotalEmployees from "@/components/icons/TotalEmployees";
-import TotalClientsAndVendors from "@/components/icons/TotalClientsAndVendors";
 import EmployeesAndClientList from "../components/EmployeesAndClientList";
+import MidInformationCard from "../components/midInformationCard";
+import StatusCardsHeadline from "../components/StatusCardsHeadline";
 
 export default function Dashboard() {
   const headLineButtons = [
@@ -23,7 +28,7 @@ export default function Dashboard() {
   const midCardData = [
     {
       title: "Tptal Project",
-      icon: TotalProject ,
+      icon: TotalProject,
       data: "58",
     },
     {
@@ -51,7 +56,7 @@ export default function Dashboard() {
       name: "John Doe",
       info: "Project Manager",
     },
-  ]
+  ];
   return (
     <MainContainer>
       <Headline
@@ -60,16 +65,95 @@ export default function Dashboard() {
         subTitle="Project"
         buttonObjects={headLineButtons}
       />
-      <StatusCardsHeadline/>
-      <CompanyStatusSummary/>
-      <MidInformationCard client={false} midCardData={midCardData}  />
+      <StatusCardsHeadline />
+      <CompanyStatusSummary />
+      <MidInformationCard client={false} midCardData={midCardData} />
       <div className="flex flex-row gap-4">
-        <EmployeesAndClientList list={list} redirect="/dev/project/have-todo-here/" title="Employees List"/>
-        <EmployeesAndClientList list={list} redirect="" title="Employees List"/>
+        <EmployeesAndClientList
+          list={list}
+          redirect="/dev/project/have-todo-here/"
+          title="Employees List"
+        />
+        <EmployeesAndClientList
+          list={list}
+          redirect=""
+          title="Employees List"
+        />
       </div>
+      <ProjectList />
+      <HelpdeskTicketsList />
+      <PayrollList />
     </MainContainer>
   );
 }
 
+function ProjectList() {
+  const router = useRouter();
+  const { userAllProjects, setSelectedProject } = useProjectContext();
+  return (
+    <Container>
+      <div className="flex flex-col w-full h-[500px] gap-4">
+        <div className="w-full flex flex-row items-center justify-between">
+          <h2 className="uppercase text-lg font-semibold">Projects list</h2>
+          <MoveRight
+            onClick={() => {
+              router.push("");
+            }}
+            color="var(--light-gray)"
+            className="cursor-pointer"
+          />
+        </div>
+        <div className="w-full flex flex-col gap-4 px-2">
+          <AllProjectListTable
+            setSelectedProject={setSelectedProject}
+            list={userAllProjects}
+          />
+        </div>
+      </div>
+    </Container>
+  );
+}
 
+function HelpdeskTicketsList() {
+  const router = useRouter();
+  return (
+    <Container>
+      <div className="flex flex-col w-full h-[500px] gap-4">
+        <div className="w-full flex flex-row items-center justify-between">
+          <h2 className="uppercase text-lg font-semibold">
+            Helpdesk Tickets list
+          </h2>
+          <MoveRight
+            onClick={() => {
+              router.push("");
+            }}
+            color="var(--light-gray)"
+            className="cursor-pointer"
+          />
+        </div>
+        <div className="w-full flex flex-col gap-4 px-2"></div>
+      </div>
+    </Container>
+  );
+}
 
+function PayrollList() {
+  const router = useRouter();
+  return (
+    <Container>
+      <div className="flex flex-col w-full h-[500px] gap-4">
+        <div className="w-full flex flex-row items-center justify-between">
+          <h2 className="uppercase text-lg font-semibold">Payroll History</h2>
+          <MoveRight
+            onClick={() => {
+              router.push("");
+            }}
+            color="var(--light-gray)"
+            className="cursor-pointer"
+          />
+        </div>
+        <div className="w-full flex flex-col gap-4 px-2"></div>
+      </div>
+    </Container>
+  );
+}

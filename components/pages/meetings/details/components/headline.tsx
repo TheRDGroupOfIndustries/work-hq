@@ -4,7 +4,7 @@ import SquareButton from "@/components/reusables/wrapper/squareButton";
 import { ChevronDown, Plus } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 
-export default function Headline() {
+export default function Headline({btnText}: {btnText: string}) {
   const pathname = usePathname()
   const router = useRouter();
 
@@ -20,7 +20,7 @@ export default function Headline() {
             onClick={() =>{handleRequestMeeting()} }
           >
             <Plus color="#155EEF" />
-            Request Meeting
+          {btnText}
           </SquareButton>
 
           <SquareButton className="text-[#6A6A6A] w-fit self-end">
