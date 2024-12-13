@@ -1,6 +1,6 @@
 "use client";
 
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -37,6 +37,7 @@ import {
   Settings,
   UserRound,
 } from "lucide-react";
+import Logout from "@/components/icons/logout";
 
 
 
@@ -57,9 +58,9 @@ const Navbar = ({ role }: { role: Role }) => {
         <div className="hidden lg:flex-center text-nowrap">
           {pathname !== "/c/all-projects" && <SelectProject role={role} />}
           <Link
-            href="/c/all-projects"
+            href="/dev/all-projects"
             className={`h-full text-desktop py-5 px-4 mr-3 ${
-              pathname === "/c/all-projects"
+              pathname === "/dev/all-projects"
                 ? `${
                     role === VENDOR
                       ? "text-white border-b-white"
@@ -300,6 +301,17 @@ export function ProfileDropDownMenu() {
           </Link>
         </DropdownMenuItem>
       ))}
+      <DropdownMenuSeparator />
+        <DropdownMenuItem className="outline-none border-0">
+          <div
+            onClick={() => signOut()}
+            className={` outline-none w-full text-desktop  hover:shadow-[3px_3px_10px_0px_#789BD399,-3px_-3px_10px_0px_#FFFFFF]  relative cursor-pointer  px-4 py-3 rounded-xl  flex flex-row items-center gap-2 `}
+          >
+
+            <Logout color="#6A6A6A" />
+            Logout
+          </div>
+        </DropdownMenuItem>
     </DropdownMenuContent>
   </DropdownMenu>
   );

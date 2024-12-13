@@ -7,8 +7,10 @@ import { usePathname, useRouter } from "next/navigation";
 
 export default function Headline({
   handleSubmit,
+  title
 }: {
   handleSubmit: () => void;
+  title: "Request a Meeting" | "Create a Meeting";
 }) {
   const pathname = usePathname()
   const router = useRouter();
@@ -19,7 +21,7 @@ export default function Headline({
   };
 
   return (
-    <WrHeadline title="Request a Meeting">
+    <WrHeadline title={title}>
         <div className="flex flex-row gap-4">
         <SquareButton
           className="text-[#6A6A6A]"

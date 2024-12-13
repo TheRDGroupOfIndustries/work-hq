@@ -1,6 +1,6 @@
 "use client";
 
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -36,6 +36,7 @@ import {
   Settings,
   UserRound,
 } from "lucide-react";
+import Logout from "@/components/icons/logout";
 
 const Navbar = ({ role }: { role: Role }) => {
   const pathname = usePathname();
@@ -263,7 +264,7 @@ export function ProfileDropDownMenu() {
         <DropdownMenuItem className="outline-none border-0">
           <Link
             href={"/c/profile"}
-            className={` w-full text-desktop  hover:shadow-[3px_3px_10px_0px_#789BD399,-3px_-3px_10px_0px_#FFFFFF]  relative cursor-pointer  px-4 py-3 rounded-xl  ${
+            className={` outline-none w-full text-desktop  hover:shadow-[3px_3px_10px_0px_#789BD399,-3px_-3px_10px_0px_#FFFFFF]  relative cursor-pointer  px-4 py-3 rounded-xl  ${
               pathname === "/c/profile"
                 ? "text-primary-blue shadow_sidebar_btn_selected"
                 : ""
@@ -302,6 +303,17 @@ export function ProfileDropDownMenu() {
             </Link>
           </DropdownMenuItem>
         ))}
+        <DropdownMenuSeparator />
+        <DropdownMenuItem className="outline-none border-0">
+          <div
+            onClick={() => signOut()}
+            className={` outline-none w-full text-desktop  hover:shadow-[3px_3px_10px_0px_#789BD399,-3px_-3px_10px_0px_#FFFFFF]  relative cursor-pointer  px-4 py-3 rounded-xl  flex flex-row items-center gap-2 `}
+          >
+
+            <Logout color="#6A6A6A" />
+            Logout
+          </div>
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

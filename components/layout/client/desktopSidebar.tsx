@@ -158,13 +158,13 @@ export default function DesktopSidebar({ role }: { role: Role }) {
             />
           </div>
 
-          <div className="flex flex-col">
+          <div className="flex flex-col overflow-hidden">
             <span className="font-semibold text-sm">
               {user?.firstName
                 ? user?.firstName + " " + user?.lastName
                 : user?.name}
             </span>
-            <span className=" text-sm text-[#475467] line-clamp-1">
+            <span className=" text-sm text-[#475467] max-w-[140px]">
               {user?.email}
             </span>
           </div>

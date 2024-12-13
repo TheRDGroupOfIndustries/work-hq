@@ -8,10 +8,10 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // const { selectedProject } = useProjectContext();
-  // if (!selectedProject._id) {
-  //   return <>{children}</>;
-  // }
+  const { selectedProject } = useProjectContext();
+  if (!selectedProject._id) {
+    return <>{children}</>;
+  }
   return (
     <>
       <div className=" min-h-[calc(100vh-80px)] h-full   flex flex-row">
