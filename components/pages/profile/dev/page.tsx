@@ -7,7 +7,7 @@ import Headline, {
 import Container from "@/components/reusables/wrapper/Container";
 import MainContainer from "@/components/reusables/wrapper/mainContainer";
 import { Label } from "@/components/ui/label";
-import { Progress } from "@/components/ui/progress";
+// import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ROLE } from "@/tempData";
 import { VENDOR } from "@/types";
@@ -19,13 +19,14 @@ import {
   Phone,
   SquarePen,
 } from "lucide-react";
+import { signOut } from "next-auth/react";
 import { useState } from "react";
 
 interface NOTIFICATION {
   _id: string;
   title: string;
   description: string;
-  date : string
+  date: string;
   type: "announcement" | "message" | "payment";
 }
 
@@ -37,21 +38,21 @@ const notification: NOTIFICATION[] = [
     description: `Hello Ashri, we have successfully transferred your salary to your
           provided account ending with XXXX XXXX 0192. No need for thanks ;`,
     type: "payment",
-    date : "2 Feb 2024, 10:10"
+    date: "2 Feb 2024, 10:10",
   },
   {
     _id: "vs",
     title: "Task Completed",
     description: "You have completed 30 tasks",
     type: "message",
-    date : "2 Feb 2024, 10:10"
+    date: "2 Feb 2024, 10:10",
   },
   {
     _id: "15",
     title: "Task Completed",
     description: "You have completed 30 tasks",
     type: "message",
-    date : "2 Feb 2024, 10:10"
+    date: "2 Feb 2024, 10:10",
   },
 
   {
@@ -59,7 +60,7 @@ const notification: NOTIFICATION[] = [
     title: "Task Completed",
     description: "You have completed 30 tasks",
     type: "announcement",
-    date : "2 Feb 2024, 10:10"
+    date: "2 Feb 2024, 10:10",
   },
 ];
 
@@ -78,7 +79,7 @@ export default function Profile() {
       icon: <Logout color="white" />,
       type: "withCustomColor",
       onNeedIcon: false,
-      onClick: () => console.log("Export Report"),
+      onClick: () => signOut(),
     },
   ] as ButtonObjectType[];
   return (
@@ -238,7 +239,7 @@ function NotificationCard({ item }: { item: NOTIFICATION }) {
             item.type === "payment" ? "text-primary-green" : "text-primary-blue"
           } text-base font-semibold`}
         >
-        {item.title}
+          {item.title}
         </h1>
         <p className=" text-[#344054] text-base font-normal">
           {item.description}

@@ -46,7 +46,7 @@ export interface ProjectDBTypes {
       date: Date;
       totalHours: number;
     }[]; // Derived from developers' hours
-    teams: string[]; 
+    teams: string[];
   };
   createdAt: Date;
 }
@@ -93,12 +93,17 @@ const projectSchema = new Schema<ProjectDBTypes>(
       size: { type: String, required: true },
     },
     developmentDetails: {
-      status: { type: String, required: true, enum: ["completed", "inProgress", "pending", "refactoring"], default: "pending" },
-      deployment: { 
+      status: {
+        type: String,
+        required: true,
+        enum: ["completed", "inProgress", "pending", "refactoring"],
+        default: "pending",
+      },
+      deployment: {
         link: { type: String, required: false },
         channelID: { type: String, required: false },
       },
-      figmaLink: { 
+      figmaLink: {
         link: { type: String, required: false },
         channelID: { type: String, required: false },
       },

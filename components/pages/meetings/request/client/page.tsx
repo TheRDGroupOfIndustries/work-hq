@@ -1,8 +1,10 @@
 "use client";
+
+import { useSession } from "next-auth/react";
+import { useCallback, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useProjectContext } from "@/context/ProjectProvider";
 import MainContainer from "@/components/reusables/wrapper/mainContainer";
-import { useCallback, useState } from 'react';
-import { useSession } from 'next-auth/react';
-import { useProjectContext } from '@/context/ProjectProvider';
 import Headline from "../components/headline";
 import { Calendar } from "@/components/ui/calendar";
 import { Label } from "@/components/ui/label";
@@ -16,7 +18,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ROLE } from "@/tempData";
-import { useRouter } from 'next/navigation';
+import { CustomUser } from "@/lib/types";
+import { toast } from "sonner";
 
 const generateTimeOptions = () => {
   const times = [];
@@ -31,6 +34,7 @@ const generateTimeOptions = () => {
 
 export default function MeetingsRequest() {
   const { data: session } = useSession();
+  const user = session?.user as CustomUser;
   const { selectedProject } = useProjectContext();
   const router = useRouter();
   const [date, setDate] = useState<Date | undefined>(new Date());
@@ -43,38 +47,54 @@ export default function MeetingsRequest() {
   const timeOptions = generateTimeOptions();
 
   const handleSubmit = useCallback(async () => {
-    if (!session?.user || !selectedProject ) return;
+    if (!user || !selectedProject) return;
 
     try {
-      // Create meeting in database
-      const response = await fetch('/api/meeting/create', {
-        method: 'POST',
+      // creating meeting request record in database
+      const response = await fetch("/api/meeting/create", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           title,
           meetingDescription: description,
           date: date?.toISOString(),
           projectID: selectedProject._id,
-          startTime: new Date(`${date?.toISOString().split('T')[0]}T${startTime}:00`).toISOString(),
-          endTime: new Date(`${date?.toISOString().split('T')[0]}T${endTime}:00`).toISOString(),
-          createdBy: session.user._id,
+          startTime: new Date(
+            `${date?.toISOString().split("T")[0]}T${startTime}:00`
+          ).toISOString(),
+          endTime: new Date(
+            `${date?.toISOString().split("T")[0]}T${endTime}:00`
+          ).toISOString(),
+          createdBy: user?._id,
           isInstant,
         }),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to create meeting');
-      }else {
-        router.push(`/c/project/${selectedProject.name}/meetings/details`);
+        toast.error(errorData.error || "Failed to send meeting request");
+        router.refresh();
+        // throw new Error(errorData.error || "Failed to send meeting request");
+      } else {
+        toast.success("Meeting request sent successfully");
+        router.push(`/c/project/${selectedProject._id}/meetings/details`);
       }
-
     } catch (error) {
-      console.error('Error creating meeting:', error);
+      console.error("Error creating meeting:", error);
     }
-  }, [date, description, endTime, selectedProject, session?.user, startTime, title, router]);
+  }, [
+    user,
+    selectedProject,
+    title,
+    description,
+    date,
+    startTime,
+    endTime,
+    isInstant,
+    router,
+  ]);
 
   return (
     <MainContainer role={ROLE}>
@@ -107,16 +127,16 @@ export default function MeetingsRequest() {
             </div>
           </div>
           <div className="space-y-2">
-        <label className="flex items-center space-x-2">
-          <input
-            type="checkbox"
-            checked={isInstant}
-            onChange={(e) => setIsInstant(e.target.checked)}
-            className="form-checkbox h-5 w-5 text-blue-600"
-          />
-          <span>Is Instant Meeting</span>
-        </label>
-      </div>
+            <label className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                checked={isInstant}
+                onChange={(e) => setIsInstant(e.target.checked)}
+                className="form-checkbox h-5 w-5 text-blue-600"
+              />
+              <span>Is Instant Meeting</span>
+            </label>
+          </div>
           <div className="w-full flex flex-row gap-5">
             <div className="flex flex-col gap-2">
               <Label>Select Date </Label>

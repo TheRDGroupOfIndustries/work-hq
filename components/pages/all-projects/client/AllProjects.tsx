@@ -68,7 +68,7 @@ const ProjectTable: React.FC<ProjectTableProps> = ({ projects }) => {
   );
 
   return (
-    <div className="p-4 rounded-lg">
+    <div className="p-4 rounded-lg select-none">
       <div className="flex items-center gap-4 mb-4">
         <input
           type="text"
@@ -182,7 +182,12 @@ const ProjectTable: React.FC<ProjectTableProps> = ({ projects }) => {
         </tbody>
       </table> */}
 
-      <AllProjectListTable list={filteredProjects} selectedProject={selectedProject} setSelectedProject={setSelectedProject} />
+      <AllProjectListTable
+        list={filteredProjects}
+        selectedProject={selectedProject}
+        setSelectedProject={setSelectedProject}
+        routeTo="c"
+      />
     </div>
   );
 };

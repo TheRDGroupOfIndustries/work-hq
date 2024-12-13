@@ -9,6 +9,7 @@ import SquareButton from "@/components/reusables/wrapper/squareButton";
 import { Plus } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { CustomUser } from "@/lib/types";
+import { toast } from "sonner";
 
 export default function AddPayment() {
   const { data: session } = useSession();
@@ -87,14 +88,39 @@ export default function AddPayment() {
       const data = await response.json();
 
       if (data.status === 400) {
-        alert(data.error);
+        toast.error(
+          data.error || "Failed to attach payment proof. Please try again."
+        );
         return;
       }
 
-      alert(`Payment created successfully: ${data.message}`);
+      toast.success(`Payment created successfully: ${data.message}`);
+
+      setPaymentData({
+        paymentTitle: "",
+        status: "fulfilled",
+        type: "payment",
+        from: {
+          userID: user?._id,
+          role: user?.role,
+        },
+        to: {
+          userID: user?._id,
+          role: "company",
+        },
+        amount: 0,
+        transactionID: "",
+        paymentProof: "",
+        paymentDate: new Date(),
+        requestedDate: new Date(),
+        bonus: 0,
+        requestDescription: "",
+      });
+
+      setProofPreview("");
     } catch (error) {
       console.error("Error creating payment:", error);
-      alert("Failed to create payment. Please try again.");
+      toast.error("Failed to create payment. Please try again.");
     }
   };
 

@@ -1,14 +1,17 @@
+"use client";
+
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { SendHorizontal } from 'lucide-react';
+import { useChat } from "@/context/ChatProvider";
+import { SendHorizontal } from "lucide-react";
 import { useState } from "react";
 import { EditorContent } from "./EditorContent";
 import Toolbar from "./toolbar";
-import { useChat } from "@/context/ChatProvider";
 
 export default function InputArea() {
   const [text, setText] = useState("");
   const [activeFormats, setActiveFormats] = useState<Set<string>>(new Set());
   const { activeChannel } = useChat();
+  const [resetEditor, setResetEditor] = useState(false);
 
   const handleFormat = (command: string) => {
     document.execCommand(command, false);
@@ -42,19 +45,23 @@ export default function InputArea() {
   const handleSend = async () => {
     if (activeChannel && text.trim()) {
       try {
-        const response = await fetch(`/api/chats/${activeChannel.id}/messages`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ text }),
-        });
+        const response = await fetch(
+          `/api/chats/${activeChannel.id}/messages`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ text }),
+          }
+        );
 
         if (!response.ok) {
-          throw new Error('Failed to send message');
+          throw new Error("Failed to send message");
         }
 
         setText("");
+        setResetEditor(true);
       } catch (error) {
         console.error("Error sending message:", error);
       }
@@ -70,6 +77,7 @@ export default function InputArea() {
               <EditorContent
                 onTextChange={setText}
                 onFormatCheck={checkFormat}
+                reset={resetEditor}
               />
             </ScrollArea>
           </div>

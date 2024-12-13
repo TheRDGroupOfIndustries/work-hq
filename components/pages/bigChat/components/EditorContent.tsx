@@ -1,18 +1,20 @@
-'use client';
-import React, { useState, useRef, useEffect } from 'react';
+"use client";
+import React, { useState, useRef, useEffect } from "react";
 
 interface EditorContentProps {
   onTextChange: (text: string) => void;
   onFormatCheck: () => void;
   placeholder?: string;
   initialText?: string;
+  reset?: boolean;
 }
 
-export function EditorContent({ 
-  onTextChange, 
-  onFormatCheck, 
-  placeholder = 'Start typing...',
-  initialText = ''
+export function EditorContent({
+  onTextChange,
+  onFormatCheck,
+  placeholder = "Start typing...",
+  initialText = "",
+  reset = false,
 }: EditorContentProps) {
   const [isEmpty, setIsEmpty] = useState(!initialText);
   const editorRef = useRef<HTMLDivElement>(null);
@@ -24,15 +26,22 @@ export function EditorContent({
     }
   }, [initialText]);
 
+  useEffect(() => {
+    if (reset && editorRef.current) {
+      editorRef.current.innerHTML = "";
+      setIsEmpty(true);
+    }
+  }, [reset]);
+
   const checkEmpty = () => {
     if (editorRef.current) {
-      const content = editorRef.current.textContent || '';
-      setIsEmpty(content.trim() === '');
+      const content = editorRef.current.textContent || "";
+      setIsEmpty(content.trim() === "");
     }
   };
 
   const handleInput = (e: React.FormEvent<HTMLDivElement>) => {
-    const content = e.currentTarget.textContent || '';
+    const content = e.currentTarget.textContent || "";
     onTextChange(content);
     checkEmpty();
   };

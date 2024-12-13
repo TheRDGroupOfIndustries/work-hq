@@ -19,11 +19,14 @@ import { Role, VENDOR } from "@/types";
 import { removeMultipleFiles } from "@/utils/actions/fileUpload.action";
 import { Upload } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 
 export default function FilesList({ role }: { role: Role }) {
   const { selectedProjectDetails } = useProjectContext();
   const [selectedFilesCount, setSelectedFilesCount] = useState<number>(0);
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
+
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   const handleSelectAll = (checked: boolean) => {
     const newSelectedRows = checked
@@ -52,7 +55,7 @@ export default function FilesList({ role }: { role: Role }) {
           0)) ||
     false;
 
-  const handleDeleteFiles = () => {
+  const handleDeleteFiles = async () => {
     if (selectedFilesCount > 0) {
       const additionalFiles =
         selectedProjectDetails?.projectDetails?.additionalFiles;
@@ -63,10 +66,37 @@ export default function FilesList({ role }: { role: Role }) {
         })
         .filter((url) => url !== null);
 
-      removeMultipleFiles(fileUrls as string[]);
-      console.log(`Deleting ${selectedFilesCount} selected files`);
+      const removedFilesSuccess = await removeMultipleFiles(
+        fileUrls as string[]
+      );
+
+      if (removedFilesSuccess) {
+        try {
+          const response = await fetch(
+            `/api/project/delete/${selectedProjectDetails?._id}/remove-additional-files`,
+            {
+              method: "DELETE",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ additionalFiles: selectedRows }),
+            }
+          );
+
+          if (!response.ok) {
+            throw new Error("Failed to remove files from database");
+          }
+
+          toast.success(`Successfully deleted ${selectedFilesCount} files`);
+          setSelectedRows([]);
+          setSelectedFilesCount(0);
+        } catch (error) {
+          console.log(error);
+          toast.error("Error removing files from database:");
+        }
+      } else {
+        toast.error("Failed to delete files");
+      }
     } else {
-      console.log("No files selected for deletion");
+      toast.error("No files selected for deletion");
     }
   };
 
@@ -134,12 +164,9 @@ export default function FilesList({ role }: { role: Role }) {
             </SquareButton>
           </div>
           <div className="w-full flex flex-row items-center justify-end">
-            <Dialog>
+            <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
               <DialogTrigger asChild>
-                <SquareButton
-                  role={role}
-                  onClick={() => console.log("upload more files")}
-                >
+                <SquareButton role={role} onClick={() => setIsModalOpen(true)}>
                   <Upload
                     color={
                       role === VENDOR
@@ -150,7 +177,13 @@ export default function FilesList({ role }: { role: Role }) {
                   Upload
                 </SquareButton>
               </DialogTrigger>
-              <DialogContent><UploadFiles/></DialogContent>
+              <DialogContent>
+                <UploadFiles
+                  isOpen={isModalOpen}
+                  onClose={() => setIsModalOpen(false)}
+                  projectId={selectedProjectDetails?._id ?? ""}
+                />
+              </DialogContent>
             </Dialog>
           </div>
         </div>

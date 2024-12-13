@@ -67,8 +67,8 @@ export default function Payments() {
     <MainContainer role={ROLE}>
       <Headline
         role={ROLE}
-        title="Helpdest Tickets"
-        subTitle="Project / Chats"
+        title="Payments"
+        subTitle="Project / Payments"
         buttonObjects={headLineButtons}
       />
       <Tabs defaultValue="paymentInfo" className="">

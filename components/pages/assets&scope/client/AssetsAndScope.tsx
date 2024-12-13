@@ -38,7 +38,14 @@ export default function AssetsAndScope() {
     {
       buttonText: "Export Scope",
       onNeedIcon: false,
-      onClick: () => console.log("Export Scope"),
+      onClick: () => {
+        const scopeFileLink = selectedProjectDetails?.projectDetails?.scope;
+        if (scopeFileLink) {
+          window.open(scopeFileLink, "_blank");
+        } else {
+          console.log("No file link available");
+        }
+      },
     },
   ];
 
@@ -51,23 +58,34 @@ export default function AssetsAndScope() {
         buttonObjects={headLineButtons}
       />
       <div className="w-full flex flex-row gap-4 ">
-        <div className="w-full flex flex-col xl:flex-row gap-10">
-          <ProjectReportCard
-            report={taskStatusReport}
-            totalTasks={totalTasks}
-            role={ROLE}
-          />
-
-          <HoursCountCard
-            totalHours={
-              selectedProjectDetails?.developmentDetails?.projectHours?.reduce(
-                (acc, entry) => acc + entry.totalHours,
-                0
-              ) || 0
-            }
-            data={chartData || []}
-            role={ROLE} // Replace with actual role
-          />
+        <div className="w-full flex flex-col xl:flex-row justify-between gap-10">
+          {taskStatusReport ? (
+            <ProjectReportCard
+              report={taskStatusReport}
+              totalTasks={totalTasks}
+              role={ROLE}
+            />
+          ) : (
+            <div className="text-center text-gray-500 shadow-neuro-3 p-4 rounded-3xl">
+              No task status data available
+            </div>
+          )}
+          {chartData && chartData.length > 0 ? (
+            <HoursCountCard
+              totalHours={
+                selectedProjectDetails?.developmentDetails?.projectHours?.reduce(
+                  (acc, entry) => acc + entry.totalHours,
+                  0
+                ) || 0
+              }
+              data={chartData}
+              role={ROLE}
+            />
+          ) : (
+            <div className="text-center text-gray-500 shadow-neuro-3 p-4 rounded-3xl">
+              No chart data available
+            </div>
+          )}
 
           {/* <ProjectReportCard
               report={dashboardProjectReport}

@@ -14,6 +14,7 @@ import { useRouter } from "next/navigation";
 
 interface ProjectContextType {
   selectedProjectDetails: ProjectValues | null;
+  setProjectDetails: React.Dispatch<React.SetStateAction<ProjectValues | null>>;
   selectedProjectTasks: TaskValues[];
   userAllProjects: ProjectValues[];
   selectedProject: { _id: string; name: string };
@@ -45,26 +46,29 @@ const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const fetchUserProjects = useCallback(async () => {
     // if (user?.allProjects && user.allProjects.length > 0) {
-      try {
-        const SignUpRole = Cookies.get("SignUpRole");
-        console.log("Sign up role fetching: ", SignUpRole);
-        const res = await fetch("/api/project/get/user-projects", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ userProjectsIds: SignUpRole ==='developer'? user.myProjects : user.allProjects }),
-        });
+    try {
+      const SignUpRole = Cookies.get("SignUpRole");
+      console.log("Sign up role fetching: ", SignUpRole);
+      const res = await fetch("/api/project/get/user-projects", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userProjectsIds:
+            SignUpRole === "developer" ? user.myProjects : user.allProjects,
+        }),
+      });
 
-        const data = await res.json();
-        if (res.ok) {
-          setUserAllProjects(data.projects); // Set the fetched projects
-        } else {
-          console.error("Error fetching user projects:", data.error);
-        }
-      } catch (error) {
-        console.error("Error fetching user projects:", error);
+      const data = await res.json();
+      if (res.ok) {
+        setUserAllProjects(data.projects); // Set the fetched projects
+      } else {
+        console.error("Error fetching user projects:", data.error);
       }
+    } catch (error) {
+      console.error("Error fetching user projects:", error);
+    }
     // }
   }, [user?.allProjects, user?.myProjects]);
 
@@ -110,6 +114,7 @@ const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({
     <ProjectContext.Provider
       value={{
         selectedProjectDetails,
+        setProjectDetails,
         selectedProjectTasks,
         userAllProjects,
         selectedProject,

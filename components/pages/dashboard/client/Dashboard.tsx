@@ -58,11 +58,18 @@ export default function Dashboard() {
       hours: entry.totalHours,
     }));
 
+  const completedProjectTasks =
+    selectedProjectTasks?.filter((task) => task.status === "completed")
+      .length ?? 0;
+  const percentage = selectedProjectTasks?.length
+    ? Math.round((completedProjectTasks / selectedProjectTasks.length) * 100)
+    : 0;
+
   const midCardData = [
     {
       title: "Project Completion",
       icon: ProjectCompletion,
-      data: "58%",
+      data: `${percentage}%`,
     },
     {
       title: "Working Team Count",
@@ -84,6 +91,7 @@ export default function Dashboard() {
         : "",
     },
   ];
+
   const headLineButtons = [
     {
       buttonText: "Export Report",
@@ -112,35 +120,35 @@ export default function Dashboard() {
           />
         </>
       )}
-      <div className="w-full flex flex-row gap-4">
-        <div className="w-full flex flex-col xl:flex-row gap-10">
-          <ProjectReportCard
-            report={taskStatusReport}
-            totalTasks={totalTasks}
-            role={ROLE}
-          />
-          <HoursCountCard
-            totalHours={
-              selectedProjectDetails?.developmentDetails?.projectHours?.reduce(
-                (acc, entry) => acc + entry.totalHours,
-                0
-              ) || 0
-            }
-            data={chartData || []}
-            role={ROLE} // Replace with actual role
-          />
-
-          {/* <ProjectReportCard
-                  report={dashboardProjectReport}
-                  totalTasks={totalTasks}
-                  // totalTasks={100}
-                  role={ROLE}
-                />
-          <HoursCountCard
-            totalHours={100}
-            data={dashbordHoursCount}
-            role={ROLE}
-          /> */}
+      <div className="w-full flex flex-row justify-between gap-4">
+        <div className="w-full flex flex-col xl:flex-row justify-between gap-10">
+          {taskStatusReport ? (
+            <ProjectReportCard
+              report={taskStatusReport}
+              totalTasks={totalTasks}
+              role={ROLE}
+            />
+          ) : (
+            <div className="text-center text-gray-500 shadow-neuro-3 p-4 rounded-3xl">
+              No task status data available
+            </div>
+          )}
+          {chartData && chartData.length > 0 ? (
+            <HoursCountCard
+              totalHours={
+                selectedProjectDetails?.developmentDetails?.projectHours?.reduce(
+                  (acc, entry) => acc + entry.totalHours,
+                  0
+                ) || 0
+              }
+              data={chartData}
+              role={ROLE}
+            />
+          ) : (
+            <div className="text-center text-gray-500 shadow-neuro-3 p-4 rounded-3xl">
+              No chart data available
+            </div>
+          )}
         </div>
       </div>
 
@@ -148,8 +156,20 @@ export default function Dashboard() {
 
       {user?.role === "developer" && (
         <div className="flex flex-row gap-4">
-          <YourTasks list={currentTask} title="Your Current Tasks" />
-          <YourTasks list={completedTasks} title="Your Completed Tasks" />
+          {currentTask && currentTask.length > 0 ? (
+            <YourTasks list={currentTask} title="Your Current Tasks" />
+          ) : (
+            <div className="text-center text-gray-500 shadow-neuro-3 p-4 rounded-3xl">
+              No current tasks available
+            </div>
+          )}
+          {completedTasks && completedTasks.length > 0 ? (
+            <YourTasks list={completedTasks} title="Your Completed Tasks" />
+          ) : (
+            <div className="text-center text-gray-500 shadow-neuro-3 p-4 rounded-3xl">
+              No completed tasks available
+            </div>
+          )}
         </div>
       )}
 

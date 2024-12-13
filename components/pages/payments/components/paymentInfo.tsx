@@ -33,13 +33,21 @@ export default function PaymentInfo() {
       </h4>
       <p className="text-sm ">OR Code</p>
       <div className="ratio-square bg-slate-400 size-[200px] rounded-xl shadow-[10px_10px_20px_0px_#1c2c4766,-5px_-5px_15px_0px_#d8d8d8] overflow-hidden">
-        <Image
-          src={companyDetail?.qrCode || "/assets/user.png"}
-          alt="company logo"
-          width={400}
-          height={400}
-          className="w-full h-full"
-        ></Image>
+        {companyDetail?.qrCode ? (
+          <Image
+            src={companyDetail?.qrCode || "/assets/user.png"}
+            alt="company logo"
+            width={400}
+            height={400}
+            className="w-full h-full"
+          ></Image>
+        ) : (
+          <div className="w-full h-full flex-center">
+            <p className="text-sm font-medium text-gray-950">
+              No QR Code Available
+            </p>
+          </div>
+        )}
       </div>
 
       <div className="grid gap-4 grid-cols-2">
@@ -50,7 +58,7 @@ export default function PaymentInfo() {
           <input
             type="text"
             disabled
-            defaultValue={companyDetail?.ifsc || "SBIN0000000"}
+            defaultValue={companyDetail?.ifsc || "No IFSC Code Available"}
             placeholder="e.g. Johan"
             className="w-full text-base h-[40px] outline-none shadow-[3px_3px_3px_0px_#789BD399,-3px_-3px_5px_0px_#FFFFFF] bg-transparent rounded-lg px-4"
             required
@@ -63,7 +71,9 @@ export default function PaymentInfo() {
           <input
             type="text"
             disabled
-            defaultValue={companyDetail?.accountNo || "0000000000"}
+            defaultValue={
+              companyDetail?.accountNo || "No Account Number Available"
+            }
             placeholder="e.g. Johan"
             className="w-full text-base h-[40px] outline-none shadow-[3px_3px_3px_0px_#789BD399,-3px_-3px_5px_0px_#FFFFFF] bg-transparent rounded-lg px-4"
             required
@@ -74,7 +84,7 @@ export default function PaymentInfo() {
           <input
             type="text"
             disabled
-            defaultValue={companyDetail?.upiID || "ashri@upi"}
+            defaultValue={companyDetail?.upiID || "No UPI ID Available"}
             placeholder="e.g. Johan"
             className="w-full text-base h-[40px] outline-none shadow-[3px_3px_3px_0px_#789BD399,-3px_-3px_5px_0px_#FFFFFF] bg-transparent rounded-lg px-4"
             required
@@ -87,7 +97,7 @@ export default function PaymentInfo() {
           <input
             type="text"
             disabled
-            defaultValue={companyDetail?.phoneNo || "+91 123456789"}
+            defaultValue={companyDetail?.phoneNo || "No Phone Number Available"}
             placeholder="e.g. Johan"
             className="w-full text-base h-[40px] outline-none shadow-[3px_3px_3px_0px_#789BD399,-3px_-3px_5px_0px_#FFFFFF] bg-transparent rounded-lg px-4"
             required

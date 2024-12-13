@@ -56,7 +56,7 @@ export default function AllProjectListTable({
                     `/${routeTo}/project/${project._id}/dashboard` + ""
                   );
               }}
-              className={`h-[60px]  text-[#1E1B39] hover:bg-transparent hover:shadow-[3px_3px_10px_0px_#789BD399,-5px_-5px_10px_0px_#FFFFFF] rounded-lg mb-5 border-l-[20px] border-transparent border-b-0 `}
+              className={`h-[60px] cursor-pointer text-[#1E1B39] hover:bg-transparent hover:shadow-[3px_3px_10px_0px_#789BD399,-5px_-5px_10px_0px_#FFFFFF] rounded-lg mb-5 border-l-[20px] border-transparent border-b-0 `}
             >
               <TableCell className=" ">{`${index + 1}.`}</TableCell>
               <TableCell className="w-[55vw] -ml-10 flex items-center gap-2 px-4 py-2">
