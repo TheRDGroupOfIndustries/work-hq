@@ -9,6 +9,7 @@ export default function SquareButton({
   role,
   disabled = false,
   title,
+  id
 }: {
   children: React.ReactNode;
   className?: string;
@@ -16,9 +17,11 @@ export default function SquareButton({
   onClick?: (value?: unknown) => void;
   role?: Role;
   disabled?: boolean;
+  id?: string;
 }) {
   return (
     <button
+      id={id}
       onClick={onClick}
       disabled={disabled}
       title={title}

@@ -10,7 +10,7 @@ export default function Loader({
   return (
     <>
       <div
-        className={`w-full   flex-1 p-3 sm:p-4 sm:px-6  flex flex-col  overflow-auto bg-primary-sky-blue  ${className} flex-center flex-col gap-4 animate-pulse`}
+        className={`mt-[60px] w-full ${className} flex-center flex-col gap-4 animate-pulse w-full   flex-1 p-3 sm:p-4 sm:px-6     overflow-auto bg-transparent undefined `}
       >
         <Image
           src="/logo.png"
