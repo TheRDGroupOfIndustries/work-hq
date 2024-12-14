@@ -51,7 +51,7 @@ export default function MeetingsDetails() {
 
   return (
     <MainContainer role={ROLE}>
-      <Headline btnText="Request Meeting" />
+      <Headline btnText="Request Meeting" goTo='request' />
       <Container className="p-0 sm:p-0 md:p-0 lg:p-0">
         <Tabs defaultValue="allMetting" className="">
           <TabsList className="flex rounded-none h-[65px] shadow-neuro-4 rounded-t-xl flex-row items-center justify-around w-full bg-transparent font-semibold text-black px-0 ">

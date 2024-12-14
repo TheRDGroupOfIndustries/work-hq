@@ -4,12 +4,12 @@ import SquareButton from "@/components/reusables/wrapper/squareButton";
 import { ChevronDown, Plus } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 
-export default function Headline({btnText}: {btnText: string}) {
+export default function Headline({btnText,goTo}: {btnText: string, goTo: string}) {
   const pathname = usePathname()
   const router = useRouter();
 
   const handleRequestMeeting = () => {
-    const updatedPath = pathname.replace("details","request"); 
+    const updatedPath = pathname.replace("details",`${goTo}`); 
     router.push(updatedPath); 
   };
 

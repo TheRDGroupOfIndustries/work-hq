@@ -47,7 +47,7 @@ export default function HoursCountCard({
   );
 }
 
-function Chart({ data, isVendor }: { data: Data[]; isVendor: boolean }) {
+export function Chart({ data, isVendor }: { data: Data[]; isVendor: boolean }) {
   const chartConfig = {
     hours: {
       label: "Hours",
