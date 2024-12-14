@@ -14,12 +14,12 @@ export default function Headline({
   const router = useRouter();
 
   const handleRequestMeeting = () => {
-    const updatedPath = pathname.replace("request","details"); 
+    const updatedPath = pathname.replace("create","details"); 
     router.push(updatedPath); 
   };
 
   return (
-    <WrHeadline title={"Request a Meeting"}>
+    <WrHeadline title={"Create a Meeting"}>
         <div className="flex flex-row gap-4">
         <SquareButton
           className="text-[#6A6A6A]"

@@ -27,10 +27,10 @@ export function middleware(request: NextRequest) {
     const isAllowed = pathname.split('/')[1] === allowedRoutes[0];
 
     // If not allowed, redirect back to where they came from
-    if (!isAllowed) {
-        const referer = request.headers.get('referer') || '/'; // Fallback to the home page
-        return NextResponse.redirect(new URL(referer, request.url));
-    }
+    // if (!isAllowed) {
+    //     const referer = request.headers.get('referer') || '/'; // Fallback to the home page
+    //     return NextResponse.redirect(new URL(referer, request.url));
+    // }
 
 
     // Allow the request to proceed

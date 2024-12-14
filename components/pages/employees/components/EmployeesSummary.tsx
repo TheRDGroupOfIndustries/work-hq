@@ -68,7 +68,7 @@ export default function EmployeesSummary() {
   );
 }
 
-export function Chart({
+ function Chart({
   report,
   isVendor,
 }: {
