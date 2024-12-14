@@ -38,13 +38,8 @@ export default function RaiseTicket() {
 
     // Generate a unique ticket number than create a channel id for chat
     const ticketNo = Date.now().toString();
-    const channel = client.channel("messaging", ticketNo, {
-      name: `Ticket: ${subject}`,
-      members: [session.user._id],
-    });
-
-    const channelResponse = await channel.create();
-    const channelID = channelResponse.channel.id;
+    // This is just for testing
+    const channelID = crypto.randomUUID();
     try {
       const response = await fetch(`/api/ticket/create/${projectId}`, {
         method: "POST",

@@ -52,10 +52,11 @@ export const POST = async (
       ticketDate : new Date(),
       issueMessage,
       userID,
-      channelID,
     });
 
     const savedTicket = await ticket.save();
+
+    console.log("Ticket created:", savedTicket);
 
     return NextResponse.json({
       status: 201,
