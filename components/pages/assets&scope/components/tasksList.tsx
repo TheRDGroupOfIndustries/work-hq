@@ -31,37 +31,39 @@ export default function TasksList({
             {"Tasks Lists"}
           </h3>
           <p className="text-[#6A6A6A] text-base font-normal">
-            Total Tasks - {tasks?.length}
+            Total Tasks - {tasks?.length || 0}
           </p>
         </div>
-        <div className="flex flex-col sm:flex-row items-center gap-5">
-          <div className="w-full flex flex-row items-center justify-end">
-            <SquareButton
-              role={role}
-              className="!text-[#6A6A6A] "
-              onClick={() => {
-                console.log("Download");
-              }}
-            >
-              <SortBy />
-              Sort By
-            </SquareButton>
+        {tasks?.length && (
+          <div className="flex flex-col sm:flex-row items-center gap-5">
+            <div className="w-full flex flex-row items-center justify-end">
+              <SquareButton
+                role={role}
+                className="!text-[#6A6A6A] "
+                onClick={() => {
+                  console.log("Download");
+                }}
+              >
+                <SortBy />
+                Sort By
+              </SquareButton>
+            </div>
+            <div className="w-full flex flex-row items-center justify-end">
+              <SquareButton
+                role={role}
+                className="!text-[#6A6A6A]  "
+                onClick={() => {
+                  console.log("Download");
+                }}
+              >
+                <Filter />
+                Filter
+              </SquareButton>
+            </div>
           </div>
-          <div className="w-full flex flex-row items-center justify-end">
-            <SquareButton
-              role={role}
-              className="!text-[#6A6A6A]  "
-              onClick={() => {
-                console.log("Download");
-              }}
-            >
-              <Filter />
-              Filter
-            </SquareButton>
-          </div>
-        </div>
+        )}
       </div>
-      <DataTableTasks tasks={tasks} />
+      {tasks?.length && <DataTableTasks tasks={tasks} />}
     </Container>
   );
 }

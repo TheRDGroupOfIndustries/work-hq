@@ -18,6 +18,8 @@ import { useState } from "react";
 import RevenueSummary from "../components/revenueSummary";
 
 export default function AllProjects() {
+  const { userAllProjects } = useProjectContext();
+
   const headLineButtons = [
     {
       buttonText: "Export Report",
@@ -33,7 +35,7 @@ export default function AllProjects() {
         subTitle="Project"
         buttonObjects={headLineButtons}
       />
-      <ProjectTable projects={[]} />
+      <ProjectTable projects={userAllProjects} />
     </MainContainer>
   );
 }
@@ -43,8 +45,6 @@ interface ProjectTableProps {
 }
 
 const ProjectTable: React.FC<ProjectTableProps> = ({ projects }) => {
-  const { selectedProject, setSelectedProject } = useProjectContext();
-
   const [search, setSearch] = useState<string>("");
   const [filterCategory, setFilterCategory] = useState<string>("");
 
@@ -101,9 +101,8 @@ const ProjectTable: React.FC<ProjectTableProps> = ({ projects }) => {
           role={ROLE}
         />
 
-        <RevenueSummary/>
+        <RevenueSummary />
       </div>
-
 
       <Container>
         <div className="flex flex-col w-full h-[500px] gap-4">
@@ -112,12 +111,7 @@ const ProjectTable: React.FC<ProjectTableProps> = ({ projects }) => {
             <p>Total Projects - {projects.length} </p>
           </div>
           <div className="w-full flex flex-col gap-4 px-2">
-            <AllProjectListTable
-              list={filteredProjects}
-              selectedProject={selectedProject}
-              setSelectedProject={setSelectedProject}
-              role='ceo'
-            />
+            <AllProjectListTable list={filteredProjects} role="ceo" />
           </div>
         </div>
       </Container>

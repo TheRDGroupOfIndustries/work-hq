@@ -156,20 +156,9 @@ export default function Dashboard() {
 
       {user?.role === "developer" && (
         <div className="flex flex-row gap-4">
-          {currentTask && currentTask.length > 0 ? (
-            <YourTasks list={currentTask} title="Your Current Tasks" />
-          ) : (
-            <div className="text-center text-gray-500 shadow-neuro-3 p-4 rounded-3xl">
-              No current tasks available
-            </div>
-          )}
-          {completedTasks && completedTasks.length > 0 ? (
-            <YourTasks list={completedTasks} title="Your Completed Tasks" />
-          ) : (
-            <div className="text-center text-gray-500 shadow-neuro-3 p-4 rounded-3xl">
-              No completed tasks available
-            </div>
-          )}
+          <YourTasks list={currentTask} title="Your Current Tasks" />
+
+          <YourTasks list={completedTasks} title="Your Completed Tasks" />
         </div>
       )}
 

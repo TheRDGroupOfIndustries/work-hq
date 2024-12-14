@@ -44,8 +44,6 @@ interface ProjectTableProps {
 }
 
 const ProjectTable: React.FC<ProjectTableProps> = ({ projects }) => {
-  const { selectedProject, setSelectedProject } = useProjectContext();
-
   const [search, setSearch] = useState<string>("");
   const [filterCategory, setFilterCategory] = useState<string>("");
 
@@ -182,12 +180,7 @@ const ProjectTable: React.FC<ProjectTableProps> = ({ projects }) => {
         </tbody>
       </table> */}
 
-      <AllProjectListTable
-        list={filteredProjects}
-        selectedProject={selectedProject}
-        setSelectedProject={setSelectedProject}
-        routeTo="c"
-      />
+      <AllProjectListTable list={filteredProjects} routeTo="c" />
     </div>
   );
 };

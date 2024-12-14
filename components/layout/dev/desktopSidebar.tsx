@@ -1,19 +1,25 @@
 "use client";
 import AssetsAndScope from "@/components/icons/Assets&Scope";
 import Chats from "@/components/icons/Chats";
+import Logout from "@/components/icons/logout";
 import Meeting from "@/components/icons/Meeting";
 import { useProjectContext } from "@/context/ProjectProvider";
+import { CustomUser } from "@/lib/types";
 import { Role, VENDOR } from "@/types";
 import {
   AlignStartHorizontal,
   ChartNoAxesColumn,
   CreditCard,
 } from "lucide-react";
+import { signOut, useSession } from "next-auth/react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 export default function DesktopSidebar({ role }: { role: Role }) {
   const pathname = usePathname();
+  const { data: session } = useSession();
+  const user = session?.user as CustomUser;
 
   const { selectedProjectDetails } = useProjectContext();
 
@@ -130,23 +136,36 @@ export default function DesktopSidebar({ role }: { role: Role }) {
       </div>
 
       {/* bottom */}
-
       <Link
         href={"/dev/profile"}
         className="flex flex-row items-center justify-between mt-auto cursor-pointer text-sm"
       >
         <div className=" flex flex-row items-center gap-2">
-          <div className="h-[40px] w-[40px] rounded-full bg-[#377be7]"></div>
+          <div className="flex-center w-10 h-10 rounded-full bg-[#4872b5] overflow-hidden">
+            <Image
+              src={user?.profileImage || user?.image || "/assets/user.png"}
+              alt="profile image"
+              width={200}
+              height={200}
+              className="w-10 h-10 rounded-full"
+            />
+          </div>
 
-          <div className="flex flex-col">
-            <span className="font-semibold text-sm">Olivia rhye</span>
-            <span className=" text-sm text-[#475467]">
-              olivia@untitledui.com
+          <div className="flex flex-col overflow-hidden">
+            <span className="font-semibold text-sm">
+              {user?.firstName
+                ? user?.firstName + " " + user?.lastName
+                : user?.name}
+            </span>
+            <span className=" text-sm text-[#475467] max-w-[140px]">
+              {user?.email}
             </span>
           </div>
         </div>
 
-        <div className="h-[10px] w-[10px] rounded-full  border"></div>
+        <div className="h-[40px] w-[40px] flex items-center justify-center">
+          <Logout color="#475467" onClick={() => signOut()} />
+        </div>
       </Link>
     </div>
   );

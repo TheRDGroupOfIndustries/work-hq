@@ -93,7 +93,7 @@ const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({
 
         setSelectedProject({
           _id: projectDetailsData.project._id || "",
-          name: projectDetailsData.project.projectName || "",
+          name: projectDetailsData.project.projectDetails.projectName || "",
         });
       } catch (error) {
         console.error("Error fetching project details:", error);

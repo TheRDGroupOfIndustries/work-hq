@@ -25,14 +25,12 @@ export default function YourTasks({
             <h2 className="uppercase text-lg font-semibold">{title}</h2>
 
             <p className="text-base font-normal text-[#6A6A6A] Total current - 24">
-              Total current - {list?.length}
+              Total current - {list?.length || 0}
             </p>
           </div>
           <MoveRight
             onClick={() => {
-              router.push(
-                `/dev/project/${selectedProjectDetails?.projectDetails?.projectName}/kanban`
-              );
+              router.push(`/dev/project/${selectedProjectDetails?._id}/kanban`);
             }}
             className="cursor-pointer"
             color="var(--light-gray)"

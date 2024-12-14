@@ -1,73 +1,45 @@
 "use client";
 
-import { signOut, useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
-import Link from "next/link";
 import Image from "next/image";
-import { useProjectContext } from "@/context/ProjectProvider";
-import { Role, VENDOR } from "@/types";
+import Link from "next/link";
+import { signOut, useSession } from "next-auth/react";
 import { CustomUser } from "@/lib/types";
+import { Role, VENDOR } from "@/types";
 import Logout from "@/components/icons/logout";
-import Chats from "@/components/icons/Chats";
-import Helpdesk from "@/components/icons/Helpdesk";
-import Meeting from "@/components/icons/Meeting";
-import AssetsAndScope from "@/components/icons/Assets&Scope";
-import { ChartNoAxesColumn } from "lucide-react";
+import { LucideProps } from "lucide-react";
+import { useProjectContext } from "@/context/ProjectProvider";
 
-export default function DesktopSidebar({ role }: { role: Role }) {
+interface LinkItem {
+  id: string;
+  title: string;
+  Icon:
+    | React.ComponentType<LucideProps>
+    | React.ComponentType<{ color: string }>;
+  link: string;
+  path: string;
+}
+
+interface DesktopSidebarProps {
+  role: Role;
+  links: LinkItem[];
+  _id: string;
+}
+
+export default function DesktopSidebar({
+  role,
+  links,
+  _id,
+}: DesktopSidebarProps) {
   const pathname = usePathname();
   const { data: session } = useSession();
   const user = session?.user as CustomUser;
+
   const { selectedProjectDetails } = useProjectContext();
 
-  // console.log(selectedProject);
-
-  const list = [
-    {
-      id: "1",
-      title: "Dashboard",
-      Icon: ChartNoAxesColumn,
-      link: `/c/project/${selectedProjectDetails?._id}/dashboard`,
-      path: "dashboard",
-    },
-    {
-      id: "2",
-      title: "Assets & Scope",
-      Icon: AssetsAndScope,
-      link: `/c/project/${selectedProjectDetails?._id}/assets&scope`,
-      path: "assets&scope",
-    },
-    {
-      id: "3",
-      title: "Meetings",
-      Icon: Meeting,
-      link: `/c/project/${selectedProjectDetails?._id}/meetings/details`,
-    },
-    {
-      id: "4",
-      title: "Chats",
-      Icon: Chats,
-      link: `/c/project/${selectedProjectDetails?._id}/chats`,
-      path: "chats",
-    },
-    {
-      id: "5",
-      title: "Payments",
-      Icon: AssetsAndScope,
-      link: `/c/project/${selectedProjectDetails?._id}/payments`,
-      path: "payments",
-    },
-    {
-      id: "6",
-      title: "Helpdesk",
-      Icon: Helpdesk,
-      link: `/c/project/${selectedProjectDetails?._id}/helpdesk`,
-      path: "helpdesk",
-    },
-  ];
   return (
     <div
-      className={`sticky left-0 top-[70px] hidden lg:w-[250px] h-[calc(100vh-70px)]  p-4 overflow-y-auto overflow-x-hidden md:flex flex-col 
+      className={`sticky left-0 top-[70px] hidden lg:w-[250px] h-[calc(100vh-70px)] p-4 overflow-auto md:flex flex-col 
       ${
         role === VENDOR
           ? "bg-vendor-dark shadow-[3px_3px_12px_0px_#00000099] text-[#A5A5A5]"
@@ -101,12 +73,12 @@ export default function DesktopSidebar({ role }: { role: Role }) {
 
       {/* List */}
       <div className={`flex flex-col gap-2 mt-5 text-lg font-semibold`}>
-        {list.map(({ id, title, Icon, link }) => {
-          const isActive = decodeURIComponent(pathname) === link;
-
+        {links.map(({ id, title, Icon, link, path }) => {
+          const isActive =
+            decodeURIComponent(pathname) === `${link}/${_id}/${path}`;
           return (
             <Link
-              href={link}
+              href={`${link}/${_id}/${path}`}
               key={id}
               className={`text-desktop relative cursor-pointer px-4 py-3 rounded-xl ${
                 role === VENDOR
@@ -143,10 +115,10 @@ export default function DesktopSidebar({ role }: { role: Role }) {
 
       {/* bottom */}
       <Link
-        href={"/c/profile"}
+        href={"/dev/profile"}
         className="flex flex-row items-center justify-between mt-auto cursor-pointer text-sm"
       >
-        <div className=" flex flex-row items-center gap-2">
+        <div className="flex flex-row items-center gap-2">
           <div className="flex-center w-10 h-10 rounded-full bg-[#4872b5] overflow-hidden">
             <Image
               src={user?.profileImage || user?.image || "/assets/user.png"}
@@ -163,7 +135,7 @@ export default function DesktopSidebar({ role }: { role: Role }) {
                 ? user?.firstName + " " + user?.lastName
                 : user?.name}
             </span>
-            <span className=" text-sm text-[#475467] max-w-[140px]">
+            <span className="text-sm text-[#475467] max-w-[140px]">
               {user?.email}
             </span>
           </div>

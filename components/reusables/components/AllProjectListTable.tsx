@@ -1,3 +1,5 @@
+"use client";
+
 import { ProjectValues } from "@/lib/types";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -11,22 +13,18 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useProjectContext } from "@/context/ProjectProvider";
 
 export default function AllProjectListTable({
   list,
-  setSelectedProject,
-  selectedProject,
   routeTo,
   role,
 }: {
   list: ProjectValues[];
-  setSelectedProject: React.Dispatch<
-    React.SetStateAction<{ _id: string; name: string }>
-  >;
-  selectedProject?: { _id: string; name: string };
   routeTo?: string;
   role?: "ceo";
 }) {
+  const { selectedProject, setSelectedProject } = useProjectContext();
   const router = useRouter();
   return (
     <Table>
