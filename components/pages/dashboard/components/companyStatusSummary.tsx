@@ -78,7 +78,7 @@ export default function CompanyStatusSummary() {
   );
 }
 
-function Status({
+export function Status({
   cardData,
   selectedCard,
   setSelectedCard,

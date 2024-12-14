@@ -38,6 +38,10 @@ import {
   UserRound,
 } from "lucide-react";
 import Logout from "@/components/icons/logout";
+import AssetsAndScope from "@/components/icons/Assets&Scope";
+import Chats from "@/components/icons/Chats";
+import Helpdesk from "@/components/icons/Helpdesk";
+import Meeting from "@/components/icons/Meeting";
 
 
 
@@ -194,55 +198,64 @@ export function ProfileDropDownMenu() {
   const { data: session } = useSession();
   const user = session?.user as CustomUser;
 
-  const {
-    selectedProjectDetails,
-    
-  } = useProjectContext();
 
-  const list = [
+const list = [
     {
       id: "1",
       title: "Dashboard",
       Icon: ChartNoAxesColumn,
-      link: `/dev/project/${selectedProjectDetails?.projectDetails.projectName}/dashboard`,
+      link: `/ceo/dashboard`,
       path: 'dashboard'
     },
     {
       id: "2",
-      title: "Assets & Scope",
+      title: "Projects",
       Icon: AssetsAndScope,
-      link: `/dev/project/${selectedProjectDetails?.projectDetails.projectName}/assets&scope`,
-      path: 'assets&scope'
+      link: `/ceo/all-projects`,
+      path: 'all-projects'
     },
     {
       id: "3",
-      title: "Project Kanban",
-      Icon: AlignStartHorizontal,
-      link: `/dev/project/${selectedProjectDetails?.projectDetails.projectName}/kanban`,
-      path: 'kanban'
+      title: "Meetings",
+      Icon: Meeting,
+      link: `/ceo/meetings/details`,
+      path: 'meetings'
     },
     {
       id: "4",
-      title: "Meetings",
-      Icon: Meeting,
-      link: `/dev/project/${selectedProjectDetails?.projectDetails.projectName}/details`,
-      path: 'details'
+      title: "Employees",
+      Icon: Chats,
+      link: `/ceo/employees`,
+      path: 'employees'
     },
     {
       id: "5",
-      title: "Salary",
-      Icon: CreditCard,
-      link: `/dev/project/${selectedProjectDetails?.projectDetails.projectName}/salary`,
-      path: 'salary'
+      title: "Client/Vendors",
+      Icon: AssetsAndScope,
+      link: `/ceo/client-vendors`,
+      path: 'client-vendors'
     },
     {
       id: "6",
       title: "Chats",
-      Icon: Chats,
-      link: `/dev/project/${selectedProjectDetails?.projectDetails.projectName}/chats`,
+      Icon: Helpdesk,
+      link: `/ceo/chats`,
       path: 'chats'
     },
-    
+    {
+      id: "7",
+      title: "Payments",
+      Icon: CreditCard,
+      link: `/ceo/payments`,
+      path: 'payments'
+    },
+    {
+      id: "7",
+      title: "Helpdesk",
+      Icon: Helpdesk,
+      link: `/ceo/helpdesk`,
+      path: 'helpdesk'
+    },
   ];
   return (
     <DropdownMenu>

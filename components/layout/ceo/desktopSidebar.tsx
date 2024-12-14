@@ -4,14 +4,13 @@ import Chats from "@/components/icons/Chats";
 import Helpdesk from "@/components/icons/Helpdesk";
 import Meeting from "@/components/icons/Meeting";
 import { Role, VENDOR } from "@/types";
-import { ChartNoAxesColumn } from "lucide-react";
+import { ChartNoAxesColumn, CreditCard } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import { CustomUser } from "@/lib/types";
 import Image from "next/image";
 import Logout from "@/components/icons/logout";
-import { useProjectContext } from "@/context/ProjectProvider";
 // import { Link, useLocation } from "react-router-dom";
 
 export default function DesktopSidebar({ role }: { role: Role }) {
@@ -20,52 +19,62 @@ export default function DesktopSidebar({ role }: { role: Role }) {
   const { data: session } = useSession();
   const user = session?.user as CustomUser;
 
-  const {
-    selectedProjectDetails,
-    
-  } = useProjectContext();
-
 
   const list = [
     {
       id: "1",
       title: "Dashboard",
       Icon: ChartNoAxesColumn,
-      link: `/c/project/${selectedProjectDetails?.projectDetails.projectName}/dashboard`,
+      link: `/ceo/dashboard`,
       path: 'dashboard'
     },
     {
       id: "2",
-      title: "Assets & Scope",
+      title: "Projects",
       Icon: AssetsAndScope,
-      link: `/c/project/${selectedProjectDetails?.projectDetails.projectName}/assets&scope`,
-      path: 'assets&scope'
+      link: `/ceo/all-projects`,
+      path: 'all-projects'
     },
     {
       id: "3",
       title: "Meetings",
       Icon: Meeting,
-      link: `/c/project/${selectedProjectDetails?.projectDetails.projectName}/meetings/details`,
+      link: `/ceo/meetings/details`,
+      path: 'meetings'
     },
     {
       id: "4",
-      title: "Chats",
+      title: "Employees",
       Icon: Chats,
-      link: `/c/project/${selectedProjectDetails?.projectDetails.projectName}/chats`,
-      path: 'chats'
+      link: `/ceo/employees`,
+      path: 'employees'
     },
     {
       id: "5",
-      title: "Payments",
+      title: "Client/Vendors",
       Icon: AssetsAndScope,
-      link: `/c/project/${selectedProjectDetails?.projectDetails.projectName}/payments`,
-      path: 'payments'
+      link: `/ceo/client-vendors`,
+      path: 'client-vendors'
     },
     {
       id: "6",
+      title: "Chats",
+      Icon: Chats,
+      link: `/ceo/chats`,
+      path: 'chats'
+    },
+    {
+      id: "7",
+      title: "Payments",
+      Icon: CreditCard,
+      link: `/ceo/payments`,
+      path: 'payments'
+    },
+    {
+      id: "7",
       title: "Helpdesk",
       Icon: Helpdesk,
-      link: `/c/project/${selectedProjectDetails?.projectDetails.projectName}/helpdesk`,
+      link: `/ceo/helpdesk`,
       path: 'helpdesk'
     },
   ];
@@ -81,24 +90,9 @@ export default function DesktopSidebar({ role }: { role: Role }) {
     >
       {/* top */}
 
-      <div className="flex text-sm  flex-row gap-4 w-full px-3 py-2">
-        <div className=" h-[60px] w-[60px] bg-transparent shadow-neuro-3 rounded-full p-4">
-          <Image
-            src={selectedProjectDetails?.companyDetails.logo || "/assets/user.png"}
-            alt="logo"
-            width={60}
-            height={60}
-            className="w-full h-full rounded-full object-contain"
-          />
-        </div>
-        <div
-          className={`flex flex-col ${
-            role === VENDOR ? "text-white" : "text-dark-gray"
-          } `}
-        >
-          <span>{selectedProjectDetails?.projectDetails.projectName}</span>
-          <span>Progress - 58%</span>
-        </div>
+      <div className="flex  flex-col">
+        <h4 className="text-lg font-semibold text-dark-gray">All Projects Panal</h4>
+        <p className="text-base text-light-gray">Total Projects -04</p>
       </div>
 
       {/* List */}

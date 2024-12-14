@@ -11,7 +11,7 @@ export default function ClientAllTransactionsHistory() {
           <h2 className=" text-base font-medium">Total transactions -</h2>
         </div>
         <div className="w-full flex flex-col gap-4 px-2">
-          <AllTransactionsHistoryTable payments={[]} />
+          <AllTransactionsHistoryTable only="client" payments={[]} />
         </div>
       </div>
     </Container>
