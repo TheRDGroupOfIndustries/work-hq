@@ -30,7 +30,7 @@ const ticketSchema = new Schema<TicketDBTypes>(
     issueMessage: { type: String, required: true },
     status: {
       type: String,
-      required: true,
+      default: "open",
       enum: ["open", "close"],
     },
     channelID: { type: Schema.Types.ObjectId, ref: "ChatChannel" }, // Optional field
