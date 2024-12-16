@@ -1,13 +1,11 @@
 import Container from "@/components/reusables/wrapper/Container";
+import { CustomUser } from "@/lib/types";
 import { MoveRight } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React from "react";
 
-interface List {
-  name: string;
-  info: string;
-}
+
 
 export default function EmployeesAndClientList({
   title,
@@ -15,7 +13,7 @@ export default function EmployeesAndClientList({
   redirect,
 }: {
   title: string;
-  list: List[];
+  list: CustomUser[];
   redirect: string;
 }) {
   const router = useRouter();
@@ -42,12 +40,12 @@ export default function EmployeesAndClientList({
   );
 }
 
-function Card({ index, list }: { index: number; list: List }) {
+function Card({ index, list }: { index: number; list: CustomUser }) {
   return (
     <div key={index} className="w-full flex flex-row items-center gap-2">
       <span className="text-light-gray text-lg">{index + 1}.</span>
       <Image
-        src={"/assets/user.png"}
+        src={list.profileImage || "/assets/user.png"}
         alt="Profile Image"
         width="20"
         height="20"
@@ -55,10 +53,10 @@ function Card({ index, list }: { index: number; list: List }) {
       />
       <div className="flex flex-col">
         <span className="text-dark-gray leading-5 light-graytext-base">
-          {list.name}
+          {list.firstName}
         </span>
         <span className="line-clamp-1 text-sm text-light-gray">
-          {list.info}
+          {list.role}
         </span>
       </div>
     </div>

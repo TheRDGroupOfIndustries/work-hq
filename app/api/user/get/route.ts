@@ -1,13 +1,13 @@
-import { NextResponse } from "next/server";
-import connectToMongoDB from "@/utils/db";
 import User from "@/models/User";
+import connectToMongoDB from "@/utils/db";
+import { NextResponse } from "next/server";
 
 export const GET = async () => {
   await connectToMongoDB();
 
   try {
     const users = await User.find().select(
-      "username firstName lastName email phone role clients vendorID allProjects myProjects workStatus"
+      "username firstName lastName email phone role clients vendorID allProjects myProjects workStatus profileImage"
     );
 
     return NextResponse.json({

@@ -2,7 +2,9 @@
 import Filter from "@/components/icons/Filter";
 import AllProjectListTable from "@/components/reusables/components/AllProjectListTable";
 import Headline from "@/components/reusables/components/headline";
-import ProjectReportCard from "@/components/reusables/components/projectReportCard";
+import ProjectReportCard, {
+  TaskStatusReport,
+} from "@/components/reusables/components/projectReportCard";
 import Container from "@/components/reusables/wrapper/Container";
 import MainContainer from "@/components/reusables/wrapper/mainContainer";
 import {
@@ -11,14 +13,30 @@ import {
   SelectItem,
   SelectTrigger,
 } from "@/components/ui/select";
-import { useProjectContext } from "@/context/ProjectProvider";
 import { ProjectValues } from "@/lib/types";
-import { dashboardProjectReport, ROLE } from "@/tempData";
-import { useState } from "react";
+import { RootState } from "@/redux/rootReducer";
+import { setAllProjectsList } from "@/redux/slices/ceo";
+import { ROLE } from "@/tempData";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import RevenueSummary from "../components/revenueSummary";
 
 export default function AllProjects() {
-  const { userAllProjects } = useProjectContext();
+  const [allProjects, setAllProjects] = useState<ProjectValues[]>([]);
+  const dispatch = useDispatch();
+
+  //Checking if the data is available in redux or not
+  const allProjectsList = useSelector(
+    (state: RootState) => state.ceo.allProjectsList
+  );
+
+  const [projectSummaryReportm, setProjectSummaryReport] =
+    useState<TaskStatusReport>({
+      completed: 0,
+      onGoing: 0,
+      pending: 0,
+      refactoring: 0,
+    });
 
   const headLineButtons = [
     {
@@ -27,6 +45,79 @@ export default function AllProjects() {
       onClick: () => {},
     },
   ];
+
+  useEffect(() => {
+    const fetchAllProjects = async () => {
+      try {
+        const res = await fetch("/api/project", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          setAllProjects(data.projects);
+        }
+
+        const projects: ProjectValues[] = data.projects;
+        console.log("projects: ", projects);
+
+        dispatch(setAllProjectsList(projects));
+
+        const projectSummaryReport: TaskStatusReport = {
+          completed: projects.filter(
+            (project: ProjectValues) =>
+              project.developmentDetails.status === "completed"
+          ).length,
+          onGoing: projects.filter(
+            (project: ProjectValues) =>
+              project.developmentDetails.status === "inProgress"
+          ).length,
+          pending: projects.filter(
+            (project: ProjectValues) =>
+              project.developmentDetails.status === "pending"
+          ).length,
+          refactoring: projects.filter(
+            (project: ProjectValues) =>
+              project.developmentDetails.status === "refactoring"
+          ).length,
+        };
+
+        setProjectSummaryReport(projectSummaryReport);
+      } catch (error) {
+        console.error("Error fetching user projects:", error);
+      }
+    };
+
+    if (allProjectsList.length > 0) {
+      setAllProjects(allProjectsList);
+
+      const projectSummaryReport: TaskStatusReport = {
+        completed: allProjectsList.filter(
+          (project: ProjectValues) =>
+            project.developmentDetails.status === "completed"
+        ).length,
+        onGoing: allProjectsList.filter(
+          (project: ProjectValues) =>
+            project.developmentDetails.status === "inProgress"
+        ).length,
+        pending: allProjectsList.filter(
+          (project: ProjectValues) =>
+            project.developmentDetails.status === "pending"
+        ).length,
+        refactoring: allProjectsList.filter(
+          (project: ProjectValues) =>
+            project.developmentDetails.status === "refactoring"
+        ).length,
+      };
+      setProjectSummaryReport(projectSummaryReport);
+    } else {
+      fetchAllProjects();
+    }
+  }, [allProjectsList, dispatch]);
   return (
     <MainContainer>
       <Headline
@@ -35,16 +126,23 @@ export default function AllProjects() {
         subTitle="Project"
         buttonObjects={headLineButtons}
       />
-      <ProjectTable projects={userAllProjects} />
+      <ProjectTable
+        projects={allProjects}
+        projectSummaryReportm={projectSummaryReportm}
+      />
     </MainContainer>
   );
 }
 
 interface ProjectTableProps {
   projects: ProjectValues[];
+  projectSummaryReportm: TaskStatusReport;
 }
 
-const ProjectTable: React.FC<ProjectTableProps> = ({ projects }) => {
+const ProjectTable: React.FC<ProjectTableProps> = ({
+  projects,
+  projectSummaryReportm,
+}) => {
   const [search, setSearch] = useState<string>("");
   const [filterCategory, setFilterCategory] = useState<string>("");
 
@@ -96,7 +194,9 @@ const ProjectTable: React.FC<ProjectTableProps> = ({ projects }) => {
 
       <div className="w-full flex flex-col xl:flex-row gap-4 ">
         <ProjectReportCard
-          report={dashboardProjectReport}
+          title="Projects Summary"
+          subTitleTotal={`Tota Projects - ${projects.length}`}
+          report={projectSummaryReportm}
           totalTasks={10}
           role={ROLE}
         />
@@ -105,12 +205,12 @@ const ProjectTable: React.FC<ProjectTableProps> = ({ projects }) => {
       </div>
 
       <Container>
-        <div className="flex flex-col w-full h-[500px] gap-4">
+        <div className="flex flex-col w-full  gap-4">
           <div className="w-full flex flex-col">
             <h2 className="uppercase text-lg font-semibold">Projects list</h2>
             <p>Total Projects - {projects.length} </p>
           </div>
-          <div className="w-full flex flex-col gap-4 px-2">
+          <div className="w-full flex flex-col gap-4 px-2 ">
             <AllProjectListTable list={filteredProjects} role="ceo" />
           </div>
         </div>

@@ -3,23 +3,56 @@ import TotalClientsAndVendors from "@/components/icons/TotalClientsAndVendors";
 import TotalEmployees from "@/components/icons/TotalEmployees";
 import TotalProject from "@/components/icons/TotalProject";
 import AllProjectListTable from "@/components/reusables/components/AllProjectListTable";
+import AllTransactionsHistoryTable from "@/components/reusables/components/AllTransactionsHistoryTable";
 import Headline from "@/components/reusables/components/headline";
+import HelpDeskTicketsListTable, {
+  Ticket,
+} from "@/components/reusables/components/HelpDeskTicketsListTable";
+import { TaskStatusReport } from "@/components/reusables/components/projectReportCard";
 import Container from "@/components/reusables/wrapper/Container";
 import MainContainer from "@/components/reusables/wrapper/mainContainer";
 import { useProjectContext } from "@/context/ProjectProvider";
+import { CustomUser, ProjectValues } from "@/lib/types";
+import {
+  setAllProjectsList,
+  setClientAndVendorList,
+  setEmployeesList,
+} from "@/redux/slices/ceo";
 import { ROLE } from "@/tempData";
 import { MoveRight } from "lucide-react";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import CompanyStatusSummary from "../components/companyStatusSummary";
 import EmployeesAndClientList from "../components/EmployeesAndClientList";
-import MidInformationCard from "../components/midInformationCard";
+import MidInformationCard, {
+  MidInformationCardProps,
+} from "../components/midInformationCard";
 import StatusCardsHeadline from "../components/StatusCardsHeadline";
-import HelpDeskTicketsListTable, { Ticket } from "@/components/reusables/components/HelpDeskTicketsListTable";
-import { useSession } from "next-auth/react";
-import AllTransactionsHistoryTable from "@/components/reusables/components/AllTransactionsHistoryTable";
 
 export default function Dashboard() {
+  const [loading, setLoading] = useState(false);
+  const [allUsers, setAllUsers] = useState<CustomUser[] | []>([]);
+  const [allProjects, setAllProjects] = useState<ProjectValues[] | []>([]);
+  const [midCardData, setMidCardData] = useState<MidInformationCardProps[] >([
+    {
+      title: "Total Project",
+      icon: TotalProject,
+      data: 0,
+    },
+    {
+      title: "Total Employees",
+      icon: TotalEmployees,
+      data: 0,
+    },
+    {
+      title: "Total Client/Vendors",
+      icon: TotalClientsAndVendors,
+      data: 0,
+    },
+  ]);
+  const dispatch = useDispatch();
   const headLineButtons = [
     {
       buttonText: "Export Report",
@@ -28,38 +61,121 @@ export default function Dashboard() {
     },
   ];
 
-  const midCardData = [
-    {
-      title: "Tptal Project",
-      icon: TotalProject,
-      data: "58",
-    },
-    {
-      title: "Total Employees",
-      icon: TotalEmployees,
-      data: 55,
-    },
-    {
-      title: "Total Client/Vendors",
-      icon: TotalClientsAndVendors,
-      data: "8",
-    },
-  ];
+// Fetch all data when the component mounts or updates
+useEffect(() => {
+  const fetchAllData = async () => {
+    try {
+      // Set loading state to true while fetching data
+      setLoading(true);
 
-  const list = [
-    {
-      name: "John Doe",
-      info: "Project Manager",
-    },
-    {
-      name: "John Doe",
-      info: "Project Manager",
-    },
-    {
-      name: "John Doe",
-      info: "Project Manager",
-    },
-  ];
+      // Fetch users, projects, and payments concurrently using Promise.all
+      const [userRes, projectRes, paymentRes] = await Promise.all([
+        // Fetch users from /api/user/get endpoint
+        fetch("/api/user/get", {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        }),
+        // Fetch projects from /api/project endpoint
+        fetch("/api/project", {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        }),
+        // Fetch payments from /api/payment/get endpoint
+        fetch("/api/payment/get", {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        }),
+      ]);
+
+      // Parse JSON responses from each endpoint
+      const [userData, projectData, paymentData] = await Promise.all([
+        userRes.json(),
+        projectRes.json(),
+        paymentRes.json(),
+      ]);
+
+      // Handle user data
+      if (userRes.ok) {
+        // Set all users state
+        setAllUsers(userData.users);
+
+        // Filter and dispatch users by roles
+        dispatch(
+          setEmployeesList(
+            // Filter users with role "developer"
+            userData.users.filter(
+              (user: CustomUser) => user.role === "developer"
+            )
+          )
+        );
+
+        dispatch(
+          setClientAndVendorList(
+            // Filter users with roles "client" or "vendor"
+            userData.users.filter(
+              (user: CustomUser) =>
+                user.role === "client" || user.role === "vendor"
+            )
+          )
+        );
+
+        // Update mid card data with user counts
+        setMidCardData((prevData) => {
+          const newDatac = prevData;
+          newDatac[1].data = userData.users.filter(
+            (user: CustomUser) => user.role === "developer"
+          ).length;
+          newDatac[2].data = userData.users.filter(
+            (user: CustomUser) =>
+              user.role === "client" || user.role === "vendor"
+          ).length;
+          return newDatac;
+        });
+      } else {
+        // Log error if user data fetch fails
+        console.error("Failed to fetch users:", userData.message);
+      }
+
+      // Handle project data
+      if (projectRes.ok) {
+        // Set all projects state
+        setAllProjects(projectData.projects);
+
+        setMidCardData((prevData) => {
+          const newDatac = prevData;
+          newDatac[0].data = projectData.projects.length;
+          
+          return newDatac;
+        });
+
+        // Dispatch all projects list
+        dispatch(setAllProjectsList(projectData.projects));
+      } else {
+        // Log error if project data fetch fails
+        console.error("Failed to fetch projects:", projectData.message);
+      }
+
+      // Handle payment data
+      if (paymentRes.ok) {
+        // Log payment data (no further processing)
+        console.log("paymentData: ", paymentData);
+      } else {
+        // Log error if payment data fetch fails
+        console.error("Failed to fetch payments:", paymentData.message);
+      }
+    } catch (error) {
+      // Log any errors that occur during data fetching
+      console.error("Error fetching data:", error);
+    } finally {
+      // Set loading state to false after data fetching completes
+      setLoading(false);
+    }
+  };
+
+  // Call the fetchAllData function
+  fetchAllData();
+}, [dispatch]);
+
   return (
     <MainContainer>
       <Headline
@@ -73,26 +189,33 @@ export default function Dashboard() {
       <MidInformationCard client={false} midCardData={midCardData} />
       <div className="flex flex-row gap-4">
         <EmployeesAndClientList
-          list={list}
+          list={allUsers.filter((user) => user.role === "developer")}
           redirect="/dev/project/have-todo-here/"
           title="Employees List"
         />
         <EmployeesAndClientList
-          list={list}
+          list={allUsers.filter(
+            (user) => user.role === "client" || user.role === "vendor"
+          )}
           redirect=""
-          title="Employees List"
+          title="Client/Vendor List"
         />
       </div>
-      <ProjectList />
+      <ProjectList list={allProjects} loading={loading} />
       <HelpdeskTicketsList />
       <PayrollList />
     </MainContainer>
   );
 }
 
-function ProjectList() {
+function ProjectList({
+  list,
+  loading,
+}: {
+  list: ProjectValues[];
+  loading: boolean;
+}) {
   const router = useRouter();
-  const { userAllProjects, setSelectedProject } = useProjectContext();
   return (
     <Container>
       <div className="flex flex-col w-full h-[500px] gap-4">
@@ -106,11 +229,8 @@ function ProjectList() {
             className="cursor-pointer"
           />
         </div>
-        <div className="w-full flex flex-col gap-4 px-2">
-          <AllProjectListTable
-            setSelectedProject={setSelectedProject}
-            list={userAllProjects}
-          />
+        <div className="w-full flex flex-col gap-4 overflow-y-scroll px-2">
+          <AllProjectListTable list={list} loading={loading} />
         </div>
       </div>
     </Container>
@@ -128,14 +248,14 @@ function HelpdeskTicketsList() {
         try {
           const response = await fetch(`/api/ticket/get`);
           if (!response.ok) {
-            throw new Error('Failed to fetch tickets');
+            throw new Error("Failed to fetch tickets");
           }
           const data = await response.json();
           setTickets(data.tickets || []);
         } catch (error) {
-          console.error('Error fetching tickets:', error);
+          console.error("Error fetching tickets:", error);
         }
-      }     
+      }
     };
 
     fetchTickets();
@@ -156,7 +276,7 @@ function HelpdeskTicketsList() {
           />
         </div>
         <div className="w-full flex flex-col gap-4 px-2">
-        <HelpDeskTicketsListTable filteredTickets={tickets} />
+          <HelpDeskTicketsListTable filteredTickets={tickets} />
         </div>
       </div>
     </Container>
@@ -179,7 +299,7 @@ function PayrollList() {
           />
         </div>
         <div className="w-full flex flex-col gap-4 px-2">
-        <AllTransactionsHistoryTable payments={[]} />
+          <AllTransactionsHistoryTable payments={[]} />
         </div>
       </div>
     </Container>

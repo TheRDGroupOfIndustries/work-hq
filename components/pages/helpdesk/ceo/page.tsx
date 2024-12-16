@@ -19,7 +19,7 @@ import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import HelpDeskTicketsListTable from "@/components/reusables/components/HelpDeskTicketsListTable";
 
-interface Ticket {
+export interface Ticket {
   _id: string;
   subject: string;
   ticketNo: string;

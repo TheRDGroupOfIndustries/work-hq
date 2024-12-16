@@ -1,14 +1,17 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import Logout from "@/components/icons/logout";
+import { useProjectContext } from "@/context/ProjectProvider";
+import { CustomUser } from "@/lib/types";
+import { RootState } from "@/redux/rootReducer";
+import { CEO, Role, VENDOR } from "@/types";
+import { LucideProps } from "lucide-react";
+import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import { signOut, useSession } from "next-auth/react";
-import { CustomUser } from "@/lib/types";
-import { Role, VENDOR } from "@/types";
-import Logout from "@/components/icons/logout";
-import { LucideProps } from "lucide-react";
-import { useProjectContext } from "@/context/ProjectProvider";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 
 interface LinkItem {
   id: string;
@@ -32,10 +35,22 @@ export default function DesktopSidebar({
   _id,
 }: DesktopSidebarProps) {
   const pathname = usePathname();
+  const [totalProjects, setTotalProjects] = useState(0);
   const { data: session } = useSession();
   const user = session?.user as CustomUser;
 
   const { selectedProjectDetails } = useProjectContext();
+
+  // Only if role is CEO
+  const allProjectsList = useSelector(
+    (state: RootState) => state.ceo.allProjectsList
+  );
+
+  useEffect(() => {
+    setTotalProjects(allProjectsList.length);
+  },[allProjectsList])
+
+
 
   return (
     <div
@@ -48,37 +63,52 @@ export default function DesktopSidebar({
     `}
     >
       {/* top */}
-      <div className="flex text-sm  flex-row gap-4 w-full px-3 py-2 shadow-[3px_3px_12px_0px_#D3E1F6] rounded-xl overflow-hidden">
-        <div className="flex-center h-[60px] w-[60px] shadow-neuro-3 rounded-xl overflow-hidden">
-          <Image
-            src={
-              selectedProjectDetails?.companyDetails?.logo || "/assets/user.png"
-            }
-            alt="profile image"
-            width={200}
-            height={200}
-            className="w-full h-full overflow-hidden"
-          />
+      {role !== CEO && (
+        <div className="flex text-sm  flex-row gap-4 w-full px-3 py-2 shadow-[3px_3px_12px_0px_#D3E1F6] rounded-xl overflow-hidden">
+          <div className="flex-center h-[60px] w-[60px] shadow-neuro-3 rounded-xl overflow-hidden">
+            <Image
+              src={
+                selectedProjectDetails?.companyDetails?.logo ||
+                "/assets/user.png"
+              }
+              alt="profile image"
+              width={200}
+              height={200}
+              className="w-full h-full overflow-hidden"
+            />
+          </div>
+          {/* <div className=" h-[60px] w-[60px] bg-[#377be7]"></div> */}
+          <div
+            className={`flex flex-col ${
+              role === VENDOR ? "text-white" : "text-dark-gray"
+            } `}
+          >
+            <span>{selectedProjectDetails?.projectDetails?.projectName}</span>
+            <span>Progress - 58%</span>
+          </div>
         </div>
-        {/* <div className=" h-[60px] w-[60px] bg-[#377be7]"></div> */}
-        <div
-          className={`flex flex-col ${
-            role === VENDOR ? "text-white" : "text-dark-gray"
-          } `}
-        >
-          <span>{selectedProjectDetails?.projectDetails?.projectName}</span>
-          <span>Progress - 58%</span>
+      )}
+
+      {role === CEO && (
+        <div className="flex  flex-col">
+          <h4 className="text-lg font-semibold text-dark-gray">
+            All Projects Panal
+          </h4>
+          <p className="text-base text-light-gray">
+            Total Projects - {totalProjects}
+          </p>
         </div>
-      </div>
+      )}
 
       {/* List */}
       <div className={`flex flex-col gap-2 mt-5 text-lg font-semibold`}>
         {links.map(({ id, title, Icon, link, path }) => {
+          const linkCheck = role === CEO ? `${link}${path}` : `${link}/${_id}/${path}`;
           const isActive =
-            decodeURIComponent(pathname) === `${link}/${_id}/${path}`;
+            decodeURIComponent(pathname) === linkCheck
           return (
             <Link
-              href={`${link}/${_id}/${path}`}
+              href={role === CEO ? `${link}/${path}` : `${link}/${_id}/${path}`}
               key={id}
               className={`text-desktop relative cursor-pointer px-4 py-3 rounded-xl ${
                 role === VENDOR

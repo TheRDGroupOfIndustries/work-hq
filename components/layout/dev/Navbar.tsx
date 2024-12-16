@@ -34,10 +34,6 @@ import {
   UserRound,
 } from "lucide-react";
 import Logout from "@/components/icons/logout";
-import AssetsAndScope from "@/components/icons/Assets&Scope";
-import Chats from "@/components/icons/Chats";
-import Helpdesk from "@/components/icons/Helpdesk";
-import Meeting from "@/components/icons/Meeting";
 
 const Navbar = ({ role }: { role: Role }) => {
   const pathname = usePathname();
@@ -171,29 +167,20 @@ export function ProfileDropDownMenu() {
   const { data: session } = useSession();
   const user = session?.user as CustomUser;
 
-<<<<<<< HEAD
   const { selectedProjectDetails } = useProjectContext();
-=======
->>>>>>> 78bfeebb7784413b663a81a109b7a8714dee8e72
 
 const list = [
     {
       id: "1",
       title: "Dashboard",
       Icon: ChartNoAxesColumn,
-<<<<<<< HEAD
       link: `/dev/project/${selectedProjectDetails?._id}/dashboard`,
       path: "dashboard",
-=======
-      link: `/ceo/dashboard`,
-      path: 'dashboard'
->>>>>>> 78bfeebb7784413b663a81a109b7a8714dee8e72
     },
     {
       id: "2",
       title: "Projects",
       Icon: AssetsAndScope,
-<<<<<<< HEAD
       link: `/dev/project/${selectedProjectDetails?._id}/assets&scope`,
       path: "assets&scope",
     },
@@ -217,60 +204,14 @@ const list = [
       Icon: CreditCard,
       link: `/dev/project/${selectedProjectDetails?._id}/salary`,
       path: "salary",
-=======
-      link: `/ceo/all-projects`,
-      path: 'all-projects'
-    },
-    {
-      id: "3",
-      title: "Meetings",
-      Icon: Meeting,
-      link: `/ceo/meetings/details`,
-      path: 'meetings'
-    },
-    {
-      id: "4",
-      title: "Employees",
-      Icon: Chats,
-      link: `/ceo/employees`,
-      path: 'employees'
-    },
-    {
-      id: "5",
-      title: "Client/Vendors",
-      Icon: AssetsAndScope,
-      link: `/ceo/client-vendors`,
-      path: 'client-vendors'
->>>>>>> 78bfeebb7784413b663a81a109b7a8714dee8e72
     },
     {
       id: "6",
       title: "Chats",
-<<<<<<< HEAD
       Icon: Chats,
       link: `/dev/project/${selectedProjectDetails?._id}/chats`,
       path: "chats",
     },
-=======
-      Icon: Helpdesk,
-      link: `/ceo/chats`,
-      path: 'chats'
-    },
-    {
-      id: "7",
-      title: "Payments",
-      Icon: CreditCard,
-      link: `/ceo/payments`,
-      path: 'payments'
-    },
-    {
-      id: "7",
-      title: "Helpdesk",
-      Icon: Helpdesk,
-      link: `/ceo/helpdesk`,
-      path: 'helpdesk'
-    },
->>>>>>> 78bfeebb7784413b663a81a109b7a8714dee8e72
   ];
   return (
     <DropdownMenu>

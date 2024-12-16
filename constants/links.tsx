@@ -9,7 +9,6 @@ import AssetsAndScope from "@/components/icons/Assets&Scope";
 import Chats from "@/components/icons/Chats";
 import Helpdesk from "@/components/icons/Helpdesk";
 import Meeting from "@/components/icons/Meeting";
-
 export const clientLinks = [
   {
     id: "1",
@@ -99,3 +98,61 @@ export const devLinks = [
     path: "salary",
   },
 ];
+export const ceoLinks = [
+    {
+      id: "1",
+      title: "Dashboard",
+      Icon: ChartNoAxesColumn,
+      link: `/ceo/`,
+      path: 'dashboard'
+    },
+    {
+      id: "2",
+      title: "Projects",
+      Icon: AssetsAndScope,
+      link: `/ceo/`,
+      path: 'all-projects'
+    },
+    {
+      id: "3",
+      title: "Meetings",
+      Icon: Meeting,
+      link: `/ceo/`,
+      path: 'meetings/details'
+    },
+    {
+      id: "4",
+      title: "Employees",
+      Icon: Chats,
+      link: `/ceo/`,
+      path: 'employees'
+    },
+    {
+      id: "5",
+      title: "Client/Vendors",
+      Icon: AssetsAndScope,
+      link: `/ceo/`,
+      path: 'client-vendors'
+    },
+    {
+      id: "6",
+      title: "Chats",
+      Icon: Chats,
+      link: `/ceo/`,
+      path: 'chats'
+    },
+    {
+      id: "7",
+      title: "Payments",
+      Icon: CreditCard,
+      link: `/ceo/`,
+      path: 'payments'
+    },
+    {
+      id: "7",
+      title: "Helpdesk",
+      Icon: Helpdesk,
+      link: `/ceo/`,
+      path: 'helpdesk'
+    },
+  ];
