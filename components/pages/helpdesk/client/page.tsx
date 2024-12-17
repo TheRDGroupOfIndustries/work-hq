@@ -38,13 +38,13 @@ export default function Helpdesk() {
   const [dateRange, setDateRange] = useState<{ from: Date | undefined, to: Date | undefined }>({ from: undefined, to: undefined });
   // const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const { data: session } = useSession();
-  const { name: projectName } = useParams();
+  const {  _id: projectId } = useParams();
 
   useEffect(() => {
     const fetchTickets = async () => {
       if (session?.user?._id) {
         try {
-          const response = await fetch(`/api/ticket/get/${projectName}/${session.user._id}`);
+          const response = await fetch(`/api/ticket/get/${projectId}/${session.user._id}`);
           if (!response.ok) {
             throw new Error('Failed to fetch tickets');
           }
@@ -57,7 +57,7 @@ export default function Helpdesk() {
     };
 
     fetchTickets();
-  }, [session, projectName]);
+  }, [session, projectId]);
 
   const filteredTickets = (tickets || []).filter((ticket) => {
     const matchesSearch = ticket.subject

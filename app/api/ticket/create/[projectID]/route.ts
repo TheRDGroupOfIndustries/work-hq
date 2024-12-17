@@ -1,16 +1,42 @@
-import { NextRequest, NextResponse } from "next/server";
-import connectToMongoDB from "@/utils/db";
 import Ticket from "@/models/Ticket";
+import connectToMongoDB from "@/utils/db";
+import { NextRequest, NextResponse } from "next/server";
 
-export const POST = async (request: NextRequest, { params }: { params: { projectID: string } }) => {
+export const POST = async (
+  request: NextRequest,
+  { params }: { params: { projectID: string } }
+) => {
   const { projectID } = params;
-  const { ticketNo, subject, issueType, priority, ticketDate, issueMessage, status, userID, channelID } = await request.json();
+  const {
+    ticketNo,
+    subject,
+    issueType,
+    priority,
+    // ticketDate, mongoDB will auto generate
+    issueMessage,
+    // status, 
+    userID,
+    channelID,
+  } = await request.json();
 
-  if (!projectID || !ticketNo || !subject || !issueType || !priority || !ticketDate || !issueMessage || !status || !userID) {
+  const requiredFields = [
+    projectID,
+    ticketNo,
+    subject,
+    issueType,
+    priority,
+    issueMessage,
+    userID,
+    channelID,
+  ];
+
+  const missingFields = requiredFields.filter((field) => !field);
+
+  if (missingFields.length > 0) {
     return NextResponse.json({
       status: 400,
       success: false,
-      error: "Required fields are missing.",
+      error: `Missing fields: ${missingFields.join(", ")}`,
     });
   }
 
@@ -19,18 +45,18 @@ export const POST = async (request: NextRequest, { params }: { params: { project
   try {
     const ticket = new Ticket({
       projectID,
-      ticketNo,
+      ticketNo : ticketNo || String(Date.now()), // This is for temp..
       subject,
       issueType,
       priority,
-      ticketDate,
+      ticketDate : new Date(),
       issueMessage,
-      status,
       userID,
-      channelID,
     });
 
     const savedTicket = await ticket.save();
+
+    console.log("Ticket created:", savedTicket);
 
     return NextResponse.json({
       status: 201,
