@@ -2,7 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import connectToMongoDB from "@/utils/db";
 import Task from "@/models/Task";
 
-export const PATCH = async (request: NextRequest, { params }: { params: { taskID: string } }) => {
+export const PATCH = async (
+  request: NextRequest,
+  { params }: { params: { taskID: string } }
+) => {
   const { taskID } = params;
   const updates = await request.json();
 
@@ -17,7 +20,9 @@ export const PATCH = async (request: NextRequest, { params }: { params: { taskID
   await connectToMongoDB();
 
   try {
-    const updatedTask = await Task.findByIdAndUpdate(taskID, updates, { new: true });
+    const updatedTask = await Task.findByIdAndUpdate(taskID, updates, {
+      new: true,
+    });
 
     if (!updatedTask) {
       return NextResponse.json({

@@ -1,6 +1,7 @@
 // import { ProjectDBTypes } from "@/models/Project";
 import { PaymentDBTypes } from "@/models/Payment";
 import { PaymentInfoDBTypes } from "@/models/PaymentInfo";
+import { TaskDBTypes } from "@/models/Task";
 import { User as NextAuthUser } from "next-auth";
 
 export interface CustomUser extends NextAuthUser {
@@ -127,18 +128,13 @@ export interface ProjectValues {
 //   _id: string;
 // }
 
-export interface TaskValues {
+export interface TaskValues extends TaskDBTypes {
   _id: string;
-  projectID: string;
-  createdBy: string;
-  taskNo: number;
-  issueSubject: string;
-  estimatedTime?: number;
-  assignedTo?: string;
-  status: "completed" | "pending" | "inProgress" | "refactoring" | string;
-  workingSince?: Date;
-  totalHoursSpend?: number;
-  createdAt: string;
+  assignedTo: {
+    _id: string;
+    name: string;
+    avatar: string;
+  };
 }
 
 export interface PaymentInfoValues extends PaymentInfoDBTypes {

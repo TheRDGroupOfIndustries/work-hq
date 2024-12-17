@@ -2,15 +2,21 @@ import { Schema, model, models } from "mongoose";
 
 // Define the TypeScript interface
 export interface TaskDBTypes {
-  projectID: Schema.Types.ObjectId; // Reference to the project (Project ID)
-  createdBy: Schema.Types.ObjectId; // Reference to the creator (User ID)
+  projectID: Schema.Types.ObjectId | string; // Reference to the project (Project ID)
+  createdBy: Schema.Types.ObjectId | string; // Reference to the creator (User ID)
   taskNo: number; // Auto-incremented task number (backend-managed)
   issueSubject: string; // Subject or description of the task
   estimatedTime?: number; // Estimated time in minutes
-  assignedTo?: Schema.Types.ObjectId; // Reference to developer (User ID)
+  assignedTo?: {
+    _id: Schema.Types.ObjectId | string;
+    name: string;
+    avatar: string;
+  }; // Reference to developer (User ID)
   status: "completed" | "pending" | "inProgress" | "refactoring" | string; // Task status
   workingSince?: Date; // Start time of active work
   totalHoursSpend?: number; // Total calculated hours excluding breaks or logged-off time
+  priority: "low" | "medium" | "high" | string; // Task priority
+  dueDate: Date; // Task due date
 }
 
 // Define the schema
@@ -21,7 +27,11 @@ const taskSchema = new Schema<TaskDBTypes>(
     taskNo: { type: Number, required: true }, // Auto-incremented by backend
     issueSubject: { type: String, required: true },
     estimatedTime: { type: Number, required: false },
-    assignedTo: { type: Schema.Types.ObjectId, ref: "User", required: false },
+    assignedTo: {
+      _id: { type: Schema.Types.ObjectId, ref: "User", required: false },
+      name: { type: String, required: false },
+      avatar: { type: String, required: false },
+    },
     status: {
       type: String,
       required: true,
@@ -29,6 +39,12 @@ const taskSchema = new Schema<TaskDBTypes>(
     },
     workingSince: { type: Date }, // Optional, only recorded when task is in progress
     totalHoursSpend: { type: Number }, // Calculated hours (optional field)
+    priority: {
+      type: String,
+      required: true,
+      enum: ["low", "medium", "high"],
+    },
+    dueDate: { type: Date, required: true },
   },
   { timestamps: true } // Adds createdAt and updatedAt timestamps automatically
 );
