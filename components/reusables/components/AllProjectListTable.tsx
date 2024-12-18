@@ -30,7 +30,7 @@ export default function AllProjectListTable({
   const { selectedProject, setSelectedProject } = useProjectContext();
   const router = useRouter();
   return (
-    <Table className="">
+    <Table className="relative">
       <TableHeader className="text-gray-600 z-10 border-0 sticky top-0 bg-primary-sky-blue">
         <TableRow className="border-0 text-nowrap hover:bg-transparent border-r-[20px] border-l-[20px] border-transparent border-b-0">
           <TableHead className="w-[60px]"></TableHead>
@@ -43,7 +43,7 @@ export default function AllProjectListTable({
         </TableRow>
       </TableHeader>
       {!loading ? (
-        <TableBody className="text-[#3A3A3A] h-[200px] text-base border-0 mb-5 px-10 overflow-auto ">
+        <TableBody className="text-[#3A3A3A] text-base border-0 mb-5 px-10 overflow-auto ">
           {list.length > 0 ? (
             list.map((project, index) => (
               <TableRow

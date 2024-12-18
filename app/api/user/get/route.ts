@@ -7,7 +7,7 @@ export const GET = async () => {
 
   try {
     const users = await User.find().select(
-      "username firstName lastName email phone role clients vendorID allProjects myProjects workStatus profileImage"
+      "username firstName lastName email phone role clients vendorID allProjects myProjects workStatus profileImage position"
     );
 
     return NextResponse.json({

@@ -8,19 +8,17 @@ import Headline from "@/components/reusables/components/headline";
 import HelpDeskTicketsListTable, {
   Ticket,
 } from "@/components/reusables/components/HelpDeskTicketsListTable";
-import { TaskStatusReport } from "@/components/reusables/components/projectReportCard";
 import Container from "@/components/reusables/wrapper/Container";
 import MainContainer from "@/components/reusables/wrapper/mainContainer";
-import { useProjectContext } from "@/context/ProjectProvider";
 import { CustomUser, ProjectValues } from "@/lib/types";
 import {
   setAllProjectsList,
   setClientAndVendorList,
   setEmployeesList,
+  setHelpdeskTicketsList,
 } from "@/redux/slices/ceo";
 import { ROLE } from "@/tempData";
 import { MoveRight } from "lucide-react";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
@@ -35,6 +33,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(false);
   const [allUsers, setAllUsers] = useState<CustomUser[] | []>([]);
   const [allProjects, setAllProjects] = useState<ProjectValues[] | []>([]);
+  const [tickets, setTickets] = useState<Ticket[]>([]);
   const [midCardData, setMidCardData] = useState<MidInformationCardProps[] >([
     {
       title: "Total Project",
@@ -69,7 +68,7 @@ useEffect(() => {
       setLoading(true);
 
       // Fetch users, projects, and payments concurrently using Promise.all
-      const [userRes, projectRes, paymentRes] = await Promise.all([
+      const [userRes, projectRes, paymentRes, ticketRes] = await Promise.all([
         // Fetch users from /api/user/get endpoint
         fetch("/api/user/get", {
           method: "GET",
@@ -85,19 +84,25 @@ useEffect(() => {
           method: "GET",
           headers: { "Content-Type": "application/json" },
         }),
+        fetch("/api/ticket/get", {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        }),
       ]);
 
       // Parse JSON responses from each endpoint
-      const [userData, projectData, paymentData] = await Promise.all([
+      const [userData, projectData, paymentData, ticketData] = await Promise.all([
         userRes.json(),
         projectRes.json(),
         paymentRes.json(),
+        ticketRes.json(),
       ]);
 
       // Handle user data
       if (userRes.ok) {
         // Set all users state
         setAllUsers(userData.users);
+        console.log("user data: ", userData.users);
 
         // Filter and dispatch users by roles
         dispatch(
@@ -163,6 +168,16 @@ useEffect(() => {
         // Log error if payment data fetch fails
         console.error("Failed to fetch payments:", paymentData.message);
       }
+
+      // Handle ticket data
+      if (ticketRes) {
+        // Log payment data (no further processing)
+        setTickets(ticketData.tickets);
+        dispatch(setHelpdeskTicketsList(ticketData.tickets));
+      } else {
+        // Log error if ticket data fetch fails
+        console.error("Failed to fetch tickets:", ticketData.message);
+      }
     } catch (error) {
       // Log any errors that occur during data fetching
       console.error("Error fetching data:", error);
@@ -202,7 +217,7 @@ useEffect(() => {
         />
       </div>
       <ProjectList list={allProjects} loading={loading} />
-      <HelpdeskTicketsList />
+      <HelpdeskTicketsList tickets={tickets}/>
       <PayrollList />
     </MainContainer>
   );
@@ -237,29 +252,10 @@ function ProjectList({
   );
 }
 
-function HelpdeskTicketsList() {
-  const { data: session } = useSession();
+function HelpdeskTicketsList({tickets}:{tickets:Ticket[]}) {
   const router = useRouter();
-  const [tickets, setTickets] = useState<Ticket[]>([]);
 
-  useEffect(() => {
-    const fetchTickets = async () => {
-      if (session?.user?._id) {
-        try {
-          const response = await fetch(`/api/ticket/get`);
-          if (!response.ok) {
-            throw new Error("Failed to fetch tickets");
-          }
-          const data = await response.json();
-          setTickets(data.tickets || []);
-        } catch (error) {
-          console.error("Error fetching tickets:", error);
-        }
-      }
-    };
 
-    fetchTickets();
-  }, [session]);
   return (
     <Container>
       <div className="flex flex-col w-full h-[500px] gap-4">
