@@ -3,7 +3,7 @@
 import Container from "@/components/reusables/wrapper/Container";
 import { createElement } from "react";
 
-interface MidInformationCardProps {
+export interface MidInformationCardProps {
   title: string;
   icon: ({ height, width }: { height?: string; width?: string }) => JSX.Element;
   data: string | number;

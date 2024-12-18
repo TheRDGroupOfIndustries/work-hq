@@ -18,8 +18,10 @@ import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import HelpDeskTicketsListTable from "@/components/reusables/components/HelpDeskTicketsListTable";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/rootReducer";
 
-interface Ticket {
+export interface Ticket {
   _id: string;
   subject: string;
   ticketNo: string;
@@ -39,24 +41,35 @@ export default function Helpdesk() {
   const { data: session } = useSession();
   const { name: projectName } = useParams();
 
+  const ticketList = useSelector((state: RootState) => state.ceo.helpdeskTicketsList);
+
   useEffect(() => {
     const fetchTickets = async () => {
-      if (session?.user?._id) {
-        try {
-          const response = await fetch(`/api/ticket/get/${projectName}/${session.user._id}`);
-          if (!response.ok) {
-            throw new Error('Failed to fetch tickets');
-          }
-          const data = await response.json();
-          setTickets(data.tickets || []);
-        } catch (error) {
-          console.error('Error fetching tickets:', error);
-        }
-      }     
+      const ticketRes = await fetch("/api/ticket/get", {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      })
+
+      const ticketData = await ticketRes.json();
+      
+      setTickets(ticketData.tickets)
+      
+
     };
 
-    fetchTickets();
-  }, [session, projectName]);
+    
+
+    
+
+
+
+    if(ticketList.length > 0){
+      setTickets(ticketList);
+    } else {
+      fetchTickets();
+    }
+
+  }, [session, projectName, ticketList]);
 
   const filteredTickets = (tickets || []).filter((ticket) => {
     const matchesSearch = ticket.subject

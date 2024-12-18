@@ -15,6 +15,7 @@ export interface TaskStatusReport {
   onGoing: number;
   pending: number;
   refactoring: number;
+  maintenance?: number;
 }
 
 const chartConfig = {
@@ -35,11 +36,15 @@ const chartConfig = {
 export default function ProjectReportCard({
   report,
   totalTasks,
+  title,
   role,
+  subTitleTotal,
 }: {
   report: TaskStatusReport;
   role: Role;
   totalTasks?: string | number;
+  title: string;
+  subTitleTotal: string;
 }) {
   const [total, setTotal] = useState<string | number>(totalTasks || 0);
   const [isVendor, setIsVendor] = useState(false);
@@ -53,7 +58,7 @@ export default function ProjectReportCard({
   useEffect(() => {
     if (typeof totalTasks === "undefined" || isNaN(Number(totalTasks))) {
       const calculatedTotal =
-        report.completed + report.onGoing + report.pending + report.refactoring;
+        report.completed + report.onGoing + report.pending +(report.refactoring ?? 0);
       setTotal(calculatedTotal);
     } else {
       setTotal(totalTasks);
@@ -62,7 +67,7 @@ export default function ProjectReportCard({
   return (
     <MidSizeCard className="h-fit">
       <div className="w-full h-full flex flex-col gap-2 p-5">
-        <Title totalTasks={total} />
+        <Title totalTasks={total} title={title} subTitleTotal={subTitleTotal} />
         <div className=" h-[1px] w-full bg-[#D0D5DD]"></div>
         <div className="w-full h-full flex flex-row items-center">
           <div className=" w-full sm:w-1/2  min-w-[280px] flex flex-col gap-2 h-full items-center justify-center">
@@ -138,13 +143,18 @@ export function Chart({
   );
 }
 
-function Title({ totalTasks }: { totalTasks?: string | number }) {
+function Title({
+  title,
+  subTitleTotal,
+}: {
+  totalTasks?: string | number;
+  title: string;
+  subTitleTotal: string;
+}) {
   return (
     <div className="w-full flex flex-col">
-      <h2 className="text-lg font-semibold">Project Tasks Report</h2>
-      <p className="text-light-gray text-sm font-normal">
-        {`Total Tasks - ${totalTasks}`}
-      </p>
+      <h2 className="text-lg font-semibold">{title}</h2>
+      <p className="text-light-gray text-sm font-normal">{subTitleTotal}</p>
     </div>
   );
 }

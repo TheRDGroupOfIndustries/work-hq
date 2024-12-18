@@ -34,7 +34,6 @@ import {
   UserRound,
 } from "lucide-react";
 import Logout from "@/components/icons/logout";
-// import Helpdesk from "@/components/icons/Helpdesk";
 
 const Navbar = ({ role }: { role: Role }) => {
   const pathname = usePathname();
@@ -167,6 +166,7 @@ export function ProfileDropDownMenu() {
   const pathname = usePathname();
   const { data: session } = useSession();
   const user = session?.user as CustomUser;
+
   const { selectedProjectDetails } = useProjectContext();
 
   const list = [
