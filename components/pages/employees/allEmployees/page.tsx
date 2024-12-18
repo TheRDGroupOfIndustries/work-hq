@@ -5,6 +5,7 @@ import Headline, {
 } from "@/components/reusables/components/headline";
 import Container from "@/components/reusables/wrapper/Container";
 import MainContainer from "@/components/reusables/wrapper/mainContainer";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -102,8 +103,8 @@ export default function AllEmployees() {
       </div>
 
       <div className="w-full flex flex-col xl:flex-row gap-4 ">
-        <EmployeesSummary/>
-        <TodayEmployeesProgress/>
+        <EmployeesSummary />
+        <TodayEmployeesProgress />
       </div>
 
       <Container className="p-4 flex flex-col gap-4">
@@ -183,10 +184,29 @@ function DataTableTasks() {
                     </button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem>View details</DropdownMenuItem>
-                    <DropdownMenuItem>Edit ticket</DropdownMenuItem>
+                    <DropdownMenuItem>Projects </DropdownMenuItem>
                     <DropdownMenuItem className="text-red-600">
-                      Delete ticket
+                      <Dialog>
+                        {/* Prevent DropdownMenu from closing */}
+                        <DialogTrigger asChild>
+                          <button
+                            className="w-full text-left"
+                            onClick={(e) => e.stopPropagation()} // Prevent event bubbling
+                          >
+                            Ban Employee
+                          </button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <h2 className="text-lg font-semibold">
+                            Ban Employee
+                          </h2>
+                          <p>Are you sure you want to ban this employee?</p>
+                          <div className="mt-4 flex justify-end space-x-2">
+                            <button className="btn-cancel">Cancel</button>
+                            <button className="btn-confirm">Confirm</button>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
