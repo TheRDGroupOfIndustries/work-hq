@@ -76,7 +76,6 @@ export default function MeetingsRequest() {
         const errorData = await response.json();
         toast.error(errorData.error || "Failed to send meeting request");
         router.refresh();
-        // throw new Error(errorData.error || "Failed to send meeting request");
       } else {
         toast.success("Meeting request sent successfully");
         router.push(`/c/project/${selectedProject._id}/meetings/details`);

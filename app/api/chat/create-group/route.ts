@@ -12,9 +12,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { groupName, members, icon } = await req.json();
+    const { groupName, members, icon, projectId } = await req.json();
 
-    if (!Array.isArray(members) || members.length < 1) {
+    if (!Array.isArray(members) || members.length < 1 || !projectId) {
       return NextResponse.json({ error: "Invalid members array" }, { status: 400 });
     }
 
@@ -59,6 +59,7 @@ export async function POST(req: NextRequest) {
       image: icon,
       members: existingUserIds,
       created_by_id: session.user._id.toString(),
+      projectId: projectId,
     });
 
     await channel.create();

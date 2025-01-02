@@ -4,6 +4,7 @@ import { createContext, useContext, useState, useEffect } from "react";
 import { StreamChat, Channel} from 'stream-chat';
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
+import { useProjectContext } from "./ProjectProvider";
 
 const chatClient = StreamChat.getInstance(process.env.NEXT_PUBLIC_STREAM_API_KEY!);
 
@@ -31,6 +32,7 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
   const [client, setClient] = useState<StreamChat | null>(null);
   const [activeChannel, setActiveChannel] = useState<Channel | null>(null);
   const { data: session } = useSession();
+  const { selectedProjectDetails } = useProjectContext();
 
   useEffect(() => {
     const initChat = async () => {
@@ -71,8 +73,8 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
   }, [session, client]);
 
   const createChat = async (userId: string): Promise<Channel | null> => {
-    if (!client || !session?.user?._id) {
-      toast.error("Chat client not initialized or user not logged in");
+    if (!client || !session?.user?._id || !selectedProjectDetails?._id) {
+      toast.error("Chat client not initialized, user not logged in, or project not selected");
       return null;
     }
 
@@ -85,7 +87,10 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
       const response = await fetch('/api/chat/create-channel', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ members: [session.user._id, userId].filter(Boolean) }),
+        body: JSON.stringify({ 
+          members: [session.user._id, userId].filter(Boolean),
+          projectId: selectedProjectDetails._id
+        }),
       });
 
       if (!response.ok) {
@@ -110,8 +115,8 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const createGroupChat = async (groupName: string, members: string[], icon?: string): Promise<Channel | null> => {
-    if (!client || !session?.user?._id) {
-      toast.error("Chat client not initialized or user not logged in");
+    if (!client || !session?.user?._id || !selectedProjectDetails?._id) {
+      toast.error("Chat client not initialized, user not logged in, or project not selected");
       return null;
     }
   
@@ -122,7 +127,8 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
         body: JSON.stringify({ 
           groupName, 
           members: members.map(id => id.toString()),
-          icon 
+          // icon,
+          projectId: selectedProjectDetails._id
         }),
       });
   

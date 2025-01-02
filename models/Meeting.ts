@@ -4,7 +4,7 @@ export interface MeetingDBTypes {
   title: string;
   link?: string;
   createdBy: Schema.Types.ObjectId;
-  projectID?: Schema.Types.ObjectId;
+  projectID: Schema.Types.ObjectId;
   meetingDescription?: string;
   attendees?: Schema.Types.ObjectId[];
   date: Date;
@@ -26,7 +26,7 @@ const meetingSchema = new Schema<MeetingDBTypes>(
     title: { type: String, required: true },
     link: { type: String },
     createdBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
-    projectID: { type: Schema.Types.ObjectId, ref: "Project" },
+    projectID: { type: Schema.Types.ObjectId, ref: "Project", required: true },
     meetingDescription: { type: String },
     attendees: [{ type: Schema.Types.ObjectId, ref: "User" }],
     date: { type: Date },

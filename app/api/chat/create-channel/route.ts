@@ -3,6 +3,16 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/authOptions";
 import { serverClient } from "@/utils/serverClient";
 import crypto from "crypto";
+import Channel from "@/models/Channel";
+import User from "@/models/User";
+
+async function channelExists(members: string[], projectId: string): Promise<boolean> {
+  const channel = await Channel.findOne({
+    members: { $all: members, $size: members.length },
+    projectIDs: projectId
+  });
+  return !!channel;
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -11,10 +21,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { members } = await req.json();
+    const { members, projectId } = await req.json();
 
-    if (!Array.isArray(members)) {
-      return NextResponse.json({ error: "Invalid members array" }, { status: 400 });
+    if (!Array.isArray(members) || !projectId) {
+      return NextResponse.json({ error: "Invalid members array or projectId" }, { status: 400 });
     }
 
     const uniqueMembers = Array.from(new Set(members.filter(Boolean).map(String)));
@@ -23,30 +33,33 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "At least two unique members are required" }, { status: 400 });
     }
 
-    const userResponses = await Promise.all(
-      uniqueMembers.map(memberId => 
-        serverClient.queryUsers({ id: memberId })
-      )
-    );
-
-    const existingUserIds = userResponses
-      .flatMap(response => response.users)
-      .map(user => user.id);
-
-    const nonExistentUsers = uniqueMembers.filter(memberId => !existingUserIds.includes(memberId));
-
-    if (nonExistentUsers.length > 0) {
-      return NextResponse.json({ 
-        error: `The following users don't exist: ${nonExistentUsers.join(', ')}` 
-      }, { status: 400 });
+    if (await channelExists(uniqueMembers, projectId)) {
+      return NextResponse.json({ error: "Channel already exists" }, { status: 400 });
     }
+
+    const users = await User.find({ _id: { $in: uniqueMembers } });
+    const userNames = users.map(user => user.firstName).join(', ');
+
+    const channelName = uniqueMembers.length > 2 ? `Group: ${userNames}` : userNames;
 
     const channel = serverClient.channel("messaging", crypto.randomUUID(), {
       members: uniqueMembers,
+      name: channelName,
       created_by_id: session.user._id,
+      projectId: projectId,
     });
 
     await channel.create();
+
+    // Save the channel to the database
+    const newChannel = new Channel({
+      channelID: channel.id,
+      members: uniqueMembers,
+      projectIDs: [projectId],
+      roleBased: [], // Add roles if needed
+      channelName: channelName,
+    });
+    await newChannel.save();
 
     return NextResponse.json({ 
       channelId: channel.id,

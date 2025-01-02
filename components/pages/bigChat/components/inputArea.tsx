@@ -2,57 +2,27 @@
 
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useChat } from "@/context/ChatProvider";
-import { SendHorizontal } from "lucide-react";
-import { useState } from "react";
-import { EditorContent } from "./EditorContent";
-import Toolbar from "./toolbar";
+import { SendHorizontal, Paperclip } from 'lucide-react';
+import { useState, useRef } from "react";
 
 export default function InputArea() {
   const [text, setText] = useState("");
-  const [activeFormats, setActiveFormats] = useState<Set<string>>(new Set());
+  const [files, setFiles] = useState<File[]>([]);
   const { activeChannel } = useChat();
-  const [resetEditor, setResetEditor] = useState(false);
-
-  const handleFormat = (command: string) => {
-    document.execCommand(command, false);
-    setActiveFormats((prev) => {
-      const newFormats = new Set(prev);
-      if (newFormats.has(command)) {
-        newFormats.delete(command);
-      } else {
-        newFormats.add(command);
-      }
-      return newFormats;
-    });
-  };
-
-  const checkFormat = () => {
-    const formats = [
-      "bold",
-      "italic",
-      "underline",
-      "justifyLeft",
-      "justifyCenter",
-      "justifyRight",
-      "insertUnorderedList",
-    ];
-    const active = new Set(
-      formats.filter((format) => document.queryCommandState(format))
-    );
-    setActiveFormats(active);
-  };
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleSend = async () => {
-    if (activeChannel && text.trim()) {
+    if (activeChannel && (text.trim() || files.length > 0)) {
       try {
+        const formData = new FormData();
+        formData.append('text', text);
+        files.forEach(file => formData.append('files', file));
+
         const response = await fetch(
           `/api/chats/${activeChannel.id}/messages`,
           {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ text }),
+            body: formData,
           }
         );
 
@@ -61,10 +31,16 @@ export default function InputArea() {
         }
 
         setText("");
-        setResetEditor(true);
+        setFiles([]);
       } catch (error) {
         console.error("Error sending message:", error);
       }
+    }
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files) {
+      setFiles(Array.from(event.target.files));
     }
   };
 
@@ -74,22 +50,34 @@ export default function InputArea() {
         <div className="w-full h-full flex flex-col p-3">
           <div className="flex-1 w-full h-full max-h-[70px]">
             <ScrollArea className="h-[70px]">
-              <EditorContent
-                onTextChange={setText}
-                onFormatCheck={checkFormat}
-                reset={resetEditor}
+              <textarea
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+                className="w-full h-full resize-none outline-none bg-transparent"
+                placeholder="Type your message..."
               />
             </ScrollArea>
           </div>
 
           <div className="w-full flex items-center justify-between">
-            <div className="flex-1 h-full w-full flex items-center">
-              <Toolbar
-                handleFormat={handleFormat}
-                activeFormats={activeFormats}
-              />
-            </div>
-
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              multiple
+              className="hidden"
+            />
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              className="p-2 rounded-full hover:bg-gray-200"
+            >
+              <Paperclip />
+            </button>
+            {files.length > 0 && (
+              <div className="text-sm text-gray-600">
+                {files.length} file(s) selected
+              </div>
+            )}
             <SendButton onSend={handleSend} />
           </div>
         </div>
@@ -100,14 +88,12 @@ export default function InputArea() {
 
 function SendButton({ onSend }: { onSend: () => void }) {
   return (
-    <div className="w-full mt-auto flex flex-row items-center justify-end">
-      <button
-        onClick={onSend}
-        className="flex flex-row items-center py-3 px-5 gap-4 shadow-[3px_3px_10px_0px_#789BD399,5px_5px_15px_0px_#00000099_inset,-3px_-3px_10px_0px_#FFFFFF] rounded-xl text-[#ffffff] font-semibold text-nowrap bg-primary-blue"
-      >
-        <SendHorizontal color="#ffffff" />
-        Send
-      </button>
-    </div>
+    <button
+      onClick={onSend}
+      className="flex flex-row items-center py-3 px-5 gap-4 shadow-[3px_3px_10px_0px_#789BD399,5px_5px_15px_0px_#00000099_inset,-3px_-3px_10px_0px_#FFFFFF] rounded-xl text-[#ffffff] font-semibold text-nowrap bg-primary-blue"
+    >
+      <SendHorizontal color="#ffffff" />
+      Send
+    </button>
   );
 }
