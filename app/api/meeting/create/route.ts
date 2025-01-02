@@ -45,7 +45,7 @@ export const POST = async (request: NextRequest) => {
       status = "requested";
     } else {
       if (date && new Date(date) > new Date()) {
-        status = "requested";
+        status = "upcoming";
       } else {
         status = "inProgress";
       }

@@ -3,12 +3,15 @@ import { useChat } from '@/context/ChatProvider';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { User } from 'stream-chat';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { FileIcon, ImageIcon, VideoIcon } from 'lucide-react';
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function ChatArea() {
   const { activeChannel, client } = useChat();
   const scrollRef = useRef<HTMLDivElement>(null);
   const [users, setUsers] = useState<{ [key: string]: User }>({});
   const [messages, setMessages] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -18,6 +21,7 @@ export default function ChatArea() {
 
   useEffect(() => {
     if (activeChannel) {
+      setIsLoading(true);
       const fetchMessages = async () => {
         try {
           const response = await fetch(`/api/chats/${activeChannel.id}/messages`);
@@ -28,6 +32,8 @@ export default function ChatArea() {
           setMessages(data.messages);
         } catch (error) {
           console.error('Error fetching messages:', error);
+        } finally {
+          setIsLoading(false);
         }
       };
 
@@ -46,7 +52,6 @@ export default function ChatArea() {
       };
       updateUsers();
 
-      // Set up event listener for new messages
       const handleNewMessage = (event: any) => {
         setMessages((prevMessages) => [...prevMessages, event.message]);
       };
@@ -64,6 +69,10 @@ export default function ChatArea() {
       await activeChannel.sendReaction(messageId, { type: reactionType });
     }
   };
+
+  if (isLoading) {
+    return <ChatSkeleton />;
+  }
 
   return (
     <div className="flex-1 w-full h-full border">
@@ -94,6 +103,29 @@ export default function ChatArea() {
                 <div className="text-sm font-medium text-[#1E1B39] bg-white rounded-lg p-2">
                   {message.text}
                 </div>
+                {message.attachments && message.attachments.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {message.attachments.map((attachment: any, index: number) => {
+                      if (attachment.type?.startsWith('image/')) {
+                        return <img key={index} src={attachment.asset_url} alt={attachment.title} className="max-w-[200px] max-h-[200px] object-cover rounded" />;
+                      } else if (attachment.type?.startsWith('video/')) {
+                        return (
+                          <video key={index} controls className="max-w-[200px] max-h-[200px] rounded">
+                            <source src={attachment.asset_url} type={attachment.type} />
+                            Your browser does not support the video tag.
+                          </video>
+                        );
+                      } else {
+                        return (
+                          <a key={index} href={attachment.asset_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 bg-gray-100 p-2 rounded">
+                            <FileIcon size={20} />
+                            <span className="text-sm truncate">{attachment.title}</span>
+                          </a>
+                        );
+                      }
+                    })}
+                  </div>
+                )}
                 <div className="flex flex-wrap gap-1 mt-1">
                   {Object.entries(message.reaction_counts || {}).map(([type, count]) => (
                     <span key={type} className="bg-gray-200 rounded-full px-2 py-1 text-xs">
@@ -106,6 +138,22 @@ export default function ChatArea() {
           })}
         </div>
       </ScrollArea>
+    </div>
+  );
+}
+
+function ChatSkeleton() {
+  return (
+    <div className="space-y-4">
+      {[...Array(5)].map((_, i) => (
+        <div key={i} className="flex items-start space-x-4">
+          <Skeleton className="h-10 w-10 rounded-full" />
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-[250px]" />
+            <Skeleton className="h-4 w-[200px]" />
+          </div>
+        </div>
+      ))}
     </div>
   );
 }

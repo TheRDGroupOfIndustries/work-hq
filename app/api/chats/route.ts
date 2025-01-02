@@ -1,54 +1,60 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
-import { Channel, ChannelSortBase, DefaultGenerics } from "stream-chat";
+import { Channel, ChannelSort, DefaultGenerics } from "stream-chat";
 import { authOptions } from "@/lib/authOptions";
 import { serverClient } from "@/utils/serverClient";
+import Project from "@/models/Project";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session?.user?._id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const { searchParams } = new URL(req.url);
+  const projectId = searchParams.get('projectId');
+
+  if (!projectId) {
+    return NextResponse.json({ error: "Project ID is required" }, { status: 400 });
+  }
+
   try {
-    const filter = { members: { $in: [session.user._id] } };
-    const sort: { last_message_at: number } = { last_message_at: -1 };
+    // Fetch project details to get associated users
+    const project = await Project.findById(projectId).populate('developmentDetails.teams');
+    if (!project) {
+      return NextResponse.json({ error: "Project not found" }, { status: 404 });
+    }
+
+    const projectMembers = project.developmentDetails.teams.map((user: any) => user._id.toString());
+
+    const filter = { 
+      members: { $in: [session.user._id, ...projectMembers] },
+      projectId: projectId,
+      type: { $in: ['messaging', 'group'] }
+    };
+    const sort: ChannelSort<DefaultGenerics> = { last_message_at: -1 };
     const channels = await serverClient.queryChannels(
       filter,
-      sort as ChannelSortBase,
+      sort,
       {
         watch: true,
         state: true,
       }
     );
 
-    // Serialize the channels data to avoid circular structure
     const serializedChannels = channels.map(
       (channel: Channel<DefaultGenerics>) => ({
         id: channel.id,
         type: channel.type,
         cid: channel.cid,
         last_message_at: channel.lastMessage()?.created_at,
-        created_at: channel.data?.created_at, // Access created_at from channel.data
+        created_at: channel.data?.created_at,
         updated_at: channel.data?.updated_at,
         member_count: channel.data?.member_count,
         data: {
           name: channel.data?.name,
           image: channel.data?.image,
-          members: channel.data?.members?.map((member) => {
-            if (typeof member !== 'string') { // Check if member is not a string
-              const user = member.user as { id: string; name?: string; image?: string }; // Type assertion for user
-              return {
-                user: {
-                  id: user.id, // Now it's safe to access user properties
-                  name: user.name,
-                  image: user.image,
-                },
-                // Include other properties as needed
-              };
-            }
-            return null; 
-          }).filter(Boolean),
+          members: channel.state.members,
         },
         state: {
           messages: channel.state.messages.map((message) => ({
@@ -61,6 +67,7 @@ export async function GET() {
             },
             created_at: message.created_at,
             updated_at: message.updated_at,
+            attachments: message.attachments,
           })),
         },
       })

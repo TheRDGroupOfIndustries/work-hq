@@ -27,10 +27,12 @@ export default function MeetingsDetails() {
   const { data: session } = useSession();
   const { selectedProject } = useProjectContext();
   const [meetings, setMeetings] = useState<Meeting[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (session?.user && selectedProject) {
+    if (session?.user && selectedProject?._id) {
       const fetchMeetings = async () => {
+        setIsLoading(true);
         try {
           const response = await fetch(
             `/api/meeting/get/getByProjectID/${selectedProject._id}`
@@ -46,6 +48,8 @@ export default function MeetingsDetails() {
           }
         } catch (error) {
           console.error("Error fetching meetings:", error);
+        } finally {
+          setIsLoading(false);
         }
       };
       fetchMeetings();
@@ -121,54 +125,78 @@ export default function MeetingsDetails() {
           </TabsList>
           <TabsContent value="allMetting">
             <div className="w-full h-full flex flex-col">
-              {meetings.map((meeting) => (
-                <Card key={meeting._id} details={meeting} />
-              ))}
+              {isLoading ? (
+                <SkeletonLoader />
+              ) : (
+                meetings.map((meeting) => (
+                  <Card key={meeting._id} details={meeting} />
+                ))
+              )}
             </div>
           </TabsContent>
           <TabsContent value="inProgress">
             <div className="w-full h-full flex flex-col">
-              {meetings
-                .filter((meeting) => meeting.status === "inProgress")
-                .map((meeting) => (
-                  <Card key={meeting._id} details={meeting} />
-                ))}
+              {isLoading ? (
+                <SkeletonLoader />
+              ) : (
+                meetings
+                  .filter((meeting) => meeting.status === "inProgress")
+                  .map((meeting) => (
+                    <Card key={meeting._id} details={meeting} />
+                  ))
+              )}
             </div>
           </TabsContent>
           <TabsContent value="upcoming">
             <div className="w-full h-full flex flex-col">
-              {meetings
-                .filter((meeting) => meeting.status === "upcoming")
-                .map((meeting) => (
-                  <Card key={meeting._id} details={meeting} />
-                ))}
+              {isLoading ? (
+                <SkeletonLoader />
+              ) : (
+                meetings
+                  .filter((meeting) => meeting.status === "upcoming")
+                  .map((meeting) => (
+                    <Card key={meeting._id} details={meeting} />
+                  ))
+              )}
             </div>
           </TabsContent>
           <TabsContent value="requested">
             <div className="w-full h-full flex flex-col">
-              {meetings
-                .filter((meeting) => meeting.status === "requested")
-                .map((meeting) => (
-                  <Card key={meeting._id} details={meeting} />
-                ))}
+              {isLoading ? (
+                <SkeletonLoader />
+              ) : (
+                meetings
+                  .filter((meeting) => meeting.status === "requested")
+                  .map((meeting) => (
+                    <Card key={meeting._id} details={meeting} />
+                  ))
+              )}
             </div>
           </TabsContent>
           <TabsContent value="completed">
             <div className="w-full h-full flex flex-col">
-              {meetings
-                .filter((meeting) => meeting.status === "completed")
-                .map((meeting) => (
-                  <Card key={meeting._id} details={meeting} />
-                ))}
+              {isLoading ? (
+                <SkeletonLoader />
+              ) : (
+                meetings
+                  .filter((meeting) => meeting.status === "completed")
+                  .map((meeting) => (
+                    <Card key={meeting._id} details={meeting} />
+                  ))
+              )}
             </div>
           </TabsContent>
           <TabsContent value="overdue">
             <div className="w-full h-full flex flex-col">
-              {meetings
-                .filter((meeting) => meeting.status === "overdue")
-                .map((meeting) => (
-                  <Card key={meeting._id} details={meeting} />
-                ))}
+              {isLoading ? (
+                <SkeletonLoader />
+              ) : (
+                meetings
+                  .filter((meeting) => meeting.status === "overdue")
+                  .map((meeting) => (
+                    <Card key={meeting._id} details={meeting} />
+                  ))
+              )}
             </div>
           </TabsContent>
         </Tabs>
@@ -185,11 +213,6 @@ function formatTime(isoString: string): string {
     hour12: true,
   });
 }
-
-// function formatDate(isoString: string): string {
-//   const date = new Date(isoString);
-//   return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-// }
 
 function Card({ details }: { details: Meeting }) {
   return (
@@ -229,11 +252,34 @@ function Card({ details }: { details: Meeting }) {
         >
           {details.status}
         </p>
-        {(details.status === "In Pregress" ||
+        {(details.status === "In Progress" ||
           details.status === "Requested") && (
           <SquareButton className="text-[#6A6A6A] px-0 py-0">Join</SquareButton>
         )}
       </div>
     </div>
+  );
+}
+
+function SkeletonLoader() {
+  return (
+    <>
+      {[1, 2, 3].map((index) => (
+        <div key={index} className="flex flex-row items-center justify-between w-full hover:shadow-neuro-3 p-3 sm:p-4 md:p-5 lg:p-6 animate-pulse">
+          <div className="flex flex-row items-center gap-4">
+            <div className="w-10 h-10 bg-gray-300 rounded-full"></div>
+            <div className="flex flex-col">
+              <div className="w-48 h-6 bg-gray-300 rounded mb-2"></div>
+              <div className="w-64 h-4 bg-gray-300 rounded mb-2"></div>
+              <div className="w-56 h-4 bg-gray-300 rounded"></div>
+            </div>
+          </div>
+          <div className="flex flex-col items-center justify-center gap-2">
+            <div className="w-20 h-6 bg-gray-300 rounded"></div>
+            <div className="w-16 h-8 bg-gray-300 rounded"></div>
+          </div>
+        </div>
+      ))}
+    </>
   );
 }
