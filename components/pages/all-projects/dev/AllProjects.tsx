@@ -23,7 +23,7 @@ export default function AllProjects() {
     {
       buttonText: "Add New Project",
       onNeedIcon: false,
-      onClick: () => router.push("/c/add-project"),
+      onClick: () => router.push("/dev/add-project"),
     },
   ];
   return (

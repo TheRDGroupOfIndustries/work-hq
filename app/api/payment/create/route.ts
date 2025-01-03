@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
-import connectToMongoDB from "@/utils/db";
 import Payment from "@/models/Payment";
+import connectToMongoDB from "@/utils/db";
+import { NextRequest, NextResponse } from "next/server";
 
 export const POST = async (request: NextRequest) => {
   try {
@@ -17,13 +17,18 @@ export const POST = async (request: NextRequest) => {
       requestedDate,
       bonus,
       requestDescription,
+      isRequested,
     } = await request.json();
 
     const missingFields = [];
     if (!paymentTitle) missingFields.push("paymentTitle");
     if (!status) missingFields.push("status");
     if (!type) missingFields.push("type");
-    if (!from || !from.role || !from.userID) {
+    if ( 
+      !from 
+      || !from.role 
+      // || !from.userID 
+    ) {
       missingFields.push("from (role and userID required)");
     }
     if (!amount || amount <= 0) missingFields.push("amount");
@@ -52,6 +57,7 @@ export const POST = async (request: NextRequest) => {
       transactionID,
       paymentProof,
       to,
+      isRequested,
       paymentDate: paymentDate ? new Date(paymentDate) : undefined,
       requestedDate: requestedDate ? new Date(requestedDate) : new Date(),
       bonus: bonus || 0,

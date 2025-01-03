@@ -6,12 +6,13 @@ import { uploadNewFile } from "@/utils/actions/fileUpload.action";
 import { DialogClose } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import SquareButton from "@/components/reusables/wrapper/squareButton";
-import { Plus } from "lucide-react";
+import { Loader2, Plus } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { CustomUser } from "@/lib/types";
 import { toast } from "sonner";
 
 export default function AddPayment() {
+  const [submitting, setSubmitting] = useState<boolean>(false);
   const { data: session } = useSession();
   const user = session?.user as CustomUser;
   const [paymentData, setPaymentData] = useState({
@@ -72,6 +73,7 @@ export default function AddPayment() {
   };
 
   const handleMakePayment = async () => {
+    setSubmitting(true);
     try {
       const response = await fetch("/api/payment/create", {
         method: "POST",
@@ -121,6 +123,8 @@ export default function AddPayment() {
     } catch (error) {
       console.error("Error creating payment:", error);
       toast.error("Failed to create payment. Please try again.");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -215,10 +219,27 @@ export default function AddPayment() {
         </DialogClose>
         <button
           onClick={handleMakePayment}
-          className="flex items-center py-3 px-5 gap-2 shadow-[3px_3px_10px_0px_#789BD399,5px_5px_15px_0px_#00000099_inset,-3px_-3px_10px_0px_#FFFFFF] rounded-xl text-white bg-primary-blue"
-        >
-          <Plus color="#ffffff" />
-          Add Payment
+          disabled={ !paymentData.transactionID || !paymentData.amount || !paymentData.paymentTitle || submitting}
+          className="flex items-center py-3 px-5 gap-2 shadow-[3px_3px_10px_0px_#789BD399,5px_5px_15px_0px_#00000099_inset,-3px_-3px_10px_0px_#FFFFFF] rounded-xl text-white bg-primary-blue disabled:bg-blue-500 disabled:cursor-not-allowed"
+        > 
+
+        {
+          submitting ? (
+            <>
+              <Loader2 color='#ffffff' className="animate-spin" />
+              Adding Payment...
+            </>
+            
+
+          ) : (
+            <>
+              <Plus color="#ffffff" />
+              Add Payment
+            </>
+          )
+        }
+
+          
         </button>
       </div>
     </div>

@@ -1,10 +1,4 @@
-// This is for ceo side
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+"use client";
 import {
   Table,
   TableBody,
@@ -15,14 +9,18 @@ import {
 } from "@/components/ui/table";
 
 import Container from "@/components/reusables/wrapper/Container";
-import { PaymentValues } from "@/lib/types";
 import { formatDateString } from "@/lib/utils";
+import { PayrollHistory } from "@/types";
 import { MoreVertical } from "lucide-react";
 import Image from "next/image";
-import React from "react";
+import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
 
-export default function AllTransactionsHistory() {
-  // run logic
+export default function AdvancePaymentRequests({
+  payrollHistory,
+}: {
+  payrollHistory: PayrollHistory[];
+}) {
   return (
     <Container>
       <div className="flex flex-col w-full h-[500px] gap-4">
@@ -30,14 +28,19 @@ export default function AllTransactionsHistory() {
           <h2 className=" text-base font-medium">Total transactions -</h2>
         </div>
         <div className="w-full flex flex-col gap-4 px-2">
-          <DataTable payments={[]} />
+          <DataTable payments={payrollHistory} />
         </div>
       </div>
     </Container>
   );
 }
 
-function DataTable({ payments = [] }: { payments: PaymentValues[] }) {
+function DataTable({ payments }: { payments: PayrollHistory[] }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const toggleMenu = () => {
+    setIsOpen((prev) => !prev);
+  };
   return (
     <Table>
       <TableHeader className=" text-gray-600 border-0">
@@ -62,7 +65,11 @@ function DataTable({ payments = [] }: { payments: PaymentValues[] }) {
             <TableCell>
               <div className="w-full flex flex-row items-center gap-2">
                 <Image
-                  src={"/assets/user.png"}
+                  src={
+                    row.to.userID?.profileImage
+                      ? row.to.userID.profileImage
+                      : "/assets/user.png"
+                  }
                   alt="Profile Image"
                   width="20"
                   height="20"
@@ -70,10 +77,10 @@ function DataTable({ payments = [] }: { payments: PaymentValues[] }) {
                 />
                 <div className="flex flex-col">
                   <span className="text-dark-gray leading-5 light-graytext-base">
-                    Client 2 Name
+                    {row.to.userID?.firstName + " " + row.to.userID?.lastName}
                   </span>
                   <span className="line-clamp-1 text-sm text-light-gray">
-                    Position
+                    {row.to.userID?.role}
                   </span>
                 </div>
               </div>
@@ -82,10 +89,10 @@ function DataTable({ payments = [] }: { payments: PaymentValues[] }) {
               {" "}
               <div className="flex flex-col">
                 <span className="text-dark-gray leading-5 light-graytext-base">
-                title
+                  {row.paymentTitle}
                 </span>
                 <span className="line-clamp-1 text-sm text-light-gray">
-                  des
+                  {row.requestDescription}
                 </span>
               </div>
             </TableCell>
@@ -94,20 +101,38 @@ function DataTable({ payments = [] }: { payments: PaymentValues[] }) {
             <TableCell>{row.amount}</TableCell>
             <TableCell>{formatDateString(row.paymentDate + "")}</TableCell>
             <TableCell>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button className="h-8 w-8 p-0">
-                    <MoreVertical className="h-4 w-4" />
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem>View details</DropdownMenuItem>
-                  <DropdownMenuItem>Edit ticket</DropdownMenuItem>
-                  <DropdownMenuItem className="text-red-600">
-                    Delete ticket
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <div className="relative">
+                <Button
+                  variant="ghost"
+                  className="h-8 w-8 p-0"
+                  onClick={toggleMenu}
+                >
+                  <span className="sr-only">Open menu</span>
+                  <MoreVertical className="h-4 w-4" />
+                </Button>
+                {isOpen && (
+                  <div className="absolute right-0 mt-2 w-40 rounded-md bg-white shadow-md z-50">
+                    <ul className="py-1">
+                      <li>
+                        <button
+                          className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                          onClick={() => alert("Action 1 clicked")}
+                        >
+                          Accept
+                        </button>
+                      </li>
+                      <li>
+                        <button
+                          className="block w-full bg-red-500 text-slate-50 text-left px-4 py-2 text-sm hover:bg-red-400"
+                          onClick={() => alert("Action 2 clicked")}
+                        >
+                          Reject
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
+                )}
+              </div>
             </TableCell>
           </TableRow>
         ))}

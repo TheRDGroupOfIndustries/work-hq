@@ -1,24 +1,23 @@
 "use client";
-
-import React, { useEffect, useState } from "react";
-import { ROLE } from "@/tempData";
-import { VENDOR } from "@/types";
-import { SquarePen } from "lucide-react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Headline, {
   ButtonObjectType,
 } from "@/components/reusables/components/headline";
+import PaymentDetails from "@/components/reusables/components/paymentDetails";
 import Container from "@/components/reusables/wrapper/Container";
 import MainContainer from "@/components/reusables/wrapper/mainContainer";
-import SalaryHistory from "../components/SalaryHistory";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { CustomUser, PaymentValues } from "@/lib/types";
+import { formatDateString } from "@/lib/utils";
+import { ROLE } from "@/tempData";
+import { VENDOR } from "@/types";
+import { SquarePen } from "lucide-react";
+import { useSession } from "next-auth/react";
+import React, { useEffect, useState } from "react";
 import AdvancePaymentRequest from "../components/AdvancePaymentRequest";
 import EditSalaryMethod from "../components/EditSalaryMethod";
 import RequestAdvancePayment from "../components/RequestAdvancePayment";
-import PaymentDetails from "@/components/reusables/components/paymentDetails";
-import { Label } from "@/components/ui/label";
-import { CustomUser, PaymentValues } from "@/lib/types";
-import { useSession } from "next-auth/react";
-import { formatDateString } from "@/lib/utils";
+import SalaryHistory from "../components/SalaryHistory";
 
 export default function Salary() {
   const { data: session } = useSession();
@@ -28,14 +27,16 @@ export default function Salary() {
 
   useEffect(() => {
     const fetchUpcomingSalaryDetails = async () => {
-      if (!user?.id) return;
-      const response = await fetch(`/api/payment/get/getByUserID/${user?.id}`);
+      if (!user?._id) return;
+      const response = await fetch(`/api/payment/get/getByUserID/${user?._id}`,{
+        cache: "no-store"
+      });
       const data = await response.json();
 
       setPayments(data.payments);
     };
     fetchUpcomingSalaryDetails();
-  }, [user?.id, payments]);
+  }, [user?._id]);
 
   const upcomingSalaryDetails: PaymentValues | undefined = payments.find(
     (payment: PaymentValues) => payment.status === "upcoming"

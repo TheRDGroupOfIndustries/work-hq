@@ -120,13 +120,13 @@ export default function EditSalaryMethod() {
   return (
     <form
       onClick={(e) => e.stopPropagation()}
-      className="z-10 w-[733px] m-4 bg-background flex flex-col gap-6 rounded-3xl p-5 lg:p-6"
+      className="z-10 w-[733px]  m-4 bg-background flex flex-col gap-6 rounded-3xl p-5 lg:p-6"
       onSubmit={handleSubmit}
     >
       <h1 className="text-2xl font-semibold text-dark-gray">
         Edit Salary Method
       </h1>
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-3 max-h-[70vh] overflow-y-auto">
         <div className="w-full flex flex-col gap-3">
           <Label className="text-base font-medium text-gray-800">QR Code</Label>
           <div className="w-full h-[200px] bg-gray-400 relative">
