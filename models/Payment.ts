@@ -53,7 +53,7 @@ const paymentSchema = new Schema<PaymentDBTypes>(
         required: true,
         enum: ["client", "vendor", "manager"],
       },
-      userID: { type: Schema.Types.ObjectId, ref: "User", required: true },
+      userID: { type: Schema.Types.ObjectId, ref: "User", },
     },
     amount: { type: Number, required: true },
     transactionID: { type: String },

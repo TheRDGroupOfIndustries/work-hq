@@ -9,7 +9,7 @@ import {
   useState,
 } from "react";
 import { CustomUser, ProjectValues, TaskValues } from "@/lib/types";
-import Cookies from "js-cookie";
+// import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 
 interface ProjectContextType {
@@ -47,7 +47,8 @@ const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({
   const fetchUserProjects = useCallback(async () => {
     // if (user?.allProjects && user.allProjects.length > 0) {
     try {
-      const SignUpRole = Cookies.get("SignUpRole");
+      const SignUpRole = user.role;
+      // const SignUpRole = Cookies.get("SignUpRole");
       console.log("Sign up role fetching: ", SignUpRole);
       const res = await fetch("/api/project/get/user-projects", {
         method: "POST",
@@ -61,6 +62,7 @@ const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({
       });
 
       const data = await res.json();
+      console.log("data: ", data);
       if (res.ok) {
         setUserAllProjects(data.projects); // Set the fetched projects
       } else {
@@ -70,7 +72,7 @@ const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({
       console.error("Error fetching user projects:", error);
     }
     // }
-  }, [user?.allProjects, user?.myProjects]);
+  }, [user?.allProjects, user?.myProjects, user?.role]);
 
   const getSelectProjectDetails = useCallback(
     async (projectId: string) => {

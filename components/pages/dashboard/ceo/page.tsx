@@ -16,6 +16,7 @@ import {
   setClientAndVendorList,
   setEmployeesList,
   setHelpdeskTicketsList,
+  setPayrollHistoryList,
 } from "@/redux/slices/ceo";
 import { ROLE } from "@/tempData";
 import { MoveRight } from "lucide-react";
@@ -28,12 +29,14 @@ import MidInformationCard, {
   MidInformationCardProps,
 } from "../components/midInformationCard";
 import StatusCardsHeadline from "../components/StatusCardsHeadline";
+import { PayrollHistory } from "@/types";
 
 export default function Dashboard() {
   const [loading, setLoading] = useState(false);
   const [allUsers, setAllUsers] = useState<CustomUser[] | []>([]);
   const [allProjects, setAllProjects] = useState<ProjectValues[] | []>([]);
   const [tickets, setTickets] = useState<Ticket[]>([]);
+  const [payrollHistory, setPayrollHistory] = useState<PayrollHistory[] | []>([]);
   const [midCardData, setMidCardData] = useState<MidInformationCardProps[] >([
     {
       title: "Total Project",
@@ -102,7 +105,6 @@ useEffect(() => {
       if (userRes.ok) {
         // Set all users state
         setAllUsers(userData.users);
-        console.log("user data: ", userData.users);
 
         // Filter and dispatch users by roles
         dispatch(
@@ -163,10 +165,12 @@ useEffect(() => {
       // Handle payment data
       if (paymentRes.ok) {
         // Log payment data (no further processing)
-        console.log("paymentData: ", paymentData);
+        setPayrollHistory(paymentData.payments);
+        console.log("setPayrollHistory", paymentData.payments);
+        dispatch(setPayrollHistoryList(projectData.payments));
       } else {
         // Log error if payment data fetch fails
-        console.error("Failed to fetch payments:", paymentData.message);
+        console.error("Failed to fetch payments:", paymentData.payments);
       }
 
       // Handle ticket data
@@ -218,7 +222,7 @@ useEffect(() => {
       </div>
       <ProjectList list={allProjects} loading={loading} />
       <HelpdeskTicketsList tickets={tickets}/>
-      <PayrollList />
+      <PayrollList payrollHistory={payrollHistory} />
     </MainContainer>
   );
 }
@@ -279,7 +283,7 @@ function HelpdeskTicketsList({tickets}:{tickets:Ticket[]}) {
   );
 }
 
-function PayrollList() {
+function PayrollList({payrollHistory}:{payrollHistory: PayrollHistory[]}) {
   const router = useRouter();
   return (
     <Container>
@@ -295,7 +299,7 @@ function PayrollList() {
           />
         </div>
         <div className="w-full flex flex-col gap-4 px-2">
-          <AllTransactionsHistoryTable payments={[]} />
+          <AllTransactionsHistoryTable only="all" payments={payrollHistory} />
         </div>
       </div>
     </Container>

@@ -5,6 +5,8 @@ import Headline, {
 } from "@/components/reusables/components/headline";
 import Container from "@/components/reusables/wrapper/Container";
 import MainContainer from "@/components/reusables/wrapper/mainContainer";
+import SquareButton from "@/components/reusables/wrapper/squareButton";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,7 +29,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ROLE } from "@/tempData";
-import { MoreVertical } from "lucide-react";
+import { VENDOR } from "@/types";
+import { MoreVertical, Plus } from "lucide-react";
 import Image from "next/image";
 import React, { useState } from "react";
 import EmployeesSummary from "../components/EmployeesSummary";
@@ -64,21 +67,59 @@ export default function AllEmployees() {
   const [search, setSearch] = useState<string>("");
   const [filterCategory, setFilterCategory] = useState<string>("");
 
-  const headLineButtons = [
-    {
-      buttonText: "Export Report",
-      onNeedIcon: false,
-      onClick: () => console.log("Export Report"),
-    },
-  ] as ButtonObjectType[];
   return (
     <MainContainer role={ROLE}>
-      <Headline
-        role={ROLE}
-        title="Project Overview"
-        subTitle="Project"
-        buttonObjects={headLineButtons}
-      />
+      <div className="w-full my-4 flex flex-row items-center justify-between">
+        <div className="flex flex-col gap-1">
+          {/* headline */}
+          <h1 className="text-2xl font-semibold">Payments Management</h1>
+          <p className="text-[#6A6A6A] text-base font-normal">
+            All Projects/ payments
+          </p>
+        </div>
+        <div className="flex flex-col sm:flex-row gap-4">
+          <SquareButton role={ROLE}>
+            <Plus
+              color={
+                ROLE === VENDOR ? "var(--vendor-dark)" : "var(--primary-blue)"
+              }
+            />
+            Export Report
+          </SquareButton>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="flex text-desktop flex-row items-center font-medium gap-2 shadow-[3px_3px_10px_0px_#789BD399,-3px_-3px_10px_0px_#FFFFFF] rounded-xl text-nowrap  py-3 px-3">
+                <MoreVertical className="h-4 w-4" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem>Projects </DropdownMenuItem>
+              <DropdownMenuItem className="text-red-600">
+                <Dialog>
+                  {/* Prevent DropdownMenu from closing */}
+                  <DialogTrigger asChild>
+                    <button
+                      className="w-full text-left"
+                      onClick={(e) => e.stopPropagation()} // Prevent event bubbling
+                    >
+                      Ban Employee
+                    </button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <h2 className="text-lg font-semibold">Ban Employee</h2>
+                    <p>Are you sure you want to ban this employee?</p>
+                    <div className="mt-4 flex justify-end space-x-2">
+                      <button className="btn-cancel">Cancel</button>
+                      <button className="btn-confirm">Confirm</button>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </div>
 
       <div className="flex items-center gap-4 mb-4">
         <input
@@ -102,8 +143,8 @@ export default function AllEmployees() {
       </div>
 
       <div className="w-full flex flex-col xl:flex-row gap-4 ">
-        <EmployeesSummary/>
-        <TodayEmployeesProgress/>
+        <EmployeesSummary />
+        <TodayEmployeesProgress />
       </div>
 
       <Container className="p-4 flex flex-col gap-4">
@@ -183,10 +224,29 @@ function DataTableTasks() {
                     </button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem>View details</DropdownMenuItem>
-                    <DropdownMenuItem>Edit ticket</DropdownMenuItem>
+                    <DropdownMenuItem>Projects </DropdownMenuItem>
                     <DropdownMenuItem className="text-red-600">
-                      Delete ticket
+                      <Dialog>
+                        {/* Prevent DropdownMenu from closing */}
+                        <DialogTrigger asChild>
+                          <button
+                            className="w-full text-left"
+                            onClick={(e) => e.stopPropagation()} // Prevent event bubbling
+                          >
+                            Ban Employee
+                          </button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <h2 className="text-lg font-semibold">
+                            Ban Employee
+                          </h2>
+                          <p>Are you sure you want to ban this employee?</p>
+                          <div className="mt-4 flex justify-end space-x-2">
+                            <button className="btn-cancel">Cancel</button>
+                            <button className="btn-confirm">Confirm</button>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>

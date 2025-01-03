@@ -1,10 +1,5 @@
+"use client";
 import Container from "@/components/reusables/wrapper/Container";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import {
   Table,
   TableBody,
@@ -13,10 +8,22 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { PaymentValues } from "@/lib/types";
 import { formatDateString } from "@/lib/utils";
-import { MoreVertical } from "lucide-react";
 import React from "react";
+import { toast } from "sonner";
 
 // const dataFilesTasks = [
 //   {
@@ -58,15 +65,21 @@ export default function AdvancePaymentRequest({
 }: {
   advancePaymentRequest: PaymentValues[];
 }) {
+  const [payMentsRequest, setPayMentsRequest] = React.useState(advancePaymentRequest);
+  const deleteFromList = (paymentID: string) => {
+    const newList = advancePaymentRequest.filter((payment) => payment._id !== paymentID);
+    setPayMentsRequest(newList);
+  };
   return (
     <Container className="p-4 flex flex-col gap-4">
-      <h1 className="text-base font-semibold">Total request - 03</h1>
-      <DataTableTasks payments={advancePaymentRequest} />
+      <h1 className="text-base font-semibold">Total request - {payMentsRequest.length}</h1>
+      <DataTableTasks payments={payMentsRequest} deleteFromList={deleteFromList} />
     </Container>
   );
 }
 
-function DataTableTasks({ payments }: { payments: PaymentValues[] }) {
+function DataTableTasks({ payments, deleteFromList  }: { payments: PaymentValues[]; deleteFromList: (paymentID: string) => void }) {
+  
   return (
     <div className="w-full">
       <Table>
@@ -110,25 +123,80 @@ function DataTableTasks({ payments }: { payments: PaymentValues[] }) {
               </TableCell>
               <TableCell>{row.amount}</TableCell>
               <TableCell>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <button className="h-8 w-8 p-0">
-                      <MoreVertical className="h-4 w-4" />
-                    </button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem>View details</DropdownMenuItem>
-                    <DropdownMenuItem>Edit ticket</DropdownMenuItem>
-                    <DropdownMenuItem className="text-red-600">
-                      Delete ticket
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                <DeleteBTNDialog paymentID={row._id} deleteFromList={deleteFromList} />
               </TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
     </div>
+  );
+}
+
+function DeleteBTNDialog({ paymentID, deleteFromList }: { paymentID: string; deleteFromList: (paymentID: string) => void }) {
+  const [deleting, setDeleting] = React.useState(false);
+  const handleDelete = async () => {
+    try {
+      setDeleting(true);
+      const response = await fetch(`/api/payment/delete/${paymentID}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete advance payment request");
+      }
+
+      toast.success("Advance payment request delete successfully!");
+      deleteFromList(paymentID);
+      setDeleting(false);
+      document.getElementById("close")?.click();
+    } catch (error) {
+      console.error("Error deleting advance payment request:", error);
+      toast.error(
+        "Failed to delete advance payment request. Please try again."
+      );
+    } finally {
+      setDeleting(false);
+    }
+  };
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button id="deleteBTN" variant="destructive">
+          Delete
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="bg-primary-sky-blue shadow-neuro-3 p-4">
+        <DialogHeader>
+          <DialogTitle>Delete Ticket</DialogTitle>
+          <DialogDescription>
+            Are you sure you want to delete this ticket? This action cannot be
+            undone.
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter className="mt-4">
+          <DialogClose asChild>
+            <Button
+              disabled={deleting}
+              id="close"
+              variant="outline"
+              className="disabled:cursor-not-allowed "
+            >
+              Cancel
+            </Button>
+          </DialogClose>
+          <Button
+            variant="destructive"
+            disabled={deleting}
+            onClick={() => {
+              handleDelete();
+            }}
+            className="disabled:cursor-not-allowed "
+          >
+            {deleting ? "Deleting..." : "Delete"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

@@ -1,8 +1,13 @@
 import AllTransactionsHistoryTable from "@/components/reusables/components/AllTransactionsHistoryTable";
 import Container from "@/components/reusables/wrapper/Container";
+import { PayrollHistory } from "@/types";
 import React from "react";
 
-export default function EmployeeAllTransactionsHistory() {
+export default function EmployeeAllTransactionsHistory({
+  payrollHistory,
+}: {
+  payrollHistory: PayrollHistory[];
+}) {
   // run logic
   return (
     <Container>
@@ -11,7 +16,7 @@ export default function EmployeeAllTransactionsHistory() {
           <h2 className=" text-base font-medium">Total transactions -</h2>
         </div>
         <div className="w-full flex flex-col gap-4 px-2">
-          <AllTransactionsHistoryTable only="employee" payments={[]} />
+          <AllTransactionsHistoryTable only="employee" payments={payrollHistory} />
         </div>
       </div>
     </Container>

@@ -91,7 +91,7 @@ const SignIn: React.FC = () => {
 
         if (res?.url) {
           setSuccess(true);
-          router.replace("/");
+          router.replace("/Welcome");
           return "Logged in successfully!";
         } else {
           setSubmitting(false);

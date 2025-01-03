@@ -1,9 +1,13 @@
 "use client";
-import React, { useState, FormEvent, ChangeEvent } from "react";
+import SquareButton from "@/components/reusables/wrapper/squareButton";
 import { DialogClose } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import SquareButton from "@/components/reusables/wrapper/squareButton";
+import { CustomUser } from "@/lib/types";
+import { Loader2 } from "lucide-react";
+import { useSession } from "next-auth/react";
+import React, { ChangeEvent, FormEvent, useState } from "react";
+import { toast } from "sonner";
 
 interface AdvancePaymentRequest {
   subject: string;
@@ -12,6 +16,12 @@ interface AdvancePaymentRequest {
 }
 
 export default function RequestAdvancePayment() {
+  const [submitting, setSubmitting] = useState(false);
+  const { data: session } = useSession();
+  const user = session?.user as CustomUser;
+
+
+
   // State for form data with type annotation
   const [request, setRequest] = useState<AdvancePaymentRequest>({
     subject: "",
@@ -32,6 +42,8 @@ export default function RequestAdvancePayment() {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    setSubmitting(true);
+
     // Basic validation
     if (!request.subject.trim()) {
       alert("Please enter a request subject");
@@ -51,20 +63,33 @@ export default function RequestAdvancePayment() {
     }
 
     // Prepare data for submission
-    const formData = {
-      subject: request.subject.trim(),
-      description: request.description.trim(),
+
+    const payload = {
+      paymentTitle: request.subject.trim(),
+      requestDescription: request.description.trim(),
+      status: "requested",
+      isRequested: true,
+      type: "salary",
+      from: {
+        role: "manager",
+      },
       amount: amount,
+      to: {
+        role: "developer",
+        userID: user._id,
+      },
     };
 
     try {
       // Send data to backend
-      const response = await fetch("/api/advance-payment", {
+      const response = await fetch(`/api/payment/create`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
+    
+
       });
 
       if (!response.ok) {
@@ -72,18 +97,21 @@ export default function RequestAdvancePayment() {
       }
 
       const result = await response.json();
+      toast.success("Advance payment request submitted successfully!");
       console.log("Submission successful:", result);
-      alert("Advance payment request submitted successfully!");
-
+      
       // Reset form after successful submission
       setRequest({
         subject: "",
         description: "",
         amount: "",
       });
+      document.getElementById("close")?.click();
     } catch (error) {
       console.error("Error submitting advance payment request:", error);
       alert("Failed to submit advance payment request. Please try again.");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -93,7 +121,7 @@ export default function RequestAdvancePayment() {
       onClick={(e) => e.stopPropagation()}
       className="z-10 w-[733px] m-4 bg-background flex flex-col gap-6 rounded-3xl p-5 lg:p-6"
     >
-      <h1 className="text-2xl font-semibold text-dark-gray">Add A Chat</h1>
+      <h1 className="text-2xl font-semibold text-dark-gray">Request Advance Payment</h1>
       <div className="flex flex-col gap-3">
         <div className="w-full flex flex-col gap-3">
           <Label className="text-base font-medium text-gray-800">
@@ -142,15 +170,20 @@ export default function RequestAdvancePayment() {
       </div>
       <div className="flex flex-row gap-2 justify-end">
         <DialogClose asChild>
-          <SquareButton className="text-[#f04e4e] w-fit self-end">
+          <SquareButton id="close" className="text-[#f04e4e] w-fit self-end">
             Cancel
           </SquareButton>
         </DialogClose>
         <button 
+        disabled={!request.subject || !request.description || !request.amount || submitting}
           type="submit"
-          className="flex flex-row items-center py-3 px-5 gap-2 shadow-neuro-9 rounded-xl text-[#ffffff] text-nowrap bg-primary-blue"
+          className="flex flex-row items-center py-3 px-5 gap-2 shadow-neuro-9 rounded-xl text-[#ffffff] text-nowrap bg-primary-blue disabled:bg-blue-400 disabled:cursor-not-allowed"
         >
-          Confirm Request
+          {submitting ? (
+            <Loader2 className="animate-spin" />
+          ) : (
+            "Send"
+          )}
         </button>
       </div>
     </form>

@@ -1,11 +1,16 @@
 import { Ticket } from '@/components/reusables/components/HelpDeskTicketsListTable';
 import { CustomUser, ProjectValues } from '@/lib/types';
+import { PayrollHistory } from '@/types';
 import { createSlice } from '@reduxjs/toolkit';
+
+
+
 export interface CeoState {
     employeesList: CustomUser[] | []
     clientAndVendorList: CustomUser[] | []
     allProjectsList: ProjectValues[] | []
     helpdeskTicketsList: Ticket[] | []
+    payrollHistoryList: PayrollHistory[] | []
 }
 
 
@@ -17,6 +22,7 @@ const initialState: CeoState = {
     clientAndVendorList: [],
     allProjectsList: [],
     helpdeskTicketsList: [],
+    payrollHistoryList: []
 };
 
 const ceoSlice = createSlice({
@@ -35,6 +41,9 @@ const ceoSlice = createSlice({
     setHelpdeskTicketsList: (state, action) => {
       state.helpdeskTicketsList = action.payload;
     },
+    setPayrollHistoryList: (state, action) => {
+      state.payrollHistoryList = action.payload;
+    }
   },
 });
 
@@ -43,5 +52,6 @@ export const {
     setClientAndVendorList,
     setAllProjectsList,
     setHelpdeskTicketsList,
+    setPayrollHistoryList
 } = ceoSlice.actions;
 export default ceoSlice.reducer;

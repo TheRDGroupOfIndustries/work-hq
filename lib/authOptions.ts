@@ -131,7 +131,7 @@ export const authOptions: NextAuthOptions = {
           (token as CustomToken).user?.email
             ? { email: (token as CustomToken).user?.email }
             : { phone: (token as CustomToken).user?.phone }
-        );
+        )
 
         if (dbUser) {
           session.user = dbUser as CustomUser;

@@ -7,13 +7,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { MoreVertical } from "lucide-react";
 import Container from "@/components/reusables/wrapper/Container";
 import { PaymentValues } from "@/lib/types";
 import { formatDateString } from "@/lib/utils";
@@ -55,22 +48,6 @@ function DataTableTasks({ payments }: { payments: PaymentValues[] }) {
               <TableCell>{row.transactionID}</TableCell>
               <TableCell>{row.amount}</TableCell>
               <TableCell>{formatDateString(row.paymentDate + "")}</TableCell>
-              <TableCell>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <button className="h-8 w-8 p-0">
-                      <MoreVertical className="h-4 w-4" />
-                    </button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem>View details</DropdownMenuItem>
-                    <DropdownMenuItem>Edit ticket</DropdownMenuItem>
-                    <DropdownMenuItem className="text-red-600">
-                      Delete ticket
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </TableCell>
             </TableRow>
           ))}
         </TableBody>
