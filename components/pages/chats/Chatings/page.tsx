@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import ChatArea from "../../bigChat/components/chatArea";
 import SecureAndEncripted from "../../bigChat/components/SecureAndEncripted";
-import InputArea from "../../bigChat/components/inputArea";
+// import InputArea from "../../bigChat/components/inputArea";
 import Headline from "../../bigChat/components/headline";
 
 export default function Chatings() {
@@ -45,7 +45,7 @@ export default function Chatings() {
       <div className="h-full w-full flex flex-col">
         <SecureAndEncripted />
         <ChatArea />
-        <InputArea />
+        {/* <InputArea /> */}
       </div>
     </MainContainer>
   );

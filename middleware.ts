@@ -19,7 +19,7 @@ export function middleware(request: NextRequest) {
 
     // If role is not found, redirect to a login or error page
     if (!userRole) {
-        return NextResponse.redirect(new URL('/login', request.url));
+        return NextResponse.redirect(new URL('/auth/c-sign-in', request.url));
     }
 
     // Check if the route matches the user's role

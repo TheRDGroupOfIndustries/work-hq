@@ -44,9 +44,25 @@ export default function Chats() {
 
   const handleChannelClick = (channel: Channel<DefaultGenerics>) => {
     setActiveChannel(channel);
-    router.push(
-      `/c/project/${selectedProjectDetails?._id}/chats/${channel.id}`
-    );
+    router.push(`/c/project/${selectedProjectDetails?._id}/chats/${channel.id}`);
+  };
+
+  const getChannelName = (channel: Channel<DefaultGenerics>): string => {
+    if (channel.data?.name) {
+      return channel.data.name;
+    }
+
+    const currentUserId = client?.userID;
+    if (!currentUserId || !channel.state.members) return "Unknown Channel";
+
+    const members = Object.values(channel.state.members);
+    const otherMember = members.find(member => member.user?.id !== currentUserId);
+    
+    if (otherMember?.user?.name) {
+      return otherMember.user.name;
+    }
+
+    return "Unknown Channel";
   };
 
   return (
@@ -66,6 +82,7 @@ export default function Chats() {
             key={channel.id}
             channel={channel}
             onClick={() => handleChannelClick(channel)}
+            getChannelName={getChannelName}
           />
         ))
       )}
@@ -76,11 +93,12 @@ export default function Chats() {
 interface CardProps {
   channel: Channel<DefaultGenerics>;
   onClick: () => void;
+  getChannelName: (channel: Channel<DefaultGenerics>) => string;
 }
 
-function Card({ channel, onClick }: CardProps) {
-  const isGroupChat = channel.data?.name !== undefined;
-  const channelName = isGroupChat ? channel.data?.name : getOtherMemberName(channel);
+function Card({ channel, onClick, getChannelName }: CardProps) {
+  const isGroupChat = channel.data?.member_count as number > 2;
+  const channelName = getChannelName(channel);
   const lastMessage = channel.state.messages[channel.state.messages.length - 1];
   const hasAttachment = lastMessage?.attachments && lastMessage.attachments.length > 0;
 
@@ -120,18 +138,15 @@ function Card({ channel, onClick }: CardProps) {
       </div>
 
       <div className="flex justify-end items-center mr-5 py-2">
-        {/* You can add additional information here if needed */}
+        {lastMessage && (
+          <span className="text-sm text-gray-500">
+            {new Date(lastMessage.created_at || Date.now()).toLocaleTimeString([], {
+              hour: '2-digit',
+              minute: '2-digit'
+            })}
+          </span>
+        )}
       </div>
     </div>
   );
-}
-
-function getOtherMemberName(channel: Channel<DefaultGenerics>): string {
-  const currentUserId = channel._client?.userID;
-  if (!currentUserId) {
-    return "Unknown User";
-  }
-  const members = Object.values(channel.state.members);
-  const otherMember = members.find(member => member.user?.id !== currentUserId);
-  return otherMember?.user?.name || "Unknown User";
 }

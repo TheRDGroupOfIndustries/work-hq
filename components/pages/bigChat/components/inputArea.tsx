@@ -2,10 +2,20 @@
 
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useChat } from "@/context/ChatProvider";
-import { SendHorizontal, Paperclip } from 'lucide-react';
+import { SendHorizontal, Paperclip, X } from 'lucide-react';
 import { useState, useRef } from "react";
+import { Button } from "@/components/ui/button";
 
-export default function InputArea() {
+interface Message {
+  id: string;
+  text?: string;
+  user?: {
+    id: string;
+    name?: string;
+  };
+}
+
+export default function InputArea({ replyingTo, setReplyingTo }: { replyingTo: Message | null; setReplyingTo: (message: Message | null) => void }) {
   const [text, setText] = useState("");
   const [files, setFiles] = useState<File[]>([]);
   const { activeChannel } = useChat();
@@ -17,6 +27,9 @@ export default function InputArea() {
         const formData = new FormData();
         formData.append('text', text);
         files.forEach(file => formData.append('files', file));
+        if (replyingTo) {
+          formData.append('quoted_message_id', replyingTo.id);
+        }
 
         const response = await fetch(
           `/api/chats/${activeChannel.id}/messages`,
@@ -32,6 +45,7 @@ export default function InputArea() {
 
         setText("");
         setFiles([]);
+        setReplyingTo(null);
       } catch (error) {
         console.error("Error sending message:", error);
       }
@@ -45,9 +59,20 @@ export default function InputArea() {
   };
 
   return (
-    <div className="w-full h-[150px]">
-      <div className="w-full h-full rounded-xl bg-primary-sky-blue shadow-[5px_5px_20px_0px_#7BA9EF99,-5px_-5px_20px_0px_#FFFFFF,-5px_-5px_20px_0px_#7BA9EF99_inset,5px_5px_20px_0px_#7BA9EF99_inset]">
-        <div className="w-full h-full flex flex-col p-3">
+    <div className="w-full">
+      <div className="w-full rounded-xl bg-primary-sky-blue shadow-[5px_5px_20px_0px_#7BA9EF99,-5px_-5px_20px_0px_#FFFFFF,-5px_-5px_20px_0px_#7BA9EF99_inset,5px_5px_20px_0px_#7BA9EF99_inset]">
+        <div className="w-full flex flex-col p-3">
+          {replyingTo && (
+            <div className="bg-gray-100 p-2 rounded-lg mb-2 flex justify-between items-center">
+              <div>
+                <p className="font-medium">Replying to {replyingTo.user?.name || 'Unknown User'}:</p>
+                <p className="text-sm">{replyingTo.text}</p>
+              </div>
+              <Button variant="ghost" size="sm" onClick={() => setReplyingTo(null)}>
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
           <div className="flex-1 w-full h-full max-h-[70px]">
             <ScrollArea className="h-[70px]">
               <textarea
