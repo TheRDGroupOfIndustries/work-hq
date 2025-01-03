@@ -31,7 +31,7 @@ useEffect(() => {
     } else if (SignUpRole === "developer" && !user?.wakaTime?.access_token) {
       router.replace("/wakaTime/auth");
     } else {
-      if (SignUpRole === "developer") {
+      if (SignUpRole === "developer" || user.role === "developer") {
         router.replace("/dev/all-projects");
       } else {
         router.replace("/c/all-projects");

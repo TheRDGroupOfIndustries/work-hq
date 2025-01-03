@@ -1,10 +1,4 @@
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
   Table,
   TableBody,
   TableCell,
@@ -12,9 +6,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { PaymentValues } from "@/lib/types";
 import { formatDateString } from "@/lib/utils";
-import { MoreVertical } from "lucide-react";
+import { PayrollHistory } from "@/types";
 import Image from "next/image";
 import React from "react";
 
@@ -22,7 +15,7 @@ export default function AllTransactionsHistoryTable({
   payments = [],
   only = "all",
 }: {
-  payments: PaymentValues[];
+  payments: PayrollHistory[];
   only: "all" | "client" | "employee";
 }) {
   return (
@@ -38,9 +31,7 @@ export default function AllTransactionsHistoryTable({
           {only === "client" && (
             <TableHead className="">Client/Vendor</TableHead>
           )}
-          {only === "employee" && (
-            <TableHead className="">Employee</TableHead>
-          )}
+          {only === "employee" && <TableHead className="">Employee</TableHead>}
           {only === "client" && <TableHead className="">Status</TableHead>}
           {only === "employee" && (
             <TableHead className="">Salary Month </TableHead>
@@ -61,7 +52,11 @@ export default function AllTransactionsHistoryTable({
             <TableCell>
               <div className="w-full flex flex-row items-center gap-2">
                 <Image
-                  src={"/assets/user.png"}
+                  src={
+                    row.to.userID?.profileImage
+                      ? row.to.userID.profileImage
+                      : "/assets/user.png"
+                  }
                   alt="Profile Image"
                   width="20"
                   height="20"
@@ -69,10 +64,10 @@ export default function AllTransactionsHistoryTable({
                 />
                 <div className="flex flex-col">
                   <span className="text-dark-gray leading-5 light-graytext-base">
-                    Client 2 Name
+                    {row.to.userID?.firstName + " " + row.to.userID?.lastName}
                   </span>
                   <span className="line-clamp-1 text-sm text-light-gray">
-                    Position
+                    {row.to.userID?.role}
                   </span>
                 </div>
               </div>
@@ -88,32 +83,10 @@ export default function AllTransactionsHistoryTable({
                 {row.status}
               </TableCell>
             )}
-            {only === "employee" && (
-              <TableCell
-                
-              >
-                Salary Month
-              </TableCell>
-            )}      
+            {only === "employee" && <TableCell>Salary Month</TableCell>}
             <TableCell>{row.transactionID}</TableCell>
-            <TableCell>{row.amount}</TableCell>
+            <TableCell>{row.amount + row.bonus}</TableCell>
             <TableCell>{formatDateString(row.paymentDate + "")}</TableCell>
-            <TableCell>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button className="h-8 w-8 p-0">
-                    <MoreVertical className="h-4 w-4" />
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem>View details</DropdownMenuItem>
-                  <DropdownMenuItem>Edit ticket</DropdownMenuItem>
-                  <DropdownMenuItem className="text-red-600">
-                    Delete ticket
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </TableCell>
           </TableRow>
         ))}
       </TableBody>

@@ -10,6 +10,7 @@ const roleRoutes: Record<string, string> = {
   client: "/c/all-projects",
   developer: "/dev/all-projects",
   ceo: "/ceo/all-projects",
+  manager: "/ceo/all-projects",
 };
 
 function WelcomeButton() {

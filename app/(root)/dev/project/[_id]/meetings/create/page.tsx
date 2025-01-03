@@ -1,6 +1,8 @@
-import MeetingsRequest from "@/components/pages/meetings/request/dev/page";
+
 // import { getServerSession } from "next-auth";
 // import { redirect } from "next/navigation";
+
+import MeetingsRequest from "@/components/pages/meetings/create/dev/page";
 
 export default async function Page() {
   // const session = await getServerSession();
