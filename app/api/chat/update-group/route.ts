@@ -10,7 +10,7 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { channelId, groupName, description, icon, members } = await req.json();
+    const { channelId, groupName, description, icon, members, removedMembers } = await req.json();
 
     const channel = serverClient.channel("messaging", channelId);
 
@@ -20,16 +20,23 @@ export async function PATCH(req: NextRequest) {
         name: groupName,
         description,
         image: icon,
-      }
+      },
     });
 
-    // Update members if provided
-    if (members) {
-      await channel.addMembers(members);
+    // Add new members if provided
+    if (members && members.length > 0) {
+      await channel.addMembers(members.map((memberId: string) => ({
+        user_id: memberId,
+      })));
     }
 
-    return NextResponse.json({ 
-      message: "Group updated successfully" 
+    // Remove members if provided
+    if (removedMembers && removedMembers.length > 0) {
+      await channel.removeMembers(removedMembers);
+    }
+
+    return NextResponse.json({
+      message: "Group updated successfully",
     }, { status: 200 });
   } catch (error) {
     console.error("Error updating group:", error);

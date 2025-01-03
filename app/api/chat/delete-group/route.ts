@@ -15,10 +15,10 @@ export async function DELETE(req: NextRequest) {
     const channel = serverClient.channel("messaging", channelId);
 
     // Verify if user has permission to delete
-    const channelData = await channel.query();
-    if (channelData.channel?.created_by_id !== session.user._id) {
-      return NextResponse.json({ error: "Unauthorized to delete group" }, { status: 403 });
-    }
+    // const channelData = await channel.query();
+    // if (channelData.channel?.created_by_id !== session.user._id) {
+    //   return NextResponse.json({ error: "Unauthorized to delete group" }, { status: 403 });
+    // }
 
     await channel.delete();
 

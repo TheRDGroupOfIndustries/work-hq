@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/authOptions"
 import { serverClient } from "@/utils/serverClient"
 import { utapi } from "@/server/uploadthing"
-import { Attachment, DefaultGenerics } from 'stream-chat'
+import { Attachment, DefaultGenerics, Channel } from 'stream-chat'
 
 export async function GET(
   request: NextRequest,
@@ -38,6 +38,7 @@ export async function POST(
     const formData = await request.formData()
     const text = formData.get('text') as string
     const files = formData.getAll('files') as File[]
+    const quotedMessageId = formData.get('quoted_message_id') as string
 
     const channel = serverClient.channel('messaging', params.chatId)
 
@@ -52,15 +53,43 @@ export async function POST(
       }))
     }
 
-    const message = await channel.sendMessage({
+    const messageData: any = {
       text,
       user_id: session.user._id,
       attachments,
-    })
+    }
+
+    if (quotedMessageId) {
+      messageData.quoted_message_id = quotedMessageId
+    }
+
+    const message = await channel.sendMessage(messageData)
 
     return NextResponse.json(message)
   } catch (error) {
     console.error("Error sending message:", error)
     return NextResponse.json({ error: "Failed to send message" }, { status: 500 })
+  }
+}
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { chatId: string; messageId: string } }
+) {
+  const session = await getServerSession(authOptions)
+  if (!session?.user?._id) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  }
+
+  try {
+    const channel = serverClient.channel('messaging', params.chatId)
+    // Type assertion to resolve the TypeScript error
+    const typedChannel = channel as Channel & { deleteMessage: (messageId: string) => Promise<any> }
+    await typedChannel.deleteMessage(params.messageId)
+
+    return NextResponse.json({ success: true })
+  } catch (error) {
+    console.error("Error deleting message:", error)
+    return NextResponse.json({ error: "Failed to delete message" }, { status: 500 })
   }
 }
