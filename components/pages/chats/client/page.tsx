@@ -6,7 +6,7 @@ import { ROLE } from "@/tempData";
 import AddChat from "../components/addChat";
 import { useRouter } from "next/navigation";
 import { useChat } from "@/context/ChatProvider";
-import { Channel, DefaultGenerics } from "stream-chat";
+import { Channel, DefaultGenerics } from 'stream-chat';
 import Image from "next/image";
 import { useProjectContext } from "@/context/ProjectProvider";
 import ChatSkeleton from "../components/ChatSkeleton";
@@ -57,7 +57,7 @@ export default function Chats() {
 
     const members = Object.values(channel.state.members);
     const otherMember = members.find(member => member.user?.id !== currentUserId);
-    
+
     if (otherMember?.user?.name) {
       return otherMember.user.name;
     }
@@ -67,7 +67,7 @@ export default function Chats() {
 
   return (
     <MainContainer role={ROLE}>
-      {isAddChatOpen && <AddChat setIsAddChatOpen={setIsAddChatOpen} />}
+      {isAddChatOpen && <AddChat setIsAddChatOpen={setIsAddChatOpen} existingChannels={channels} />}
 
       <Headline role={ROLE} setIsAddChatOpen={setIsAddChatOpen} />
       {isLoading ? (

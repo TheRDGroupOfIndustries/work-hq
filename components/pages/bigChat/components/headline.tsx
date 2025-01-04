@@ -39,7 +39,7 @@ interface User {
 }
 
 export default function Headline() {
-  const { activeChannel, updateGroupChat, deleteGroupChat } = useChat();
+  const { activeChannel, updateGroupChat, deleteGroupChat, client } = useChat();
   const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isMembersDialogOpen, setIsMembersDialogOpen] = useState(false);
@@ -98,8 +98,18 @@ export default function Headline() {
   if (!activeChannel) return null;
 
   const isGroup = activeChannel.data?.member_count as number > 2;
-  const name = activeChannel.data?.name || "Chat";
   const image = activeChannel.data?.image;
+
+  const getOtherUserName = (): string => {
+    if (!isGroup && client) {
+      const members = Object.values(activeChannel.state.members || {});
+      const otherMember = members.find(member => member.user?.id !== client.userID);
+      return otherMember?.user?.name || "Unknown User";
+    }
+    return activeChannel.data?.name || "Chat";
+  };
+
+  const name = isGroup ? activeChannel.data?.name || 'CHAT' : getOtherUserName();
   const members = Object.values(activeChannel.state.members || {})
     .map(member => member.user?.name)
     .filter(Boolean);
@@ -193,7 +203,7 @@ export default function Headline() {
         ) : (
           <Avatar className="h-10 w-10">
             <AvatarImage src={image as string || ''} />
-            <AvatarFallback>{name[0]}</AvatarFallback>
+            <AvatarFallback>{name.charAt(0).toUpperCase()}</AvatarFallback>
           </Avatar>
         )}
         <div>
