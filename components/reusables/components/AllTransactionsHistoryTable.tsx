@@ -1,3 +1,4 @@
+"use client";
 import {
   Table,
   TableBody,
@@ -6,7 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { formatDateString } from "@/lib/utils";
+import { formatDateString, salaryMonth } from "@/lib/utils";
 import { PayrollHistory } from "@/types";
 import Image from "next/image";
 import React from "react";
@@ -83,10 +84,13 @@ export default function AllTransactionsHistoryTable({
                 {row.status}
               </TableCell>
             )}
-            {only === "employee" && <TableCell>Salary Month</TableCell>}
+            {only === "employee" && (
+              <TableCell>{salaryMonth(row.createdAt + "")}</TableCell>
+            )}
             <TableCell>{row.transactionID}</TableCell>
             <TableCell>{row.amount + row.bonus}</TableCell>
-            <TableCell>{formatDateString(row.paymentDate + "")}</TableCell>
+            <TableCell>{formatDateString(row.createdAt + "")}</TableCell>
+            
           </TableRow>
         ))}
       </TableBody>
