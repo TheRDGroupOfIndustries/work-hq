@@ -51,6 +51,7 @@ export default function Payment() {
         const response = await fetch("/api/payment/get", {
           method: "GET",
           headers: { "Content-Type": "application/json" },
+          cache: "no-store",
         });
         const data = await response.json();
         
@@ -135,7 +136,7 @@ export default function Payment() {
           <EmployeeAllTransactionsHistory
             payrollHistory={payrollHistory.filter(
               (payment) =>
-                payment.to.role === "developer" && payment.isRequested
+                payment.to.role === "developer" && !payment.isRequested
             )}
           />
         </TabsContent>
@@ -143,7 +144,7 @@ export default function Payment() {
           <AdvancePaymentRequests
             payrollHistory={payrollHistory.filter(
               (payment) =>
-                payment.to.role === "developer" && !payment.isRequested
+                payment.to.role === "developer" && payment.isRequested
             )}
           />
         </TabsContent>
