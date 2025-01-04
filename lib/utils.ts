@@ -63,6 +63,14 @@ export const formatDateString = (dateString: string) => {
   return `${day}${suffix} ${month}, ${date.getFullYear()}`;
 };
 
+export const salaryMonth = (dateString: string) => {
+  const date = new Date(dateString);
+  // const options = { day: "numeric", month: "long", year: "numeric" };
+  const month = date.toLocaleString("default", { month: "long" });
+  
+  return ` ${month}, ${date.getFullYear()}`;
+};
+
 export const formatTimestamp = (timestamp: string): string => {
   const date = new Date(timestamp);
 
