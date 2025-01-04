@@ -19,6 +19,7 @@ export default function AllTransactionsHistoryTable({
   payments: PayrollHistory[];
   only: "all" | "client" | "employee";
 }) {
+    console.log("AllTransactionsHistory", payments, );
   return (
     <Table>
       <TableHeader className=" text-gray-600 border-0">
@@ -44,7 +45,8 @@ export default function AllTransactionsHistoryTable({
         </TableRow>
       </TableHeader>
       <TableBody className="text-[#3A3A3A] max-h-[400px] text-base border-0 mb-5 px-10 overflow-hidden  ">
-        {payments.map((row, index) => (
+        {payments.map((row, index) =>{
+        return (
           <TableRow
             key={index || row._id}
             className={`h-[60px]  text-[#1E1B39] hover:bg-transparent rounded-lg mb-5 border-l-[20px] border-transparent border-b-0 `}
@@ -54,9 +56,9 @@ export default function AllTransactionsHistoryTable({
               <div className="w-full flex flex-row items-center gap-2">
                 <Image
                   src={
-                    row.to.userID?.profileImage
-                      ? row.to.userID.profileImage
-                      : "/assets/user.png"
+                    `${row.type === "salary"
+                      ? row.to?.userID?.profileImage || "/assets/user.png"
+                      : row.from?.userID?.profileImage || "/assets/user.png"}`
                   }
                   alt="Profile Image"
                   width="20"
@@ -65,10 +67,16 @@ export default function AllTransactionsHistoryTable({
                 />
                 <div className="flex flex-col">
                   <span className="text-dark-gray leading-5 light-graytext-base">
-                    {row.to.userID?.firstName + " " + row.to.userID?.lastName}
+                    {row.type === "salary"
+                      ? row.to.userID?.firstName +
+                        " " +
+                        row.to.userID?.lastName
+                      : row.from.userID?.firstName +
+                        " " +
+                        row.from.userID?.lastName}
                   </span>
                   <span className="line-clamp-1 text-sm text-light-gray">
-                    {row.to.userID?.role}
+                    {row.type !== "salary" ? row.from.role : row.to.role}
                   </span>
                 </div>
               </div>
@@ -90,9 +98,8 @@ export default function AllTransactionsHistoryTable({
             <TableCell>{row.transactionID}</TableCell>
             <TableCell>{row.amount + row.bonus}</TableCell>
             <TableCell>{formatDateString(row.createdAt + "")}</TableCell>
-            
           </TableRow>
-        ))}
+        )})}
       </TableBody>
     </Table>
   );

@@ -18,7 +18,7 @@ export default function SalaryHistory({
 }) {
   return (
     <Container className="p-4 flex flex-col gap-4">
-      <h1 className="text-base font-semibold">Total Client Payments - 03</h1>
+      <h1 className="text-base font-semibold">Total Client Payments - {payments.length}</h1>
       <DataTableTasks payments={payments} />
     </Container>
   );
@@ -38,7 +38,7 @@ function DataTableTasks({ payments }: { payments: PaymentValues[] }) {
           </TableRow>
         </TableHeader>
         <TableBody className="text-[#3A3A3A] max-h-[400px] text-base border-0 mb-5 px-10 overflow-hidden  ">
-          {payments.map((row, index) => (
+          {payments?.map((row, index) => (
             <TableRow
               key={index || row._id}
               className={`h-[60px]  text-[#1E1B39] hover:bg-transparent rounded-lg mb-5 border-l-[20px] border-transparent border-b-0 `}

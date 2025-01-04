@@ -33,20 +33,22 @@ export default function Salary() {
       });
       const data = await response.json();
 
-      setPayments(data.payments);
+      console.log("payments", data);
+
+      setPayments(data.payments || []);
     };
     fetchUpcomingSalaryDetails();
   }, [user?._id]);
 
-  const upcomingSalaryDetails: PaymentValues | undefined = payments.find(
+  const upcomingSalaryDetails: PaymentValues | undefined = payments?.find(
     (payment: PaymentValues) => payment.status === "upcoming"
   );
 
-  const salaryHistory: PaymentValues[] = payments.filter(
+  const salaryHistory: PaymentValues[] = payments?.filter(
     (payment: PaymentValues) => payment.status === "fulfilled"
   );
 
-  const advancePaymentRequest: PaymentValues[] = payments.filter(
+  const advancePaymentRequest: PaymentValues[] = payments?.filter(
     (payment: PaymentValues) => payment.isRequested
   );
 

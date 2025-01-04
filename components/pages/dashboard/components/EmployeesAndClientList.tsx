@@ -41,6 +41,7 @@ export default function EmployeesAndClientList({
 }
 
 function Card({ index, list }: { index: number; list: CustomUser }) {
+  console.log("list", list);
   return (
     <div key={index} className="w-full flex flex-row items-center gap-2">
       <span className="text-light-gray text-lg">{index + 1}.</span>
