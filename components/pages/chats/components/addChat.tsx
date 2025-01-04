@@ -4,11 +4,11 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Search, Users } from 'lucide-react';
 import { useState, useEffect } from "react";
 import { useChat } from "@/context/ChatProvider";
-// import { User } from "stream-chat";
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useProjectContext } from "@/context/ProjectProvider";
 
 interface User {
   _id: string,
@@ -18,18 +18,20 @@ interface User {
   profileImage: string
 }
 
-export default function AddChat({
-  setIsAddChatOpen,
-}: {
+interface AddChatProps {
   setIsAddChatOpen: (value: boolean) => void;
-}) {
+  existingChannels: any[];
+}
+
+export default function AddChat({ setIsAddChatOpen, existingChannels }: AddChatProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [users, setUsers] = useState<User[]>([]);
   const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
   const [groupName, setGroupName] = useState("");
   const [isGroupChat, setIsGroupChat] = useState(false);
-  const { client, createChat, createGroupChat } = useChat();
+  const { client, createChat, createGroupChat, checkExistingChannel } = useChat();
   const router = useRouter();
+  const { selectedProjectDetails } = useProjectContext();
 
   useEffect(() => {
     if (client) {
@@ -57,10 +59,17 @@ export default function AddChat({
     }
 
     try {
+      const existingChannel = checkExistingChannel(userId, existingChannels);
+      if (existingChannel) {
+        setIsAddChatOpen(false);
+        router.push(`/c/project/${selectedProjectDetails?._id}/chats/${existingChannel.id}`);
+        return;
+      }
+
       const channel = await createChat(userId);
       if (channel) {
         setIsAddChatOpen(false);
-        router.push(`/c/project/something/chats/${channel.id}`);
+        router.push(`/c/project/${selectedProjectDetails?._id}/chats/${channel.id}`);
       } else {
         throw new Error("Failed to create chat");
       }
@@ -83,7 +92,7 @@ export default function AddChat({
       );
       if (channel) {
         setIsAddChatOpen(false);
-        router.push(`/c/project/something/chats/${channel.id}`);
+        router.push(`/c/project/${selectedProjectDetails?._id}/chats/${channel.id}`);
       } else {
         throw new Error("Failed to create group chat");
       }

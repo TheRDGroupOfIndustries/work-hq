@@ -12,35 +12,38 @@ export async function GET(req: NextRequest) {
   }
 
   const { searchParams } = new URL(req.url);
-  const projectId = searchParams.get('projectId');
+  const projectId = searchParams.get("projectId");
 
   if (!projectId) {
-    return NextResponse.json({ error: "Project ID is required" }, { status: 400 });
+    return NextResponse.json(
+      { error: "Project ID is required" },
+      { status: 400 }
+    );
   }
 
   try {
     // Fetch project details to get associated users
-    const project = await Project.findById(projectId).populate('developmentDetails.teams');
+    const project = await Project.findById(projectId).populate(
+      "developmentDetails.teams"
+    );
     if (!project) {
       return NextResponse.json({ error: "Project not found" }, { status: 404 });
     }
 
-    const projectMembers = project.developmentDetails.teams.map((user: any) => user._id.toString());
+    const projectMembers = project.developmentDetails.teams.map((user: any) =>
+      user._id.toString()
+    );
 
-    const filter = { 
+    const filter = {
       members: { $in: [session.user._id, ...projectMembers] },
       projectId: projectId,
-      type: { $in: ['messaging', 'group'] }
+      type: { $in: ["messaging", "group"] },
     };
     const sort: ChannelSort<DefaultGenerics> = { last_message_at: -1 };
-    const channels = await serverClient.queryChannels(
-      filter,
-      sort,
-      {
-        watch: true,
-        state: true,
-      }
-    );
+    const channels = await serverClient.queryChannels(filter, sort, {
+      watch: true,
+      state: true,
+    });
 
     const serializedChannels = channels.map(
       (channel: Channel<DefaultGenerics>) => ({
