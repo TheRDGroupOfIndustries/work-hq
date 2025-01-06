@@ -11,10 +11,11 @@ import { CircleAlert, SquarePen } from "lucide-react";
 import { useSession } from "next-auth/react";
 import React, { useEffect } from "react";
 import AddEmployeeSalary from "../components/AddEmployeeSalary";
+import AdvancePaymentRequests from "../components/AdvancePaymentRequests";
 import AllTransactionsHistory from "../components/allTransactionsHistory";
 import ClientAllTransactionsHistory from "../components/clientAllTransactionHistory";
 import EmployeeAllTransactionsHistory from "../components/employeeAllTransactionHistory";
-import AdvancePaymentRequests from "../components/AdvancePaymentRequests";
+import PaymentRequestClient from "../components/PaymentRequestClient";
 export default function Payment() {
   const [payrollHistory, setPayrollHistory] = React.useState<
     PayrollHistory[] | []
@@ -36,7 +37,7 @@ export default function Payment() {
       icon: <CircleAlert size={20} />,
       type: "lightGray",
       onNeedIcon: false,
-      dialogContent: <div>PA</div>,
+      dialogContent: <PaymentRequestClient />,
     },
     {
       buttonText: "Add Payment",
@@ -54,21 +55,19 @@ export default function Payment() {
           cache: "no-store",
         });
         const data = await response.json();
-        
+
         setPayrollHistory(data.payments);
       } catch (error) {
         console.error("Error fetching payroll history:", error);
       }
     };
 
-    
-
     fetchPayrollHistory();
-  },[]);
+  }, []);
 
   return (
     <MainContainer>
-      {user.role === "ceo" && (
+      {user?.role === "ceo" && (
         <Headline
           role={user.role as Role}
           title="Payments Management"
@@ -76,7 +75,7 @@ export default function Payment() {
           buttonObjects={headLineButtonsCEO}
         />
       )}
-      {user.role === "manager" && (
+      {user?.role === "manager" && (
         <Headline
           role={user.role as Role}
           title="Payments"
@@ -90,7 +89,6 @@ export default function Payment() {
           <TabsTrigger
             className={` data-[state=active]:border-primary-blue `}
             value="yourAddedMethod"
-            
           >
             Your Added Method
           </TabsTrigger>
@@ -144,7 +142,9 @@ export default function Payment() {
           <AdvancePaymentRequests
             payrollHistory={payrollHistory.filter(
               (payment) =>
-                payment.to.role === "developer" && payment.isRequested
+                payment.to.role === "developer" &&
+                payment.isRequested &&
+                payment.status === "requested"
             )}
           />
         </TabsContent>

@@ -3,7 +3,7 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogHeader,
+  DialogFooter,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
@@ -20,9 +20,12 @@ import Container from "@/components/reusables/wrapper/Container";
 import { Button } from "@/components/ui/button";
 import { formatDateString } from "@/lib/utils";
 import { PayrollHistory } from "@/types";
+import { DialogClose } from "@radix-ui/react-dialog";
 import { Trash2 } from "lucide-react";
 import Image from "next/image";
 import React from "react";
+import { toast } from "sonner";
+import FulfillEmployeeAdvanceRequest from "./FulfillEmployeeAdvanceRequest";
 
 export default function AdvancePaymentRequests({
   payrollHistory,
@@ -104,11 +107,24 @@ function DataTable({ payments }: { payments: PayrollHistory[] }) {
             <TableCell>{row.transactionID}</TableCell>
             <TableCell>{row.status}</TableCell>
             <TableCell>{row.amount}</TableCell>
-            <TableCell>{formatDateString(row.paymentDate + "")}</TableCell>
+            <TableCell>{formatDateString(row.requestedDate + "")}</TableCell>
             <TableCell>
               <div className="flex flex-row items-center gap-2">
-                <ApproveBTN />
-                <DeleteBTN />
+                <ApproveBTN
+                  paymentID={row._id}
+                  employeeName={
+                    row.to.userID?.firstName + " " + row.to.userID?.lastName
+                  }
+                  employeeId={row.to.userID?._id}
+                  amount={row.amount}
+                  title={row.paymentTitle}
+                  description={row.requestDescription}
+                />
+                <DeleteBTN
+                  paymentID={row._id}
+                  title={row.paymentTitle}
+                  description={row.requestDescription}
+                />
               </div>
             </TableCell>
           </TableRow>
@@ -118,26 +134,80 @@ function DataTable({ payments }: { payments: PayrollHistory[] }) {
   );
 }
 
-function ApproveBTN() {
+function ApproveBTN({
+  paymentID,
+  employeeName,
+  employeeId,
+  amount,
+  title,
+  description,
+}: {
+  paymentID: string;
+  employeeName: string;
+  employeeId: string;
+  amount: number;
+  title: string;
+  description: string;
+}) {
   return (
     <Dialog>
       <DialogTrigger>
         <Button variant="default">Approve</Button>
       </DialogTrigger>
       <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Are you absolutely sure?</DialogTitle>
-          <DialogDescription>
-            This action cannot be undone. This will permanently delete your
-            account and remove your data from our servers.
-          </DialogDescription>
-        </DialogHeader>
+        <FulfillEmployeeAdvanceRequest
+          paymentID={paymentID}
+          employeeName={employeeName}
+          employeeId={employeeId}
+          amount={amount}
+          title={title}
+          description={description}
+        />
       </DialogContent>
     </Dialog>
   );
 }
 
-function DeleteBTN() {
+function DeleteBTN({
+  paymentID,
+  title,
+  description,
+}: {
+  paymentID: string;
+  title: string;
+  description: string;
+}) {
+  const [deleting, setDeleting] = React.useState(false);
+
+  const handleDelete = async () => {
+    setDeleting(true);
+    const payload = {
+      status: "rejected",
+    };
+    try {
+      const response = await fetch(`/api/payment/update/${paymentID}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+      if (!response.ok) {
+        throw new Error("Failed to reject advance payment request");
+      }
+      setDeleting(false);
+      toast.success("Advance payment request reject successfully");
+      document.getElementById("close")?.click();        
+    } catch (error) {
+      console.error("Error reject advance payment request:", error);
+      toast.error(
+        "Failed to reject advance payment request. Please try again."
+      );
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   return (
     <Dialog>
       <DialogTrigger>
@@ -145,14 +215,27 @@ function DeleteBTN() {
           <Trash2 color="#fff" size={20} />
         </Button>
       </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Are you absolutely sure?</DialogTitle>
-          <DialogDescription>
-            This action cannot be undone. This will permanently delete your
-            account and remove your data from our servers.
-          </DialogDescription>
-        </DialogHeader>
+      <DialogContent className=" w-[733px]  m-4 bg-background flex flex-col rounded-3xl p-5 lg:p-6">
+        <DialogTitle>Are you absolutely sure?</DialogTitle>
+        <div className="bg-slate-600 h-[1px] mt-3"></div>
+        <DialogDescription className="my-3">
+          <h1 className="text-lg font-bold mb-2">{title}</h1>
+          <p className="text-base leading-relaxed max-h-[60vh] overflow-y-scroll">{description} Lorem ipsum dolor sit amet consectetur, adipisicing elit. Corporis nobis obcaecati magni ducimus fugit enim rerum vitae eveniet eum beatae. Et beatae voluptates ipsam. Rerum nemo enim dolor nisi ipsam! Lorem ipsum dolor sit amet consectetur adipisicing elit. Veniam ratione blanditiis magnam unde quae repellendus soluta sed ullam at delectus quo, repellat dolorum debitis explicabo aspernatur iste quaerat id eum.</p>
+        </DialogDescription>
+        <DialogFooter>
+          <Button
+            disabled={deleting}
+            onClick={handleDelete}
+            variant="destructive"
+          >
+            {deleting ? "Reject..." : "Reject"}
+          </Button>
+          <DialogClose asChild>
+            <Button id="close" disabled={deleting}>
+              Cancel
+            </Button>
+          </DialogClose>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

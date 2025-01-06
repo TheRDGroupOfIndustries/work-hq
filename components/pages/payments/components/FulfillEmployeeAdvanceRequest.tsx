@@ -7,36 +7,51 @@ import { CustomUser } from "@/lib/types";
 import { RootState } from "@/redux/rootReducer";
 import { uploadNewFile } from "@/utils/actions/fileUpload.action";
 import { Loader2, Search } from "lucide-react";
-import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 
-interface EmployeeSalary {
+interface EmployeeAdvanceRequest {
   employeeName: string;
   employeeId: string;
   amount: number;
   paymentProof: string;
-  bonus: number;
   transactionId: string;
+  title: string;
+  description: string;
 }
 
-export default function AddEmployeeSalary() {
-  const { data: session } = useSession();
-  const user = session?.user as CustomUser;
+export default function FulfillEmployeeAdvanceRequest({
+  paymentID,
+  employeeName,
+  employeeId,
+  amount,
+  title,
+  description,
+}: {
+  paymentID: string;
+  employeeName: string;
+  employeeId: string;
+  amount: number;
+  title: string;
+  description: string;
+}) {
+//   const { data: session } = useSession();
+//   const user = session?.user as CustomUser;
 
   const [submitting, setSubmitting] = useState<boolean>(false);
 
   const [previewUrl, setPreviewUrl] = useState<string>("");
   const [uploadingPreview, setUploadingPreview] = useState<boolean>(false);
 
-  const [employeeSalary, setEmployeeSalary] = useState<EmployeeSalary>({
-    employeeName: "",
-    employeeId: "",
+  const [employeeSalary, setEmployeeSalary] = useState<EmployeeAdvanceRequest>({
+    employeeName,
+    employeeId,
     transactionId: "",
-    amount: 0,
+    amount,
     paymentProof: "",
-    bonus: 0,
+    title,
+    description,
   });
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -73,29 +88,15 @@ export default function AddEmployeeSalary() {
 
     console.log("handleSubmit", employeeSalary);
     const payload = {
-      paymentTitle: employeeSalary.employeeName + " salary",
       status: "fulfilled",
-      isRequested: false,
-      type: "salary",
-      from: {
-        role: "manager",
-        userID: user._id,
-      },
       amount: employeeSalary.amount,
       transactionID: employeeSalary.transactionId,
       paymentProof: employeeSalary.paymentProof,
-      to: {
-        role: "developer",
-        userID: employeeSalary.employeeId,
-      },
-      bonus : employeeSalary.bonus
     };
 
-    console.log("");
-
     try {
-      const response = await fetch(`/api/payment/create`, {
-        method: "POST",
+      const response = await fetch(`/api/payment/update/${paymentID}`, {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
@@ -120,13 +121,6 @@ export default function AddEmployeeSalary() {
     }
   };
 
-  const handleEmployeeSelect = (employee: CustomUser) => {
-    setEmployeeSalary((prevData) => ({
-      ...prevData,
-      employeeName: employee.firstName + " " + employee.lastName,
-      employeeId: employee._id,
-    }));
-  };
 
   return (
     <form
@@ -135,14 +129,52 @@ export default function AddEmployeeSalary() {
       onSubmit={handleSubmit}
     >
       <h1 className="text-2xl font-semibold text-dark-gray">
-        Add an Employee Salary
+        Fulfill Employee Advance Request
       </h1>
       <div className="flex flex-col gap-3 max-h-[70vh] py-5 px-2 overflow-y-auto">
         <div className="w-full flex flex-col gap-3">
           <Label className="text-base font-medium text-gray-800">
-            Select Employee
+            Employee
           </Label>
-          <EmployeeSelect onSelect={handleEmployeeSelect} />
+          <input
+            type="text"
+            disabled
+            name={"employeeName"}
+            value={employeeSalary.employeeName}
+            placeholder="Select Employee"
+            className="w-full text-base h-[40px] outline-none shadow-neuro-3 bg-transparent rounded-lg px-4"
+            required
+          />
+        </div>
+
+        <div className="w-full flex flex-col gap-3">
+          <Label className="text-base font-medium text-gray-800">
+            Title
+          </Label>
+          <input
+            type="text"
+            disabled
+            name={"title"}
+            value={employeeSalary.title}
+            placeholder="Select Employee"
+            className="w-full text-base h-[40px] outline-none shadow-neuro-3 bg-transparent rounded-lg px-4"
+            required
+          />
+        </div>
+
+        <div className="w-full flex flex-col gap-3">
+          <Label className="text-base font-medium text-gray-800">
+          Description
+          </Label>
+          <input
+            type="text"
+            disabled
+            name={"description"}
+            value={employeeSalary.description}
+            placeholder="Select Employee"
+            className="w-full text-base h-[40px] outline-none shadow-neuro-3 bg-transparent rounded-lg px-4"
+            required
+          />
         </div>
 
         <div className="w-full flex flex-col gap-3">
@@ -218,25 +250,7 @@ export default function AddEmployeeSalary() {
           />
         </div>
 
-        <div className="w-full flex flex-col gap-3">
-          <Label className="text-base font-medium text-gray-800">
-            Bonus Amount
-          </Label>
-          <input
-            type="text"
-            name={"bonus"}
-            value={employeeSalary.bonus}
-            onChange={(e) =>
-              setEmployeeSalary((prevData) => ({
-                ...prevData,
-                bonus: Number(e.target.value),
-              }))
-            }
-            placeholder="Bonus Amount"
-            className="w-full text-base h-[40px] outline-none shadow-neuro-3 bg-transparent rounded-lg px-4"
-            required
-          />
-        </div>
+        
       </div>
       <div className="flex flex-row gap-2 justify-end">
         <DialogClose asChild>

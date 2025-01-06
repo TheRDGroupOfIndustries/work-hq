@@ -1,7 +1,6 @@
 import React from "react";
 import { formatDateString } from "@/lib/utils";
 import { PaymentValues } from "@/lib/types";
-import { ROLE } from "@/tempData";
 import {
   Table,
   TableBody,
@@ -11,9 +10,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { LightGrayButton } from "@/components/reusables/components/headline";
 import AddPayment from "./addPayment";
-import { Plus } from "lucide-react";
+import SquareButton from "@/components/reusables/wrapper/squareButton";
 
 export default function PaymentRequest({
   payments,
@@ -64,13 +62,9 @@ function DataTableTasks({ payments }: { payments: PaymentValues[] }) {
               <TableCell>
                 <Dialog>
                   <DialogTrigger asChild>
-                    <LightGrayButton
-                      onClick={() => console.log("add payment")}
-                      icon={<Plus color="var(--primary-blue)" />}
-                      buttonText="Add Payment"
-                      onNeedIcon={false}
-                      role={ROLE}
-                    />
+                    <SquareButton>
+                      Add Payment
+                    </SquareButton>
                   </DialogTrigger>
                   <DialogContent>
                     <AddPayment />
