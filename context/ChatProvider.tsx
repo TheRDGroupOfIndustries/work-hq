@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { StreamChat, Channel, ChannelFilters, ChannelSort, ChannelOptions, ConnectAPIResponse } from 'stream-chat';
+import { StreamChat, Channel } from 'stream-chat';
 import { useSession } from 'next-auth/react';
 import { toast } from 'sonner';
 import { useProjectContext } from './ProjectProvider';
@@ -11,7 +11,7 @@ type ChatContextType = {
   setActiveChannel: React.Dispatch<React.SetStateAction<Channel | null>>;
   activeChannel: Channel | null;
   createChat: (userId: string) => Promise<Channel | null>;
-  createGroupChat: (groupName: string, memberIds: string[]) => Promise<Channel | null>;
+  createGroupChat: (groupName: string, memberIds: string[], icon?: string | null, description?: string) => Promise<Channel | null>;
   updateGroupChat: (channelId: string, data: any) => Promise<void>;
   deleteGroupChat: (channelId: string) => Promise<void>;
   checkExistingChannel: (userId: string, channels: Channel[]) => Channel | undefined;
@@ -65,9 +65,9 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const checkExistingChannel = useCallback((userId: string, channels: Channel[]) => {
     return channels.find(channel => {
       const members = Object.keys(channel.state.members || {});
-      return channel.data?.member_count === 2 && 
-             members.includes(userId) && 
-             members.includes(client?.userID || '');
+      return channel.data?.member_count === 2 &&
+        members.includes(userId) &&
+        members.includes(client?.userID || '');
     });
   }, [client?.userID]);
 
@@ -101,7 +101,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const createGroupChat = async (groupName: string, memberIds: string[]) => {
+  const createGroupChat = async (groupName: string, memberIds: string[], icon?: string | null, description?: string) => {
     if (!client || !selectedProjectDetails?._id) return null;
     try {
       const response = await fetch('/api/chat/create-group', {
@@ -112,6 +112,8 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
         body: JSON.stringify({
           groupName,
           members: memberIds,
+          icon,
+          description,
           projectId: selectedProjectDetails._id,
         }),
       });
@@ -157,13 +159,13 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <ChatContext.Provider value={{ 
-      client, 
-      setActiveChannel, 
-      activeChannel, 
-      createChat, 
-      createGroupChat, 
-      updateGroupChat, 
+    <ChatContext.Provider value={{
+      client,
+      setActiveChannel,
+      activeChannel,
+      createChat,
+      createGroupChat,
+      updateGroupChat,
       deleteGroupChat,
       checkExistingChannel
     }}>
