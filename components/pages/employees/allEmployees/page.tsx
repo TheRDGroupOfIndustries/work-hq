@@ -42,9 +42,6 @@ import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import EmployeesSummary from "../components/EmployeesSummary";
 import TodayEmployeesProgress from "../components/TodayEmployeesProgress";
-import AllProjects from "../../all-projects/dev/AllProjects";
-import { set } from "mongoose";
-
 export default function AllEmployees() {
   const [search, setSearch] = useState<string>("");
   const [filterCategory, setFilterCategory] = useState<string>("");
