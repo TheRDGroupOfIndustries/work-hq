@@ -1,16 +1,20 @@
 import { Ticket } from '@/components/reusables/components/HelpDeskTicketsListTable';
-import { CustomUser, ProjectValues } from '@/lib/types';
+import { CustomUser, PaymentInfoValues, ProjectValues } from '@/lib/types';
 import { PayrollHistory } from '@/types';
 import { createSlice } from '@reduxjs/toolkit';
 
 
 
 export interface CeoState {
+    // Dashboard Page
     employeesList: CustomUser[] | []
     clientAndVendorList: CustomUser[] | []
     allProjectsList: ProjectValues[] | []
     helpdeskTicketsList: Ticket[] | []
     payrollHistoryList: PayrollHistory[] | []
+
+    // Payment
+    paymentInfoValues: PaymentInfoValues | null
 }
 
 
@@ -18,11 +22,16 @@ export interface CeoState {
 
 
 const initialState: CeoState = {
+    // Dashboard Page
     employeesList: [],
     clientAndVendorList: [],
     allProjectsList: [],
     helpdeskTicketsList: [],
-    payrollHistoryList: []
+    payrollHistoryList: [],
+
+    // Payment
+    paymentInfoValues: null
+
 };
 
 const ceoSlice = createSlice({
@@ -43,6 +52,9 @@ const ceoSlice = createSlice({
     },
     setPayrollHistoryList: (state, action) => {
       state.payrollHistoryList = action.payload;
+    },
+    setPaymentInfoValues: (state, action) => {
+      state.paymentInfoValues = action.payload;
     }
   },
 });
@@ -52,6 +64,7 @@ export const {
     setClientAndVendorList,
     setAllProjectsList,
     setHelpdeskTicketsList,
-    setPayrollHistoryList
+    setPayrollHistoryList,
+    setPaymentInfoValues
 } = ceoSlice.actions;
 export default ceoSlice.reducer;
