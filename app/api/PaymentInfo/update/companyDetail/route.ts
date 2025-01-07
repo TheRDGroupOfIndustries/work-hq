@@ -16,16 +16,31 @@ export const PUT = async (request: NextRequest) => {
   await connectToMongoDB();
 
   try {
-    const paymentInfo = await PaymentInfo.findOne({ isCompanyDetail: true });
+    let paymentInfo = await PaymentInfo.findOne({ isCompanyDetail: true });
 
     if (!paymentInfo) {
+      // Create new payment info if not found
+      paymentInfo = new PaymentInfo({
+        qrCode,
+        ifsc,
+        accountNo,
+        upiID,
+        phoneNo,
+        bankName,
+        isCompanyDetail: true, // Ensure this flag is set for identification
+      });
+
+      const newPaymentInfo = await paymentInfo.save();
+
       return NextResponse.json({
-        status: 404,
-        success: false,
-        error: "Company payment info not found",
+        status: 201,
+        success: true,
+        message: "New company payment info created successfully!",
+        paymentInfo: newPaymentInfo,
       });
     }
 
+    // Update existing payment info
     paymentInfo.qrCode = qrCode || paymentInfo.qrCode;
     paymentInfo.ifsc = ifsc;
     paymentInfo.accountNo = accountNo;
@@ -42,7 +57,7 @@ export const PUT = async (request: NextRequest) => {
       paymentInfo: updatedPaymentInfo,
     });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return NextResponse.json({
       status: 500,
       success: false,

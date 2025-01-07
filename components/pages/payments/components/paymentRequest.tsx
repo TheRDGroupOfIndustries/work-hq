@@ -67,7 +67,12 @@ function DataTableTasks({ payments }: { payments: PaymentValues[] }) {
                     </SquareButton>
                   </DialogTrigger>
                   <DialogContent>
-                    <AddPayment />
+                    <AddPayment
+                      paymentTitle={row.paymentTitle}
+                      requestDescription={row.requestDescription}
+                      amount={row.amount}
+                      paymentID={row._id}
+                    />
                   </DialogContent>
                 </Dialog>
               </TableCell>

@@ -4,10 +4,19 @@ import React, { useEffect, useState } from "react";
 import { PaymentInfoValues } from "@/lib/types";
 import { Label } from "@/components/ui/label";
 import Image from "next/image";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/rootReducer";
+import { useDispatch } from "react-redux";
+import { setPaymentInfoValues } from "@/redux/slices/ceo";
 
 export default function PaymentInfo() {
   const [companyDetail, setCompanyDetail] = useState<PaymentInfoValues | null>(
     null
+  );
+  const dispatch = useDispatch();
+
+  const reduxCompanyDetail = useSelector(
+    (state: RootState) => state.ceo.paymentInfoValues
   );
 
   useEffect(() => {
@@ -16,13 +25,19 @@ export default function PaymentInfo() {
         const response = await fetch("/api/PaymentInfo/get/companyDetail");
         const data = await response.json();
         setCompanyDetail(data?.paymentInfo as PaymentInfoValues);
+        dispatch(setPaymentInfoValues(data?.paymentInfo as PaymentInfoValues));
       } catch (error) {
         console.error("Error fetching company detail:", error);
       }
     }
 
-    fetchCompanyDetail();
-  }, []);
+    if (reduxCompanyDetail) {
+      setCompanyDetail(reduxCompanyDetail);
+    } else {
+      fetchCompanyDetail();
+    }
+
+  }, [dispatch, reduxCompanyDetail]);
 
   // console.log(companyDetail);
 
@@ -58,7 +73,7 @@ export default function PaymentInfo() {
           <input
             type="text"
             disabled
-            defaultValue={companyDetail?.ifsc || "No IFSC Code Available"}
+            value={companyDetail?.ifsc || "No IFSC Code Available"}
             placeholder="e.g. Johan"
             className="w-full text-base h-[40px] outline-none shadow-[3px_3px_3px_0px_#789BD399,-3px_-3px_5px_0px_#FFFFFF] bg-transparent rounded-lg px-4"
             required
@@ -71,7 +86,7 @@ export default function PaymentInfo() {
           <input
             type="text"
             disabled
-            defaultValue={
+            value={
               companyDetail?.accountNo || "No Account Number Available"
             }
             placeholder="e.g. Johan"
@@ -84,7 +99,7 @@ export default function PaymentInfo() {
           <input
             type="text"
             disabled
-            defaultValue={companyDetail?.upiID || "No UPI ID Available"}
+            value={companyDetail?.upiID || "No UPI ID Available"}
             placeholder="e.g. Johan"
             className="w-full text-base h-[40px] outline-none shadow-[3px_3px_3px_0px_#789BD399,-3px_-3px_5px_0px_#FFFFFF] bg-transparent rounded-lg px-4"
             required
@@ -97,7 +112,7 @@ export default function PaymentInfo() {
           <input
             type="text"
             disabled
-            defaultValue={companyDetail?.phoneNo || "No Phone Number Available"}
+            value={companyDetail?.phoneNo || "No Phone Number Available"}
             placeholder="e.g. Johan"
             className="w-full text-base h-[40px] outline-none shadow-[3px_3px_3px_0px_#789BD399,-3px_-3px_5px_0px_#FFFFFF] bg-transparent rounded-lg px-4"
             required

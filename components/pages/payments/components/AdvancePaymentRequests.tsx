@@ -220,7 +220,7 @@ function DeleteBTN({
         <div className="bg-slate-600 h-[1px] mt-3"></div>
         <DialogDescription className="my-3">
           <h1 className="text-lg font-bold mb-2">{title}</h1>
-          <p className="text-base leading-relaxed max-h-[60vh] overflow-y-scroll">{description} Lorem ipsum dolor sit amet consectetur, adipisicing elit. Corporis nobis obcaecati magni ducimus fugit enim rerum vitae eveniet eum beatae. Et beatae voluptates ipsam. Rerum nemo enim dolor nisi ipsam! Lorem ipsum dolor sit amet consectetur adipisicing elit. Veniam ratione blanditiis magnam unde quae repellendus soluta sed ullam at delectus quo, repellat dolorum debitis explicabo aspernatur iste quaerat id eum.</p>
+          <p className="text-base leading-relaxed max-h-[60vh] overflow-y-scroll">{description}</p>
         </DialogDescription>
         <DialogFooter>
           <Button

@@ -1,13 +1,21 @@
-import { NextRequest, NextResponse } from "next/server";
-import connectToMongoDB from "@/utils/db";
 import PaymentInfo from "@/models/PaymentInfo";
+import connectToMongoDB from "@/utils/db";
+import { NextRequest, NextResponse } from "next/server";
 
 export const PUT = async (
   request: NextRequest,
   { params }: { params: { userID: string } }
 ) => {
   const { userID } = params;
-  const { qrCode, ifsc, accountNo, upiID, phoneNo, bankName, isCompanyDetail } =
+  const { 
+    qrCode, 
+    ifsc, 
+    accountNo, 
+    upiID, 
+    phoneNo, 
+    bankName, 
+    // isCompanyDetail  
+  } =
     await request.json();
 
   if (!userID || !ifsc || !accountNo || !bankName) {
@@ -32,7 +40,7 @@ export const PUT = async (
         upiID,
         phoneNo,
         bankName,
-        isCompanyDetail: isCompanyDetail ? true : false,
+        // isCompanyDetail: isCompanyDetail ? true : false,
       });
     } else {
       paymentInfo.qrCode = qrCode || paymentInfo.qrCode;
@@ -41,7 +49,7 @@ export const PUT = async (
       paymentInfo.upiID = upiID || paymentInfo.upiID;
       paymentInfo.phoneNo = phoneNo || paymentInfo.phoneNo;
       paymentInfo.bankName = bankName;
-      paymentInfo.isCompanyDetail = isCompanyDetail;
+      // paymentInfo.isCompanyDetail = isCompanyDetail;
     }
 
     const updatedPaymentInfo = await paymentInfo.save();

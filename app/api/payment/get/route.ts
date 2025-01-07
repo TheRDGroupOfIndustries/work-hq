@@ -14,7 +14,8 @@ export const GET = async () => {
       .populate(
         "to.userID",
         "firstName lastName role profileImage position email"
-      );
+      )
+      .sort({ updatedAt: -1 });
 
     return NextResponse.json({
       status: 200,

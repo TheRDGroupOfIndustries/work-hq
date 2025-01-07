@@ -15,7 +15,9 @@ import AdvancePaymentRequests from "../components/AdvancePaymentRequests";
 import AllTransactionsHistory from "../components/allTransactionsHistory";
 import ClientAllTransactionsHistory from "../components/clientAllTransactionHistory";
 import EmployeeAllTransactionsHistory from "../components/employeeAllTransactionHistory";
+import PaymentInfo from "../components/paymentInfo";
 import PaymentRequestClient from "../components/PaymentRequestClient";
+import EditCompanyPaymentDetails from "../components/EditCompanyPaymentDetails";
 export default function Payment() {
   const [payrollHistory, setPayrollHistory] = React.useState<
     PayrollHistory[] | []
@@ -25,9 +27,9 @@ export default function Payment() {
   const headLineButtonsCEO = [
     {
       buttonText: "Edit Method",
-      icon: <SquarePen />,
+      icon: <SquarePen size={20} color={"var(--primary-blue)"} />,
       onNeedIcon: false,
-      dialogContent: <div>PA</div>,
+      dialogContent: <EditCompanyPaymentDetails/>,
     },
   ] as ButtonObjectType[];
 
@@ -118,7 +120,7 @@ export default function Payment() {
           </TabsTrigger>
         </TabsList>
         <TabsContent value="yourAddedMethod">
-          {/* it is same as your payment info can you handle it */}
+          <PaymentInfo />
         </TabsContent>
         <TabsContent value="transactionsHistory">
           <AllTransactionsHistory payrollHistory={payrollHistory} />

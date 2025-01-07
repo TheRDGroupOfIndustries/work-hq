@@ -78,6 +78,7 @@ export default function RequestAdvancePayment() {
         role: "developer",
         userID: user._id,
       },
+      requestedDate: new Date(),
     };
 
     try {

@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { CustomUser } from "@/lib/types";
 import { Loader2, Search } from "lucide-react";
+import { useSession } from "next-auth/react";
 import React, { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
@@ -18,8 +19,8 @@ interface ClientPaymentRequest {
 
 export default function PaymentRequestClient() {
   const [submitting, setSubmitting] = useState(false);
-//   const { data: session } = useSession();
-//   const user = session?.user as CustomUser;
+  const { data: session } = useSession();
+  const user = session?.user as CustomUser;
 
 
 
@@ -80,8 +81,9 @@ export default function PaymentRequestClient() {
       amount: amount,
       to: {
         role: "company",
-        // userID: user._id,
+        userID: user._id,
       },
+      requestedDate: new Date(),
     };
 
     try {

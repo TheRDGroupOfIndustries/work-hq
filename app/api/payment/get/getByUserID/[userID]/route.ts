@@ -21,7 +21,7 @@ export const GET = async (
   try {
     const payments = await Payment.find({
       $or: [{ "to.userID": userID }, { "from.userID": userID }],
-    });
+    }).sort({ updatedAt: -1 });
 
     if (payments.length === 0) {
       return NextResponse.json({
