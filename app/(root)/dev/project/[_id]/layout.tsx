@@ -9,7 +9,7 @@ export default function SpecificProjectlayout({
 }: SpecificProjectlayoutProps) {
   return (
     <div className="min-h-[calc(100vh-80px)] h-full flex flex-row">
-      <DesktopSidebar role={"developer"} links={devLinks} _id={params._id} />
+      <DesktopSidebar links={devLinks} _id={params._id} />
       <Project projectId={params._id}>{children}</Project>
     </div>
   );

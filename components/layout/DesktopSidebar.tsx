@@ -4,7 +4,7 @@ import Logout from "@/components/icons/logout";
 import { useProjectContext } from "@/context/ProjectProvider";
 import { CustomUser } from "@/lib/types";
 import { RootState } from "@/redux/rootReducer";
-import { CEO, Role, VENDOR } from "@/types";
+import { CEO, MANAGER, Role, VENDOR } from "@/types";
 import { LucideProps } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
@@ -24,13 +24,11 @@ interface LinkItem {
 }
 
 interface DesktopSidebarProps {
-  role: Role;
   links: LinkItem[];
   _id: string;
 }
 
 export default function DesktopSidebar({
-  role,
   links,
   _id,
 }: DesktopSidebarProps) {
@@ -38,6 +36,9 @@ export default function DesktopSidebar({
   const [totalProjects, setTotalProjects] = useState(0);
   const { data: session } = useSession();
   const user = session?.user as CustomUser;
+
+  const role = user?.role as Role;
+  console.log("role ", role);
 
   const { selectedProjectDetails } = useProjectContext();
 
@@ -63,7 +64,7 @@ export default function DesktopSidebar({
     `}
     >
       {/* top */}
-      {role !== CEO && (
+      {role !== CEO && role !==MANAGER && (
         <div className="flex text-sm  flex-row gap-4 w-full px-3 py-2 shadow-[3px_3px_12px_0px_#D3E1F6] rounded-xl overflow-hidden">
           <div className="flex-center h-[60px] w-[60px] shadow-neuro-3 rounded-xl overflow-hidden">
             <Image
@@ -89,7 +90,7 @@ export default function DesktopSidebar({
         </div>
       )}
 
-      {role === CEO && (
+      {(role === CEO || role === MANAGER) && (
         <div className="flex  flex-col">
           <h4 className="text-lg font-semibold text-dark-gray">
             All Projects Panal
@@ -101,14 +102,14 @@ export default function DesktopSidebar({
       )}
 
       {/* List */}
-      <div className={`flex flex-col gap-2 mt-5 text-lg font-semibold`}>
+      <div className={`flex flex-col gap-2 mt-5 text-lg font-semibold overflow-y-auto`}>
         {links.map(({ id, title, Icon, link, path }) => {
-          const linkCheck = role === CEO ? `${link}${path}` : `${link}/${_id}/${path}`;
+          const linkCheck = role === CEO || role === MANAGER ? `${link}${path}` : `${link}/${_id}/${path}`;
           const isActive =
             decodeURIComponent(pathname) === linkCheck
           return (
             <Link
-              href={role === CEO ? `${link}/${path}` : `${link}/${_id}/${path}`}
+              href={role === CEO || role === MANAGER ? `${link}/${path}` : `${link}/${_id}/${path}`}
               key={id}
               className={`text-desktop relative cursor-pointer px-4 py-3 rounded-xl ${
                 role === VENDOR

@@ -1,18 +1,21 @@
 "use client";
 import Filter from "@/components/icons/Filter";
-import Headline, {
-  ButtonObjectType,
-} from "@/components/reusables/components/headline";
 import Container from "@/components/reusables/wrapper/Container";
 import MainContainer from "@/components/reusables/wrapper/mainContainer";
 import SquareButton from "@/components/reusables/wrapper/squareButton";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -28,44 +31,57 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { CustomUser, ProjectValues } from "@/lib/types";
+import { RootState } from "@/redux/rootReducer";
+import { setEmployeesList } from "@/redux/slices/ceo";
 import { ROLE } from "@/tempData";
 import { VENDOR } from "@/types";
-import { MoreVertical, Plus } from "lucide-react";
+import { Loader2, MoreVertical, Plus, Search, X } from "lucide-react";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import EmployeesSummary from "../components/EmployeesSummary";
 import TodayEmployeesProgress from "../components/TodayEmployeesProgress";
-
-const data = [
-  {
-    id: 1,
-    name: "John Doe",
-    stacks: "Full Stack, UI UX",
-    workingOn: "CSK, Ecowell",
-    tasksCompleted: "54",
-    tasksPending: "10",
-    status: "Logged In",
-    todayWorkHours: "8",
-    totalWorkHours: "102",
-    email: "john@gmail.com",
-  },
-  {
-    id: 2,
-    name: "John Doe",
-    stacks: "Full Stack, UI UX",
-    workingOn: "CSK, Ecowell",
-    tasksCompleted: "54",
-    tasksPending: "10",
-    status: "Logged Out",
-    todayWorkHours: "8",
-    totalWorkHours: "102",
-    email: "john@gmail.com",
-  },
-];
+import AllProjects from "../../all-projects/dev/AllProjects";
+import { set } from "mongoose";
 
 export default function AllEmployees() {
   const [search, setSearch] = useState<string>("");
   const [filterCategory, setFilterCategory] = useState<string>("");
+
+  const dispatch = useDispatch();
+  const reduxEmployeesList = useSelector(
+    (state: RootState) => state.ceo.employeesList
+  );
+
+  const [employees, setEmployees] = useState<CustomUser[] | []>([]);
+
+  useEffect(() => {
+    const fetchPayrollHistory = async () => {
+      try {
+        const response = await fetch("/api/user/get/getAllDevs", {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        });
+        const data = await response.json();
+
+        setEmployees(data.developers || []);
+
+        dispatch(
+          setEmployeesList(
+            // Filter users with role "developer"
+            data.developers
+          )
+        );
+      } catch (error) {
+        console.error("Error fetching payroll history:", error);
+      }
+    };
+
+    if (reduxEmployeesList && reduxEmployeesList.length > 0) {
+      setEmployees(reduxEmployeesList);
+    } else fetchPayrollHistory();
+  }, [dispatch, reduxEmployeesList]);
 
   return (
     <MainContainer role={ROLE}>
@@ -154,13 +170,13 @@ export default function AllEmployees() {
           </h1>
           <p className="text-sm text-[#6A6A6A]">Total Employees - 05</p>
         </div>
-        <DataTableTasks />
+        <DataTableTasks employees={employees} />
       </Container>
     </MainContainer>
   );
 }
 
-function DataTableTasks() {
+function DataTableTasks({ employees }: { employees: CustomUser[] }) {
   return (
     <div className=" w-full ">
       <Table>
@@ -179,7 +195,7 @@ function DataTableTasks() {
           </TableRow>
         </TableHeader>
         <TableBody className="text-[#3A3A3A] max-h-[400px] text-base border-0 mb-5 px-10 overflow-hidden  ">
-          {data.map((row, index) => (
+          {employees.map((row, index) => (
             <TableRow
               key={row.id}
               className={`h-[60px] text-nowrap  text-[#344054] hover:bg-transparent rounded-lg mb-5 border-l-[20px] border-transparent border-b-0 `}
@@ -189,32 +205,40 @@ function DataTableTasks() {
                 <div className="flex flex-row items-center gap-2">
                   <div className="w-[40px] h-[40px] bg-[#D9D9D9] rounded-full">
                     <Image
-                      src="/assets/user.png"
+                      src={row.profileImage || "/assets/user.png"}
                       width={40}
                       height={40}
                       alt="avatar"
                     />
                   </div>
                   <div className="flex flex-col">
-                    <h6 className="text-base font-medium ">{row.name}</h6>
-                    <p className="text-sm font-normal ">{row.stacks}</p>
+                    <h6 className="text-base font-medium ">{row.firstName}</h6>
+                    <p className="text-sm font-normal ">{row.role}</p>
                   </div>
                 </div>
               </TableCell>
-              <TableCell>{row.workingOn}</TableCell>
-              <TableCell>{row.tasksCompleted}</TableCell>
-              <TableCell>{row.tasksPending}</TableCell>
+              <TableCell>
+                {row.myProjects?.map((p, index) => (
+                  <span key={index}>
+                    {typeof p === "object" &&
+                      (p.projectDetails?.projectName as string)}
+                    {index < (row.myProjects?.length ?? 0) - 1 && ", "}
+                  </span>
+                ))}
+              </TableCell>
+              <TableCell>{"idk"}</TableCell>
+              <TableCell>{"idk"}</TableCell>
               <TableCell
                 className={`${
-                  row.status === "Logged In"
+                  row.workStatus === "loggedIn"
                     ? "!text-green-400"
                     : "!text-primary-blue"
                 }`}
               >
-                {row.status}
+                {row.workStatus}
               </TableCell>
-              <TableCell>{row.todayWorkHours}</TableCell>
-              <TableCell>{row.totalWorkHours}</TableCell>
+              <TableCell>{"isk"}</TableCell>
+              <TableCell>{"isk"}</TableCell>
               <TableCell className="text-primary-blue">{row.email}</TableCell>
               <TableCell>
                 <DropdownMenu>
@@ -224,7 +248,12 @@ function DataTableTasks() {
                     </button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem>Projects </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <ManageProjects
+                        userProjects={row.myProjects as ProjectValues[]}
+                        employee={row}
+                      />
+                    </DropdownMenuItem>
                     <DropdownMenuItem className="text-red-600">
                       <Dialog>
                         {/* Prevent DropdownMenu from closing */}
@@ -247,14 +276,265 @@ function DataTableTasks() {
                           </div>
                         </DialogContent>
                       </Dialog>
+                  
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
+                <ManageProjects
+                        userProjects={row.myProjects as ProjectValues[]}
+                        employee={row}
+                      />
               </TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
+    </div>
+  );
+}
+
+function ManageProjects({
+  userProjects,
+  employee,
+}: {
+  userProjects: ProjectValues[];
+  employee: CustomUser;
+}) {
+  const [projects, setProjects] = useState<ProjectValues[] | []>([]);
+
+
+  useEffect(()=>{
+    setProjects(userProjects)
+  },[userProjects])
+
+  console.log("project", projects);
+  console.log("userProjects", userProjects);
+  const [submitting, setSubmitting] = useState<boolean>(false);
+
+
+  const handleProjectSelect = (project: ProjectValues) => {
+    console.log("handleProjectSelect");
+    setProjects((prevData) => [...prevData, project]);
+  };
+
+  const handleRemoveProject = (project: ProjectValues) => {
+    setProjects((prevData) => prevData.filter((p) => p._id !== project._id));
+  };
+
+  const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    e.preventDefault();
+    setSubmitting(true);
+    // Prepare JSON payload
+
+    const payload = {
+      _id: employee._id,
+      myProjects: projects.map((project) => project._id),
+    };
+
+    try {
+      const response = await fetch(`/api/user/update`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to submit data");
+      }
+
+      const result = await response.json();
+      document.getElementById("close")?.click();
+      console.log("Submission successful:", result);
+
+      // alert("Data submitted successfully!");
+    } catch (error) {
+      console.error("Error submitting data:", error);
+      alert("Failed to submit data");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+
+
+
+
+  return (
+    <Dialog>
+      {/* Prevent DropdownMenu from closing */}
+      <DialogTrigger asChild>
+        <button
+          className="w-full text-left"
+          onClick={(e) => e.stopPropagation()} // Prevent event bubbling
+        >
+          Manage Projects
+        </button>
+      </DialogTrigger>
+      <DialogContent className="w-[733px] m-4 bg-primary-sky-blue flex flex-col gap-6 rounded-3xl p-5 lg:p-6">
+        <h1 className="text-2xl font-semibold text-dark-gray">
+          Manage Clients Projects
+        </h1>
+        <div className="flex flex-col gap-3">
+          <div className="w-full flex flex-col gap-3">
+            <Label className="text-base font-medium text-gray-800">
+              Employee
+            </Label>
+            <input
+              type="text"
+              disabled
+              value={`${employee.firstName} ${employee.lastName}`}
+              className="w-full text-base h-[40px] outline-none shadow-[3px_3px_3px_0px_#789BD399,-3px_-3px_5px_0px_#FFFFFF] bg-transparent rounded-lg px-4"
+              required
+            />
+          </div>
+          <div className="w-full flex flex-col gap-3">
+            <Label className="text-base font-medium text-gray-800">
+              Project working on
+            </Label>
+            <div className="w-full text-base h-[40px] flex flex-row flex-wrap">
+              {Array.isArray(projects) && projects.map((project) => (
+                <span
+                  key={project._id}
+                  className=" w-fit h-full flex items-center gap-1 shadow-[3px_3px_3px_0px_#789BD399,-3px_-3px_5px_0px_#FFFFFF] bg-transparent rounded-lg px-4  text-base  "
+                >
+                  {project.projectDetails?.projectName}
+                  <X size={20} onClick={() => handleRemoveProject(project)} />
+                </span>
+              ))}
+            </div>
+          </div>
+          <div className="w-full flex flex-col gap-3">
+            <Label className="text-base font-medium text-gray-800">
+              Select project
+            </Label>
+            <ProjectSelect onSelect={handleProjectSelect} />
+          </div>
+        </div>
+        <div className="flex flex-row gap-2 justify-end">
+          <DialogClose asChild>
+            <SquareButton id="close" className="text-[#6A6A6A] w-fit self-end">
+              Cancel
+            </SquareButton>
+          </DialogClose>
+          <button
+            onClick={(e) => handleSubmit(e)}
+            disabled={submitting}
+            className="flex flex-row items-center py-3 px-5 gap-2 shadow-neuro-9 rounded-xl text-[#ffffff] text-nowrap bg-primary-blue disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            {submitting ? (
+              <Loader2 className="w-6 h-6 animate-spin" />
+            ) : (
+              "Submit"
+            )}
+          </button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function ProjectSelect({
+  onSelect,
+}: {
+  onSelect: (project: ProjectValues) => void;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [proejct, setProject] = useState<ProjectValues[] | []>([]);
+
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  const projectListRedux = useSelector(
+    (state: RootState) => state.ceo.allProjectsList
+  );
+
+  useEffect(() => {
+    async function getEmployees() {
+      const res = await fetch("/api/project", {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      const data = await res.json();
+
+      setProject(data.projects);
+    }
+
+    if (projectListRedux.length === 0) {
+      getEmployees();
+    } else {
+      setProject(projectListRedux);
+    }
+  }, [projectListRedux]);
+
+  // Filter projects based on search term
+  const filteredProjects = proejct.filter((pj) =>
+    [pj.projectDetails.projectName].some((field) =>
+      field?.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  );
+
+  // Handle click outside to close dropdown
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        wrapperRef.current &&
+        !wrapperRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleSelect = (project: ProjectValues) => {
+    // setSelectedEmployee(employee);
+    setSearchTerm(project.projectDetails.projectName);
+    setIsOpen(false);
+    onSelect(project);
+  };
+
+  return (
+    <div ref={wrapperRef} className="relative w-full ">
+      <div className="relative">
+        <input
+          type="text"
+          className="w-full text-base h-[40px] outline-none shadow-neuro-3 bg-transparent rounded-lg px-4"
+          placeholder="Search employee..."
+          value={searchTerm}
+          onClick={(e) => e.stopPropagation()}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          onFocus={() => {
+            setIsOpen(true)}}
+        />
+        <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+      </div>
+
+      {isOpen && (
+        <div className="absolute z-10 w-full mt-1 bg-white border rounded-md shadow-lg max-h-60 overflow-y-auto">
+          {filteredProjects.length > 0 ? (
+            filteredProjects.map((pj) => (
+              <div
+                key={pj._id}
+                className="px-3 py-2 cursor-pointer hover:bg-gray-100 transition-colors"
+                onClick={() => handleSelect(pj)}
+              >
+                <div className="font-medium">
+                  {pj.projectDetails.projectName}
+                </div>
+                <div className="text-sm text-gray-500">{""}</div>
+              </div>
+            ))
+          ) : (
+            <div className="px-3 py-2 text-gray-500">No project found</div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

@@ -1,8 +1,8 @@
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { ChatProvider } from "@/context/ChatProvider";
-import { ROLE } from "@/tempData";
 import Navbar from "@/components/layout/client/Navbar";
+import { Role } from "@/types";
 
 export default async function RootLayout( { children }: Readonly<{ children: React.ReactNode }> ) {
   const session = await getServerSession();
@@ -11,7 +11,7 @@ export default async function RootLayout( { children }: Readonly<{ children: Rea
   return (
     <>
       <ChatProvider>
-        <Navbar role={ROLE} />
+        <Navbar role={session?.user?.role as Role} />
         {children}
       </ChatProvider>
     </>

@@ -43,7 +43,7 @@ export interface CustomUser extends NextAuthUser {
   }[]; // Working hours array
   joiningDate?: Date;
   position?: string[]; // Developer positions
-  myProjects?: string[]; // Reference to projects
+  myProjects?: string[] | ProjectValues[]; // Reference to projects
   totalSpendHours?: { date: Date; totalHours: number; loggedInTime: number }[];
   performance?: { month: number; year: number; performance: number };
   managerID?: string; // Manger reference to know about the dev working on this manager
