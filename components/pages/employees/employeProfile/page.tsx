@@ -8,11 +8,18 @@ import MainContainer from "@/components/reusables/wrapper/mainContainer";
 import { Label } from "@/components/ui/label";
 import { dashbordHoursCount, ROLE } from "@/tempData";
 import { Ban, Mail, MessageCircleMore, Phone } from "lucide-react";
-import { useState } from "react";
+import Image from "next/image";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import SalaryHistory from "../../salary/components/SalaryHistory";
 import ProjectList from "../components/projectsLIsts";
+import { CustomUser, PaymentValues, ProjectValues } from "@/lib/types";
+
 
 export default function EmployeProfile() {
+  const [employee, setEmployee] = useState<CustomUser>({} as CustomUser);
+  const [salaryHistory, setSalaryHistory] = useState<PaymentValues[]>([]);
+  const [projects, setProjects] = useState<ProjectValues[]>([]);
   const [performance, setPerformance] = useState(40);
   const [taskCompleted, setTaskCompleted] = useState(30);
   const headLineButtons = [
@@ -30,11 +37,49 @@ export default function EmployeProfile() {
       onClick: () => console.log("Export Report"),
     },
   ] as ButtonObjectType[];
+
+  // get query params
+  const searchParams = useSearchParams();
+  const id = searchParams.get('id');
+
+
+  useEffect(() => {
+    const getData = async () => {
+      const [employeeRes, salaryHistoryRes] = await Promise.all([
+        fetch("/api/user/get/getUserAllInfo/" + id, {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        }),
+
+        fetch("/api/payment/get/getByUserID/" + id, {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        }),
+        
+      ])
+
+      const [employeeData, salaryHistoryData] = await Promise.all([
+        employeeRes.json(),
+        salaryHistoryRes.json(),
+      ])
+
+      console.log("employeeData", employeeData);
+      console.log("salaryHistoryData", salaryHistoryData);
+
+      if( employeeData.userData) setEmployee(employeeData.userData);
+      if( salaryHistoryData.payments) setSalaryHistory(salaryHistoryData.payments);
+      if(employeeData.userData.myProjects) setProjects(employeeData.userData.myProjects);
+    }
+
+    getData()
+  }, [ id]);
+
+  
   return (
     <MainContainer role={ROLE}>
       <Headline
         role={ROLE}
-        title="Employee Name"
+        title={employee?.firstName + " " + employee?.lastName}
         subTitle="Project"
         buttonObjects={headLineButtons}
       />
@@ -42,9 +87,18 @@ export default function EmployeProfile() {
       <Container>
         <div className="w-full h-fit grid grid-cols-[1fr_2fr] p-4">
           <div className="h-full w-full flex flex-col items-center justify-center border-r border-[#9c9c9c] gap-2">
-            <div className="w-[140px] h-[140px] rounded-full bg-[#d2d2d2]"></div>
-            <h4 className="text-base text-dark-gray">Client</h4>
-            <h6 className="text-base text-[#007AFF]">Client@gmail.com</h6>
+            <div className="w-[140px] h-[140px] rounded-full bg-[#d2d2d2]">
+              <Image 
+                src={employee?.profileImage || "/assets/user.png"}
+                alt="Profile Image"
+                width="140"
+                height="140"
+                className="w-full h-full rounded-full object-cover overflow-hidden"
+              />
+
+            </div>
+            <h4 className="text-base text-dark-gray">{employee?.role}</h4>
+            <h6 className="text-base text-[#007AFF]">{employee?.email}</h6>
             <h6 className="text-base ">Fullstack</h6>
             <div className="flex flex-row items-center gap-4 max-h-[100px]">
               <Phone />
@@ -92,7 +146,7 @@ export default function EmployeProfile() {
         <div className="w-full flex flex-row items-center justify-between">
           <div className="flex flex-col">
             <h2 className="text-lg font-semibold">
-              Here’s insight about Ashri’s Performance
+              Here’s insight about {employee?.firstName} Performance
             </h2>
             <h2 className="text-base font-normal">
               This is the summary for empoyee performance based on their daily
@@ -111,9 +165,9 @@ export default function EmployeProfile() {
 
 
               
-      <SalaryHistory payments={[]} />
+      <SalaryHistory payments={salaryHistory} />
 
-      <ProjectList list={[]}/>
+      <ProjectList list={projects} employee={employee}/>
     </MainContainer>
   );
 }

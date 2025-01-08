@@ -275,7 +275,7 @@ function HelpdeskTicketsList({tickets}:{tickets:Ticket[]}) {
             className="cursor-pointer"
           />
         </div>
-        <div className="w-full flex flex-col gap-4 px-2">
+        <div className="w-full flex flex-col gap-4 px-2 overflow-y-scroll">
           <HelpDeskTicketsListTable filteredTickets={tickets} />
         </div>
       </div>
@@ -298,7 +298,7 @@ function PayrollList({payrollHistory}:{payrollHistory: PayrollHistory[]}) {
             className="cursor-pointer"
           />
         </div>
-        <div className="w-full flex flex-col gap-4 px-2">
+        <div className="w-full flex flex-col gap-4 overflow-y-scroll px-2">
           <AllTransactionsHistoryTable only="all" payments={payrollHistory} />
         </div>
       </div>

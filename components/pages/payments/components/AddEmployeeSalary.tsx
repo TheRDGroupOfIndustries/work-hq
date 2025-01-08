@@ -88,7 +88,8 @@ export default function AddEmployeeSalary() {
         role: "developer",
         userID: employeeSalary.employeeId,
       },
-      bonus : employeeSalary.bonus
+      bonus : employeeSalary.bonus,
+      paymentDate: new Date().toISOString(),
     };
 
     console.log("");

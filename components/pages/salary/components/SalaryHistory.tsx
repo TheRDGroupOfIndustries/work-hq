@@ -17,8 +17,8 @@ export default function SalaryHistory({
   payments: PaymentValues[];
 }) {
   return (
-    <Container className="p-4 flex flex-col gap-4">
-      <h1 className="text-base font-semibold">Total Client Payments - {payments.length}</h1>
+    <Container className="p-4 flex flex-col gap-4 w-full h-[500px]">
+      <h1 className="text-base font-semibold">Total Client Payments - {payments?.length}</h1>
       <DataTableTasks payments={payments} />
     </Container>
   );
@@ -26,7 +26,7 @@ export default function SalaryHistory({
 
 function DataTableTasks({ payments }: { payments: PaymentValues[] }) {
   return (
-    <div className="w-full">
+    <div className="w-full flex flex-col gap-4 overflow-y-scroll px-2">
       <Table>
         <TableHeader className=" text-gray-600 border-0">
           <TableRow className=" border-0 hover:bg-transparent border-r-[20px] border-l-[20px] border-transparent border-b-0">
