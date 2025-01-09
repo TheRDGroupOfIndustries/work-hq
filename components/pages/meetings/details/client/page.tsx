@@ -12,6 +12,7 @@ import { ROLE } from "@/tempData";
 import Headline from "../components/headline";
 import { VENDOR } from "@/types";
 import { formatDateString } from "@/lib/utils";
+import Link from "next/link";
 
 interface Meeting {
   _id: string;
@@ -21,6 +22,10 @@ interface Meeting {
   startTime: string;
   endTime: string;
   status: string;
+  streamCallId?: string;
+  projectID: string;
+  attendees: string[];
+  createdBy: string;
 }
 
 export default function MeetingsDetails() {
@@ -29,31 +34,47 @@ export default function MeetingsDetails() {
   const [meetings, setMeetings] = useState<Meeting[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
+  const fetchMeetings = async () => {
     if (session?.user && selectedProject?._id) {
-      const fetchMeetings = async () => {
-        setIsLoading(true);
-        try {
-          const response = await fetch(
-            `/api/meeting/get/getByProjectID/${selectedProject._id}`
+      setIsLoading(true);
+      try {
+        const response = await fetch(
+          `/api/meeting/get/getByProjectID/${selectedProject._id}`
+        );
+        const data = await response.json();
+        if (data.success && Array.isArray(data.meet)) {
+          const filteredMeetings = data.meet.filter((meeting: Meeting) =>
+            meeting.attendees.includes(session.user._id) ||
+            meeting.createdBy === session.user._id
           );
-          const data = await response.json();
-          if (data.success && Array.isArray(data.meet)) {
-            setMeetings(data.meet);
-          } else {
-            console.error(
-              "Failed to fetch meetings:",
-              data.error || "Unknown error"
-            );
-          }
-        } catch (error) {
-          console.error("Error fetching meetings:", error);
-        } finally {
-          setIsLoading(false);
+          setMeetings(filteredMeetings);
+        } else {
+          console.error(
+            "Failed to fetch meetings:",
+            data.error || "Unknown error"
+          );
         }
-      };
-      fetchMeetings();
+      } catch (error) {
+        console.error("Error fetching meetings:", error);
+      } finally {
+        setIsLoading(false);
+      }
     }
+  };
+
+  const updateMeetingStatuses = async () => {
+    try {
+      await fetch('/api/meeting/update-status', { method: 'POST' });
+      await fetchMeetings();
+    } catch (error) {
+      console.error('Error updating meeting statuses:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchMeetings();
+    const intervalId = setInterval(updateMeetingStatuses, 60000); // Check every minute
+    return () => clearInterval(intervalId);
   }, [session, selectedProject]);
 
   return (
@@ -63,64 +84,58 @@ export default function MeetingsDetails() {
         <Tabs defaultValue="allMetting" className="">
           <TabsList className="flex rounded-none h-[65px] shadow-neuro-4 rounded-t-xl flex-row items-center justify-around w-full bg-transparent font-semibold text-black px-0 ">
             <TabsTrigger
-              className={`${
-                ROLE === VENDOR
-                  ? "data-[state=active]:border-vendor-dark"
-                  : "data-[state=active]:border-primary-blue"
-              } `}
+              className={`${ROLE === VENDOR
+                ? "data-[state=active]:border-vendor-dark"
+                : "data-[state=active]:border-primary-blue"
+                } `}
               value="allMetting"
             >
               All Meetings
             </TabsTrigger>
             <TabsTrigger
-              className={`${
-                ROLE === VENDOR
-                  ? "data-[state=active]:border-vendor-dark"
-                  : "data-[state=active]:border-primary-blue"
-              } `}
+              className={`${ROLE === VENDOR
+                ? "data-[state=active]:border-vendor-dark"
+                : "data-[state=active]:border-primary-blue"
+                } `}
               value="inProgress"
             >
               In Progress
             </TabsTrigger>
             <TabsTrigger
-              className={`${
-                ROLE === VENDOR
-                  ? "data-[state=active]:border-vendor-dark"
-                  : "data-[state=active]:border-primary-blue"
-              } `}
+              className={`${ROLE === VENDOR
+                ? "data-[state=active]:border-vendor-dark"
+                : "data-[state=active]:border-primary-blue"
+                } `}
               value="upcoming"
             >
               Upcoming
             </TabsTrigger>
             <TabsTrigger
-              className={`${
-                ROLE === VENDOR
-                  ? "data-[state=active]:border-vendor-dark"
-                  : "data-[state=active]:border-primary-blue"
-              } `}
+              className={`${ROLE === VENDOR
+                ? "data-[state=active]:border-vendor-dark"
+                : "data-[state=active]:border-primary-blue"
+                } `}
               value="requested"
             >
               Requested
             </TabsTrigger>
             <TabsTrigger
-              className={`${
-                ROLE === VENDOR
-                  ? "data-[state=active]:border-vendor-dark"
-                  : "data-[state=active]:border-primary-blue"
-              } `}
+              className={`${ROLE === VENDOR
+                ? "data-[state=active]:border-vendor-dark"
+                : "data-[state=active]:border-primary-blue"
+                } `}
               value="completed"
             >
               Completed
             </TabsTrigger>
             <TabsTrigger
-              className={`${
-                ROLE === VENDOR
-                  ? "data-[state=active]:border-vendor-dark"
-                  : "data-[state=active]:border-primary-blue"
-              } `}
-              value="overdue"
+              className={`${ROLE === VENDOR
+                ? "data-[state=active]:border-vendor-dark"
+                : "data-[state=active]:border-primary-blue"
+                } `}
+              value="cancelled"
             >
-              Overdue
+              Cancelled
             </TabsTrigger>
           </TabsList>
           <TabsContent value="allMetting">
@@ -186,13 +201,13 @@ export default function MeetingsDetails() {
               )}
             </div>
           </TabsContent>
-          <TabsContent value="overdue">
+          <TabsContent value="cancelled">
             <div className="w-full h-full flex flex-col">
               {isLoading ? (
                 <SkeletonLoader />
               ) : (
                 meetings
-                  .filter((meeting) => meeting.status === "overdue")
+                  .filter((meeting) => meeting.status === "cancelled")
                   .map((meeting) => (
                     <Card key={meeting._id} details={meeting} />
                   ))
@@ -221,11 +236,10 @@ function Card({ details }: { details: Meeting }) {
         <ZoomVideo />
         <div className="flex flex-col">
           <h3
-            className={`text-lg font-semibold ${
-              details.status === "In Progress" || details.status === "Requested"
-                ? "text-[#155EEF]"
-                : "text-gray-800"
-            }`}
+            className={`text-lg font-semibold ${details.status === "inProgress" || details.status === "upcoming"
+              ? "text-[#155EEF]"
+              : "text-gray-800"
+              }`}
           >
             {details.title}
           </h3>
@@ -242,19 +256,19 @@ function Card({ details }: { details: Meeting }) {
 
       <div className="flex flex-col items-center justify-center gap-2">
         <p
-          className={`text-base ${
-            details.status === "Overdue"
-              ? "text-[#FF3B30]"
-              : details.status === "Completed"
+          className={`text-base ${details.status === "cancelled"
+            ? "text-[#FF3B30]"
+            : details.status === "completed"
               ? "text-[#34C759]"
               : "text-[#155EEF]"
-          } font-normal`}
+            } font-normal`}
         >
           {details.status}
         </p>
-        {(details.status === "In Progress" ||
-          details.status === "Requested") && (
-          <SquareButton className="text-[#6A6A6A] px-0 py-0">Join</SquareButton>
+        {(details.status === "inProgress" || details.status === "upcoming") && details.streamCallId && (
+          <Link href={`/c/project/${details.projectID}/meetings/${details._id}`} passHref>
+            <SquareButton className="text-[#6A6A6A] px-0 py-0">Join</SquareButton>
+          </Link>
         )}
       </div>
     </div>

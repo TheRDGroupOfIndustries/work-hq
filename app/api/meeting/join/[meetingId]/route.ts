@@ -4,12 +4,19 @@ import connectToMongoDB from "@/utils/db";
 import Meeting from "@/models/Meeting";
 import { CustomUser } from "@/lib/types";
 import { createVideoToken, serverVideoClient } from "@/utils/serverClient";
+import { authOptions } from "@/lib/authOptions";
+import { GetCallResponse } from '@stream-io/video-client';
+
+// Extend the GetCallResponse type to include recording_started_at
+interface ExtendedCallResponse extends GetCallResponse {
+  recording_started_at: string | null;
+}
 
 export const POST = async (
   request: NextRequest,
   { params }: { params: { meetingId: string } }
 ) => {
-  const session = await getServerSession();
+  const session = await getServerSession(authOptions);
   if (!session) {
     return NextResponse.json({
       status: 401,
@@ -47,7 +54,17 @@ export const POST = async (
     }
 
     // Generate Stream token for the user
-    const streamToken = createVideoToken(user._id);
+    let streamToken;
+    try {
+      streamToken = createVideoToken(user._id.toString());
+    } catch (error) {
+      console.error('Error creating video token:', error);
+      return NextResponse.json({
+        status: 500,
+        success: false,
+        error: "Failed to create video token",
+      });
+    }
 
     // Add user to joinedParticipants if not already present
     if (!meeting.joinedParticipants?.includes(user._id)) {
@@ -57,7 +74,7 @@ export const POST = async (
 
     // Check if the meeting is being recorded
     const call = serverVideoClient.call("default", meeting.streamCallId);
-    const callState = (await call.get()) as { recording_started_at?: string | null };
+    const callState = await call.get() as ExtendedCallResponse;
     const isRecording = callState.recording_started_at !== null;
 
     return NextResponse.json({
@@ -68,7 +85,7 @@ export const POST = async (
       isRecording,
     });
   } catch (error) {
-    console.log(error);
+    console.error('Error joining meeting:', error);
     return NextResponse.json({
       status: 500,
       success: false,

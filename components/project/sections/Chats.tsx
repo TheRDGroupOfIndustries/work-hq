@@ -59,7 +59,7 @@ const Chats = () => {
           {
             id: user._id,
             name: user.firstName || "User Name",
-            image: user.profile_image || "/assets/user.png",
+            image: user.profileImage || "/assets/user.png",
           },
           data.token
         );
@@ -79,7 +79,7 @@ const Chats = () => {
   }, [
     user._id,
     user.firstName,
-    user.profile_image,
+    user.profileImage,
     selectedProject,
   ]);
 
@@ -94,7 +94,7 @@ const Chats = () => {
   }, [
     user._id,
     user.firstName,
-    user.profile_image,
+    user.profileImage,
     selectedProject,
     initChat,
   ]);
@@ -128,11 +128,10 @@ const Chats = () => {
 
   return (
     <Chat
-      theme={`${
-        theme === "dark" || theme === "system"
-          ? "str-chat__theme-dark"
-          : "str-chat__theme-light"
-      }`}
+      theme={`${theme === "dark" || theme === "system"
+        ? "str-chat__theme-dark"
+        : "str-chat__theme-light"
+        }`}
       client={chatClient}
     >
       <div className="flex w-full h-full">

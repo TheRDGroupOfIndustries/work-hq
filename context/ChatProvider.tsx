@@ -10,8 +10,8 @@ type ChatContextType = {
   client: StreamChat | null;
   setActiveChannel: React.Dispatch<React.SetStateAction<Channel | null>>;
   activeChannel: Channel | null;
-  createChat: (userId: string) => Promise<Channel | null>;
-  createGroupChat: (groupName: string, memberIds: string[], icon?: string | null, description?: string) => Promise<Channel | null>;
+  createChat: (userId: string, projectId: string | null) => Promise<Channel | null>;
+  createGroupChat: (groupName: string, memberIds: string[], icon?: string | null, description?: string, projectId?: string | null) => Promise<Channel | null>;
   updateGroupChat: (channelId: string, data: any) => Promise<void>;
   deleteGroupChat: (channelId: string) => Promise<void>;
   checkExistingChannel: (userId: string, channels: Channel[]) => Channel | undefined;
@@ -71,8 +71,8 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
   }, [client?.userID]);
 
-  const createChat = async (userId: string) => {
-    if (!client || !selectedProjectDetails?._id) return null;
+  const createChat = async (userId: string, projectId: string | null) => {
+    if (!client) return null;
     try {
       const response = await fetch('/api/chat/create-channel', {
         method: 'POST',
@@ -81,7 +81,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
         },
         body: JSON.stringify({
           members: [client.userID!, userId],
-          projectId: selectedProjectDetails._id,
+          projectId: projectId || selectedProjectDetails?._id,
         }),
       });
 
@@ -101,8 +101,8 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const createGroupChat = async (groupName: string, memberIds: string[], icon?: string | null, description?: string) => {
-    if (!client || !selectedProjectDetails?._id) return null;
+  const createGroupChat = async (groupName: string, memberIds: string[], icon?: string | null, description?: string, projectId?: string | null) => {
+    if (!client) return null;
     try {
       const response = await fetch('/api/chat/create-group', {
         method: 'POST',
@@ -114,7 +114,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
           members: memberIds,
           icon,
           description,
-          projectId: selectedProjectDetails._id,
+          projectId: projectId || selectedProjectDetails?._id,
         }),
       });
 

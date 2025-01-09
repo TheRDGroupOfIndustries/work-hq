@@ -8,7 +8,6 @@ import { useRouter } from "next/navigation";
 import { useChat } from "@/context/ChatProvider";
 import { Channel, DefaultGenerics } from 'stream-chat';
 import Image from "next/image";
-import { useProjectContext } from "@/context/ProjectProvider";
 import ChatSkeleton from "../components/ChatSkeleton";
 
 export default function Chats() {
@@ -17,14 +16,12 @@ export default function Chats() {
   const [isLoading, setIsLoading] = useState(true);
   const { client, setActiveChannel } = useChat();
   const router = useRouter();
-  const { selectedProjectDetails } = useProjectContext();
 
   useEffect(() => {
     const fetchChannels = async () => {
-      if (!selectedProjectDetails?._id) return;
       setIsLoading(true);
       try {
-        const response = await fetch(`/api/chats?projectId=${selectedProjectDetails._id}`);
+        const response = await fetch(`/api/chats`);
         if (!response.ok) {
           throw new Error("Failed to fetch channels");
         }
@@ -40,11 +37,11 @@ export default function Chats() {
     if (client) {
       fetchChannels();
     }
-  }, [client, selectedProjectDetails]);
+  }, [client]);
 
   const handleChannelClick = (channel: Channel<DefaultGenerics>) => {
     setActiveChannel(channel);
-    router.push(`/c/project/${selectedProjectDetails?._id}/chats/${channel.id}`);
+    router.push(`/ceo/chats/${channel.id}`);
   };
 
   const getChannelName = (channel: Channel<DefaultGenerics>): string => {

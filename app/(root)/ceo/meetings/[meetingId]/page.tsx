@@ -2,23 +2,23 @@
 
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import VideoCall from '@/components/VideoCall';
-import { Button } from '@/components/ui/button';
 
-export default function MeetingRoom() {
+export default function CEOMeetingRoom() {
   const { data: session } = useSession();
   const params = useParams();
-  const router = useRouter();
   const [token, setToken] = useState<string | null>(null);
   const [callId, setCallId] = useState<string | null>(null);
-  const [isRecording, setIsRecording] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const joinMeeting = async () => {
       if (!session?.user || !params.meetingId) return;
 
       try {
+        setIsLoading(true);
         const response = await fetch(`/api/meeting/join/${params.meetingId}`, {
           method: 'POST',
         });
@@ -30,36 +30,32 @@ export default function MeetingRoom() {
         const data = await response.json();
         setToken(data.streamToken);
         setCallId(data.callId);
-        setIsRecording(data.isRecording);
       } catch (error) {
         console.error('Error joining meeting:', error);
+        setError('Failed to join the meeting. Please try again.');
+      } finally {
+        setIsLoading(false);
       }
     };
 
     joinMeeting();
   }, [session, params.meetingId]);
 
-  const handleEndMeeting = async () => {
-    if (!callId) return;
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
-    try {
-      await fetch(`/api/meeting/end/${callId}`, { method: 'POST' });
-      router.push(`/c/project/${params.name}/meetings/details`);
-    } catch (error) {
-      console.error('Error ending meeting:', error);
-    }
-  };
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
 
   if (!token || !callId || !session?.user) {
-    return <div>Loading...</div>;
+    return <div>Unable to join the meeting. Please try again later.</div>;
   }
 
   return (
     <div className="w-full h-screen flex flex-col">
       <VideoCall callId={callId} token={token} userId={session.user._id} />
-      <div className="p-4 flex justify-center">
-        <Button onClick={handleEndMeeting} variant="destructive">End Meeting</Button>
-      </div>
     </div>
   );
 }

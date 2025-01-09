@@ -70,6 +70,7 @@ export interface Meeting {
   endTime: string;
   status: string;
   streamCallId: string;
+  attendees: string[];
 }
 
 export interface ProjectValues {

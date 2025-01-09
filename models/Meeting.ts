@@ -8,9 +8,9 @@ export interface MeetingDBTypes {
   meetingDescription?: string;
   attendees?: Schema.Types.ObjectId[];
   date: Date;
-  startTime?: Date;
-  endTime?: Date;
-  status: "requested" | "upcoming" | "overdue" | "completed" | "inProgress";
+  startTime: Date;
+  endTime: Date;
+  status: "requested" | "upcoming" | "cancelled" | "completed" | "inProgress";
   isInstant: boolean;
   streamCallId?: string;
   streamSessionId?: string;
@@ -30,12 +30,12 @@ const meetingSchema = new Schema<MeetingDBTypes>(
     meetingDescription: { type: String },
     attendees: [{ type: Schema.Types.ObjectId, ref: "User" }],
     date: { type: Date },
-    startTime: { type: Date },
-    endTime: { type: Date },
+    startTime: { type: Date, required: true },
+    endTime: { type: Date, required: true },
     status: {
       type: String,
       required: true,
-      enum: ["upcoming", "requested", "overdue", "completed", "inProgress"],
+      enum: ["upcoming", "requested", "cancelled", "completed", "inProgress"],
     },
     isInstant: { type: Boolean, required: true },
     streamCallId: { type: String },
@@ -49,6 +49,7 @@ const meetingSchema = new Schema<MeetingDBTypes>(
   { timestamps: true }
 );
 
-const Meeting = models?.Meeting || model<MeetingDBTypes>("Meeting", meetingSchema);
+const Meeting =
+  models?.Meeting || model<MeetingDBTypes>("Meeting", meetingSchema);
 
 export default Meeting;
