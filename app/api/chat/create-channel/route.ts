@@ -15,9 +15,9 @@ export async function POST(req: NextRequest) {
 
     const { members, projectId } = await req.json();
 
-    if (!Array.isArray(members) || !projectId) {
+    if (!Array.isArray(members)) {
       return NextResponse.json(
-        { error: "Invalid members array or projectId" },
+        { error: "Invalid members array" },
         { status: 400 }
       );
     }
@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
       members: uniqueMembers,
       name: channelName,
       created_by_id: session.user._id,
-      projectId: projectId,
+      projectId: projectId ? [projectId] : [],
     });
 
     await channel.create();
@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
     const newChannel = new Channel({
       channelID: channel.id,
       members: uniqueMembers,
-      projectIDs: [projectId],
+      projectIDs: projectId ? [projectId] : [],
       roleBased: [], // Add roles if needed
       channelName: channelName,
     });

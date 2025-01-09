@@ -1,23 +1,44 @@
 import { NextRequest, NextResponse } from "next/server";
 import connectToMongoDB from "@/utils/db";
 import Meeting from "@/models/Meeting";
+import User from "@/models/User";
+import Project from "@/models/Project";
+import { transporter } from "@/app/api/core";
+import { CustomUser } from "@/lib/types";
+import { authOptions } from "@/lib/authOptions";
+import { getServerSession } from "next-auth";
 
-export const PUT = async (request: NextRequest, { params }: { params: { meetingID: string } }) => {
-  const { meetingID } = params;
-  const { project_id, title, link, date, startTime, endTime, status } = await request.json();
-
-  if (!project_id) {
+export const PUT = async (
+  request: NextRequest,
+  { params }: { params: { meetingID: string } }
+) => {
+  const session = await getServerSession(authOptions);
+  if (!session?.user) {
     return NextResponse.json({
-      status: 400,
+      status: 401,
       success: false,
-      error: "Project ID is required",
+      error: "Unauthorized",
+    });
+  }
+
+  const user = session.user as CustomUser;
+  const { meetingID } = params;
+  const { status, attendees } = await request.json();
+
+  if (attendees && !["ceo", "manager"].includes(user.role)) {
+    return NextResponse.json({
+      status: 403,
+      success: false,
+      error: "Only CEO and managers can modify attendees",
     });
   }
 
   await connectToMongoDB();
 
   try {
-    const meeting = await Meeting.findOne({ _id: meetingID, projectID: project_id });
+    const meeting = await Meeting.findById(meetingID).populate(
+      "createdBy projectID attendees"
+    );
 
     if (!meeting) {
       return NextResponse.json({
@@ -27,47 +48,38 @@ export const PUT = async (request: NextRequest, { params }: { params: { meetingI
       });
     }
 
-    const updatedFields = {
-      title: title || meeting.title,
-      link: link || meeting.link,
-      date: date || meeting.date,
-      startTime: startTime || meeting.startTime,
-      endTime: endTime || meeting.endTime,
-      status: status || meeting.status,
-    };
+    if (status) meeting.status = status;
+    if (attendees) meeting.attendees = attendees;
+    await meeting.save();
 
-    let changes: Record<string, unknown> = {};
+    // Send email to the client
+    const client = await User.findById(meeting.createdBy);
+    const project = await Project.findById(meeting.projectID);
 
-    changes = Object.keys(updatedFields).reduce(
-      (acc: Record<string, unknown>, key) => {
-        if (updatedFields[key as keyof typeof updatedFields] !== meeting[key as keyof typeof meeting]) {
-          acc[key] = updatedFields[key as keyof typeof updatedFields];
-        }
-        return acc;
-      },
-      changes
-    );
-
-    if (Object.keys(changes).length > 0) {
-      const updatedMeeting = await Meeting.updateOne(
-        { _id: meetingID, projectID: project_id },
-        { $set: changes }
-      );
-
-      return NextResponse.json({
-        status: 200,
-        success: true,
-        message: "Meeting updated successfully!",
-        updatedMeeting,
-        updatedFields: changes,
+    if (status === "upcoming") {
+      await transporter.sendMail({
+        from: process.env.GMAIL_USER,
+        to: client.email,
+        subject: "Meeting Request Accepted",
+        text: `Your request for the meeting for the project ${project.projectDetails.projectName} has been accepted.`,
+        html: `<p>Your request for the meeting for the project ${project.projectDetails.projectName} has been accepted.</p>`,
       });
-    } else {
-      return NextResponse.json({
-        status: 200,
-        success: true,
-        message: "No changes detected.",
+    } else if (status === "cancelled") {
+      await transporter.sendMail({
+        from: process.env.GMAIL_USER,
+        to: client.email,
+        subject: "Meeting Request Rejected",
+        text: `Your request for the meeting for the project ${project.projectDetails.projectName} has been rejected.`,
+        html: `<p>Your request for the meeting for the project ${project.projectDetails.projectName} has been rejected.</p>`,
       });
     }
+
+    return NextResponse.json({
+      status: 200,
+      success: true,
+      message: "Meeting updated successfully!",
+      meeting,
+    });
   } catch (error) {
     console.log(error);
     return NextResponse.json({

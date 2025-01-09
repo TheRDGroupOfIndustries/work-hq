@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 
 export default async function Page() {
   const session = await getServerSession();
-  if (!session) redirect("/auth/c-sign-in");
+  if (!session) redirect("/auth/ceo-sign-in");
 
   return <MeetingsDetails />;
 }

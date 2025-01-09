@@ -14,31 +14,41 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const projectId = searchParams.get("projectId");
 
-  if (!projectId) {
-    return NextResponse.json(
-      { error: "Project ID is required" },
-      { status: 400 }
-    );
-  }
-
   try {
-    // Fetch project details to get associated users
-    const project = await Project.findById(projectId).populate(
-      "developmentDetails.teams"
-    );
-    if (!project) {
-      return NextResponse.json({ error: "Project not found" }, { status: 404 });
-    }
-
-    const projectMembers = project.developmentDetails.teams.map((user: any) =>
-      user._id.toString()
-    );
-
-    const filter = {
-      members: { $in: [session.user._id, ...projectMembers] },
-      projectId: projectId,
+    let filter: any = {
+      members: { $in: [session.user._id] },
       type: { $in: ["messaging", "group"] },
     };
+
+    if (session.user.role === 'ceo' || session.user.role === 'manager') {
+      // CEO and manager can see all chats
+      if (projectId) {
+        filter.projectId = projectId;
+      }
+    } else {
+      // Other roles can only see chats related to their project
+      if (!projectId) {
+        return NextResponse.json(
+          { error: "Project ID is required" },
+          { status: 400 }
+        );
+      }
+      filter.projectId = projectId;
+
+      // Fetch project details to get associated users
+      const project = await Project.findById(projectId).populate(
+        "developmentDetails.teams"
+      );
+      if (!project) {
+        return NextResponse.json({ error: "Project not found" }, { status: 404 });
+      }
+
+      const projectMembers = project.developmentDetails.teams.map((user: any) =>
+        user._id.toString()
+      );
+      filter.members.$in.push(...projectMembers);
+    }
+
     const sort: ChannelSort<DefaultGenerics> = { last_message_at: -1 };
     const channels = await serverClient.queryChannels(filter, sort, {
       watch: true,

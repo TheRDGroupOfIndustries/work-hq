@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
       description: description,
       members: existingUserIds,
       created_by_id: session.user._id.toString(),
-      projectId: projectId,
+      projectId: projectId ? [projectId] : [],
     });
 
     await channel.create();
@@ -76,7 +76,7 @@ export async function POST(req: NextRequest) {
     const newChannel = new Channel({
       channelID: channelId,
       members: existingUserIds,
-      projectIDs: [projectId],
+      projectIDs: projectId ? [projectId] : [],
       roleBased: [], // Add roles if needed
       channelName: groupName,
       channelIcon: icon,

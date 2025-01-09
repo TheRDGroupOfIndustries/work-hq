@@ -17,6 +17,8 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { useProjectContext } from "@/context/ProjectProvider";
+import { useSession } from "next-auth/react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface User {
     _id: string;
@@ -31,6 +33,13 @@ interface CreateGroupDialogProps {
     onOpenChange: (open: boolean) => void;
 }
 
+interface Project {
+    _id: string;
+    projectDetails: {
+      projectName: string;
+    };
+  }
+
 export default function CreateGroupDialog({ open, onOpenChange }: CreateGroupDialogProps) {
     const [groupName, setGroupName] = useState("");
     const [description, setDescription] = useState("");
@@ -44,6 +53,25 @@ export default function CreateGroupDialog({ open, onOpenChange }: CreateGroupDia
     const router = useRouter();
     const { selectedProjectDetails } = useProjectContext();
     const dropdownRef = useRef<HTMLDivElement>(null);
+    const { data: session } = useSession();
+    const userRole = session?.user?.role;
+    const [selectedProject, setSelectedProject] = useState<string | null>(null);
+    const [projects, setProjects] = useState<Project[]>([]);
+
+    useEffect(() => {
+        const fetchProjects = async () => {
+          try {
+            const response = await fetch('/api/project');
+            if (!response.ok) throw new Error('Failed to fetch projects');
+            const data = await response.json();
+            setProjects(data.projects);
+          } catch (error) {
+            console.error('Error fetching projects:', error);
+          }
+        };
+    
+        fetchProjects();
+      }, []);
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -117,12 +145,17 @@ export default function CreateGroupDialog({ open, onOpenChange }: CreateGroupDia
                 groupName,
                 selectedUsers.map(user => user._id),
                 iconUrl,
-                description
+                description,
+                selectedProject
             );
 
             if (channel) {
                 onOpenChange(false);
-                router.push(`/c/project/${selectedProjectDetails?._id}/chats/${channel.id}`);
+                if (userRole === 'ceo' || userRole === 'manager') {
+                    router.push(`/ceo/chats/${channel.id}`);
+                } else {
+                    router.push(`/c/project/${selectedProjectDetails?._id}/chats/${channel.id}`);
+                }
                 toast.success("Group created successfully");
             }
         } catch (error) {
@@ -192,6 +225,24 @@ export default function CreateGroupDialog({ open, onOpenChange }: CreateGroupDia
                         />
                     </div>
 
+                    {(userRole === 'ceo' || userRole === 'manager') && (
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-dark-gray">Select Project</label>
+                            <Select onValueChange={(value) => setSelectedProject(value)}>
+                                <SelectTrigger className="w-full">
+                                    <SelectValue placeholder="Select a project" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {projects.map((project) => (
+                                        <SelectItem key={project._id} value={project._id}>
+                                            {project.projectDetails.projectName}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    )}
+
                     <div className="space-y-2">
                         <label className="text-sm font-medium text-dark-gray">Add Members</label>
                         <div className="relative" ref={dropdownRef}>
@@ -226,6 +277,7 @@ export default function CreateGroupDialog({ open, onOpenChange }: CreateGroupDia
                                                 user={user}
                                                 onSelect={() => toggleUserSelection(user)}
                                                 isSelected={selectedUsers.some(u => u._id === user._id)}
+                                                isGroupChat={true}
                                             />
                                         ))}
                                     </ScrollArea>
@@ -254,7 +306,7 @@ export default function CreateGroupDialog({ open, onOpenChange }: CreateGroupDia
     );
 }
 
-function Card({ user, onSelect, isSelected }: { user: User; onSelect: (user: User) => void; isSelected?: boolean }) {
+function Card({ user, onSelect, isSelected, isGroupChat }: { user: User; onSelect: (user: User) => void; isSelected?: boolean; isGroupChat: boolean }) {
     if (!user) return null;
     return (
         <div

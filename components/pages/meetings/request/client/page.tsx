@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useSession } from "next-auth/react";
 import { useCallback, useState } from "react";
@@ -50,7 +50,6 @@ export default function MeetingsRequest() {
     if (!user || !selectedProject) return;
 
     try {
-      // creating meeting request record in database
       const response = await fetch("/api/meeting/create", {
         method: "POST",
         headers: {
@@ -61,12 +60,8 @@ export default function MeetingsRequest() {
           meetingDescription: description,
           date: date?.toISOString(),
           projectID: selectedProject._id,
-          startTime: new Date(
-            `${date?.toISOString().split("T")[0]}T${startTime}:00`
-          ).toISOString(),
-          endTime: new Date(
-            `${date?.toISOString().split("T")[0]}T${endTime}:00`
-          ).toISOString(),
+          startTime: new Date(`${date?.toISOString().split("T")[0]}T${startTime}:00`).toISOString(),
+          endTime: new Date(`${date?.toISOString().split("T")[0]}T${endTime}:00`).toISOString(),
           createdBy: user?._id,
           isInstant,
         }),
@@ -75,25 +70,15 @@ export default function MeetingsRequest() {
       if (!response.ok) {
         const errorData = await response.json();
         toast.error(errorData.error || "Failed to send meeting request");
-        router.refresh();
       } else {
-        toast.success("Meeting request sent successfully");
+        toast.success("Meeting request sent successfully. Awaiting approval from management.");
         router.push(`/c/project/${selectedProject._id}/meetings/details`);
       }
     } catch (error) {
       console.error("Error creating meeting:", error);
+      toast.error("An error occurred while sending the meeting request");
     }
-  }, [
-    user,
-    selectedProject,
-    title,
-    description,
-    date,
-    startTime,
-    endTime,
-    isInstant,
-    router,
-  ]);
+  }, [user, selectedProject, title, description, date, startTime, endTime, isInstant, router]);
 
   return (
     <MainContainer role={ROLE}>

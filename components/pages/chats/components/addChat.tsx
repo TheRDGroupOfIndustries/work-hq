@@ -7,6 +7,8 @@ import { useChat } from "@/context/ChatProvider";
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { useProjectContext } from "@/context/ProjectProvider";
+import { useSession } from "next-auth/react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface User {
   _id: string,
@@ -21,12 +23,38 @@ interface AddChatProps {
   existingChannels: any[];
 }
 
+interface Project {
+  _id: string;
+  projectDetails: {
+    projectName: string;
+  };
+}
+
 export default function AddChat({ setIsAddChatOpen, existingChannels }: AddChatProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [users, setUsers] = useState<User[]>([]);
   const { client, createChat, checkExistingChannel } = useChat();
   const router = useRouter();
   const { selectedProjectDetails } = useProjectContext();
+  const { data: session } = useSession();
+  const userRole = session?.user?.role;
+  const [selectedProject, setSelectedProject] = useState<string | null>(null);
+  const [projects, setProjects] = useState<Project[]>([]);
+
+    useEffect(() => {
+        const fetchProjects = async () => {
+          try {
+            const response = await fetch('/api/project');
+            if (!response.ok) throw new Error('Failed to fetch projects');
+            const data = await response.json();
+            setProjects(data.projects);
+          } catch (error) {
+            console.error('Error fetching projects:', error);
+          }
+        };
+    
+        fetchProjects();
+      }, []);
 
   useEffect(() => {
     if (client) {
@@ -37,7 +65,11 @@ export default function AddChat({ setIsAddChatOpen, existingChannels }: AddChatP
             throw new Error(`HTTP error! status: ${response.status}`);
           }
           const data = await response.json();
-          setUsers(data);
+          if (userRole === 'developer') {
+            setUsers(data.filter((user: User) => ['developer', 'manager', 'ceo'].includes(user.role)));
+          } else {
+            setUsers(data);
+          }
         } catch (error) {
           console.error("Error fetching users:", error);
           toast.error("Failed to fetch users. Please try again.");
@@ -45,7 +77,7 @@ export default function AddChat({ setIsAddChatOpen, existingChannels }: AddChatP
       };
       fetchUsers();
     }
-  }, [client, searchQuery]);
+  }, [client, searchQuery, userRole]);
 
   const handleCreateChat = async (userId: string) => {
     if (!userId) {
@@ -57,14 +89,26 @@ export default function AddChat({ setIsAddChatOpen, existingChannels }: AddChatP
       const existingChannel = checkExistingChannel(userId, existingChannels);
       if (existingChannel) {
         setIsAddChatOpen(false);
-        router.push(`/c/project/${selectedProjectDetails?._id}/chats/${existingChannel.id}`);
+        if(userRole === 'ceo' || userRole === 'manager') {
+          router.push(`/ceo/chats/${existingChannel.id}`)
+        } else if (userRole === 'client') {
+          router.push(`/c/project/${selectedProjectDetails?._id}/chats/${existingChannel.id}`)
+        } else if (userRole === 'developer') {
+          router.push(`/dev/project/${selectedProjectDetails?._id}/chats/${existingChannel.id}`)
+        }
         return;
       }
 
-      const channel = await createChat(userId);
+      const channel = await createChat(userId, selectedProject);
       if (channel) {
         setIsAddChatOpen(false);
-        router.push(`/c/project/${selectedProjectDetails?._id}/chats/${channel.id}`);
+        if (userRole === 'ceo' || userRole === 'manager') {
+          router.push(`/ceo/chats/${channel.id}`)
+        } else if (userRole === 'client') {
+          router.push(`/c/project/${selectedProjectDetails?._id}/chats/${channel.id}`)
+        } else if (userRole === 'developer') {
+          router.push(`/dev/project/${selectedProjectDetails?._id}/chats/${channel.id}`)
+        }
       } else {
         throw new Error("Failed to create chat");
       }
@@ -87,6 +131,20 @@ export default function AddChat({ setIsAddChatOpen, existingChannels }: AddChatP
           Add A Chat
         </h1>
         <div className="flex flex-col gap-3 w-full">
+          {(userRole === 'ceo' || userRole === 'manager') && (
+            <Select onValueChange={(value) => setSelectedProject(value)}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select a project" />
+              </SelectTrigger>
+              <SelectContent>
+                {projects.map((project) => (
+                  <SelectItem key={project._id} value={project._id}>
+                    {project.projectDetails.projectName}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
           <div className="flex justify-between items-center">
             <span className="relative w-full">
               <input

@@ -26,6 +26,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from 'sonner';
 import { Search, Upload, X } from 'lucide-react';
 import Image from "next/image";
+import { useSession } from "next-auth/react";
 
 interface User {
   _id: string;
@@ -52,6 +53,10 @@ export default function Headline() {
   const router = useRouter();
   const { selectedProjectDetails } = useProjectContext();
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const { data: session } = useSession();
+  const userRole = session?.user?.role;
+
+  const canEditOrDelete = userRole === 'ceo' || userRole === 'manager';
 
   useEffect(() => {
     if (activeChannel) {
@@ -231,7 +236,7 @@ export default function Headline() {
         </div>
       </div>
 
-      <DropdownMenu>
+      {canEditOrDelete && (<DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="icon">
             <MoreVertical className="h-5 w-5" />
@@ -250,7 +255,7 @@ export default function Headline() {
             Delete {isGroup ? 'Group' : 'Chat'}
           </DropdownMenuItem>
         </DropdownMenuContent>
-      </DropdownMenu>
+      </DropdownMenu>)}
 
       {/* Edit Group Settings Dialog */}
       <Dialog open={isUpdateDialogOpen} onOpenChange={setIsUpdateDialogOpen}>
