@@ -1,12 +1,13 @@
 "use client";
 import Filter from "@/components/icons/Filter";
-import Headline, {
-  ButtonObjectType,
-} from "@/components/reusables/components/headline";
 import Container from "@/components/reusables/wrapper/Container";
 import MainContainer from "@/components/reusables/wrapper/mainContainer";
 import SquareButton from "@/components/reusables/wrapper/squareButton";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,44 +29,65 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { CustomUser } from "@/lib/types";
+import { RootState } from "@/redux/rootReducer";
+import { setEmployeesList } from "@/redux/slices/ceo";
 import { ROLE } from "@/tempData";
 import { VENDOR } from "@/types";
-import { MoreVertical, Plus } from "lucide-react";
+import { MoreVertical, Plus} from "lucide-react";
 import Image from "next/image";
-import React, { useState } from "react";
+import Link from "next/link";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import EmployeesSummary from "../components/EmployeesSummary";
 import TodayEmployeesProgress from "../components/TodayEmployeesProgress";
-
-const data = [
-  {
-    id: 1,
-    name: "John Doe",
-    stacks: "Full Stack, UI UX",
-    workingOn: "CSK, Ecowell",
-    tasksCompleted: "54",
-    tasksPending: "10",
-    status: "Logged In",
-    todayWorkHours: "8",
-    totalWorkHours: "102",
-    email: "john@gmail.com",
-  },
-  {
-    id: 2,
-    name: "John Doe",
-    stacks: "Full Stack, UI UX",
-    workingOn: "CSK, Ecowell",
-    tasksCompleted: "54",
-    tasksPending: "10",
-    status: "Logged Out",
-    todayWorkHours: "8",
-    totalWorkHours: "102",
-    email: "john@gmail.com",
-  },
-];
-
 export default function AllEmployees() {
   const [search, setSearch] = useState<string>("");
   const [filterCategory, setFilterCategory] = useState<string>("");
+
+  const dispatch = useDispatch();
+  const reduxEmployeesList = useSelector(
+    (state: RootState) => state.ceo.employeesList
+  );
+
+  const [employees, setEmployees] = useState<CustomUser[] | []>([]);
+
+  const filterEmployees = employees.filter((employee) => {
+    const matchesSearch =
+      employee?.firstName?.toLowerCase().includes(search.toLowerCase()) ||
+      employee?.lastName?.toLowerCase().includes(search.toLowerCase());
+
+    // const matchesCategory
+
+    return matchesSearch;
+  });
+
+  useEffect(() => {
+    const fetchPayrollHistory = async () => {
+      try {
+        const response = await fetch("/api/user/get/getAllDevs", {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        });
+        const data = await response.json();
+
+        setEmployees(data.developers || []);
+
+        dispatch(
+          setEmployeesList(
+            // Filter users with role "developer"
+            data.developers
+          )
+        );
+      } catch (error) {
+        console.error("Error fetching payroll history:", error);
+      }
+    };
+
+    if (reduxEmployeesList && reduxEmployeesList.length > 0) {
+      setEmployees(reduxEmployeesList);
+    } else fetchPayrollHistory();
+  }, [dispatch, reduxEmployeesList]);
 
   return (
     <MainContainer role={ROLE}>
@@ -94,7 +116,6 @@ export default function AllEmployees() {
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem>Projects </DropdownMenuItem>
               <DropdownMenuItem className="text-red-600">
                 <Dialog>
                   {/* Prevent DropdownMenu from closing */}
@@ -154,13 +175,13 @@ export default function AllEmployees() {
           </h1>
           <p className="text-sm text-[#6A6A6A]">Total Employees - 05</p>
         </div>
-        <DataTableTasks />
+        <DataTableTasks employees={filterEmployees} />
       </Container>
     </MainContainer>
   );
 }
 
-function DataTableTasks() {
+function DataTableTasks({ employees }: { employees: CustomUser[] }) {
   return (
     <div className=" w-full ">
       <Table>
@@ -179,7 +200,7 @@ function DataTableTasks() {
           </TableRow>
         </TableHeader>
         <TableBody className="text-[#3A3A3A] max-h-[400px] text-base border-0 mb-5 px-10 overflow-hidden  ">
-          {data.map((row, index) => (
+          {employees.map((row, index) => (
             <TableRow
               key={row.id}
               className={`h-[60px] text-nowrap  text-[#344054] hover:bg-transparent rounded-lg mb-5 border-l-[20px] border-transparent border-b-0 `}
@@ -189,32 +210,40 @@ function DataTableTasks() {
                 <div className="flex flex-row items-center gap-2">
                   <div className="w-[40px] h-[40px] bg-[#D9D9D9] rounded-full">
                     <Image
-                      src="/assets/user.png"
+                      src={row.profileImage || "/assets/user.png"}
                       width={40}
                       height={40}
                       alt="avatar"
                     />
                   </div>
                   <div className="flex flex-col">
-                    <h6 className="text-base font-medium ">{row.name}</h6>
-                    <p className="text-sm font-normal ">{row.stacks}</p>
+                    <h6 className="text-base font-medium ">{row.firstName}</h6>
+                    <p className="text-sm font-normal ">{row.role}</p>
                   </div>
                 </div>
               </TableCell>
-              <TableCell>{row.workingOn}</TableCell>
-              <TableCell>{row.tasksCompleted}</TableCell>
-              <TableCell>{row.tasksPending}</TableCell>
+              <TableCell>
+                {row.myProjects?.map((p, index) => (
+                  <span key={index}>
+                    {typeof p === "object" &&
+                      (p.projectDetails?.projectName as string)}
+                    {index < (row.myProjects?.length ?? 0) - 1 && ", "}
+                  </span>
+                ))}
+              </TableCell>
+              <TableCell>{"idk"}</TableCell>
+              <TableCell>{"idk"}</TableCell>
               <TableCell
                 className={`${
-                  row.status === "Logged In"
+                  row.workStatus === "loggedIn"
                     ? "!text-green-400"
                     : "!text-primary-blue"
                 }`}
               >
-                {row.status}
+                {row.workStatus}
               </TableCell>
-              <TableCell>{row.todayWorkHours}</TableCell>
-              <TableCell>{row.totalWorkHours}</TableCell>
+              <TableCell>{"isk"}</TableCell>
+              <TableCell>{"isk"}</TableCell>
               <TableCell className="text-primary-blue">{row.email}</TableCell>
               <TableCell>
                 <DropdownMenu>
@@ -224,7 +253,13 @@ function DataTableTasks() {
                     </button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem>Projects </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <Link
+                        href={`/ceo/employees/${row.firstName+row.lastName}?id=${row._id}`}
+                      >
+                        Details
+                      </Link>
+                    </DropdownMenuItem>
                     <DropdownMenuItem className="text-red-600">
                       <Dialog>
                         {/* Prevent DropdownMenu from closing */}
@@ -250,6 +285,10 @@ function DataTableTasks() {
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
+                {/* <ManageProjects
+                        userProjects={row.myProjects as ProjectValues[]}
+                        employee={row}
+                /> */}
               </TableCell>
             </TableRow>
           ))}
@@ -258,3 +297,4 @@ function DataTableTasks() {
     </div>
   );
 }
+

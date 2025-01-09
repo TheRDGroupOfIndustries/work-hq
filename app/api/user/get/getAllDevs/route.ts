@@ -6,9 +6,11 @@ export const GET = async () => {
   await connectToMongoDB();
 
   try {
-    const developers = await User.find({ role: "developer" }).select(
-      "username firstName lastName email phone role myProjects workStatus performance position"
-    );
+    const developers = await User.find({ role: "developer" })
+    .populate("myProjects", "projectDetails.projectName")
+    // .select(
+    //   "username firstName lastName email phone role myProjects workStatus performance position"
+    // );
 
     if (developers.length === 0) {
       return NextResponse.json({

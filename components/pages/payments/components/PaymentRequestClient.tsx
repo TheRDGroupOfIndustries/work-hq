@@ -129,7 +129,6 @@ export default function PaymentRequestClient() {
     <form
       onSubmit={handleSubmit}
       onClick={(e) => e.stopPropagation()}
-      className="z-10 w-[733px] m-4 bg-background flex flex-col gap-6 rounded-3xl p-5 lg:p-6"
     >
       <h1 className="text-2xl font-semibold text-dark-gray">Make A Payment Request to Client</h1>
       <div className="flex flex-col gap-3">
