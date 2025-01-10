@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import HelpDeskTicketsListTable from "@/components/reusables/components/HelpDeskTicketsListTable";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
+import { TicketValues } from "@/lib/types";
 
 export interface Ticket {
   _id: string;
@@ -32,7 +33,7 @@ export interface Ticket {
 }
 
 export default function Helpdesk() {
-  const [tickets, setTickets] = useState<Ticket[]>([]);
+  const [tickets, setTickets] = useState<TicketValues[]>([]);
   const [search, setSearch] = useState("");
   const [issueType, setIssueType] = useState<string>("all");
   const [priority, setPriority] = useState<string>("all");
@@ -56,12 +57,6 @@ export default function Helpdesk() {
       
 
     };
-
-    
-
-    
-
-
 
     if(ticketList.length > 0){
       setTickets(ticketList);

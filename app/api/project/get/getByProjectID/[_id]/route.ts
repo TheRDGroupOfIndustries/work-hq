@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
-import connectToMongoDB from "@/utils/db";
 import Project from "@/models/Project";
+import connectToMongoDB from "@/utils/db";
+import { NextRequest, NextResponse } from "next/server";
 
 export const GET = async (
   request: NextRequest,
@@ -9,7 +9,17 @@ export const GET = async (
   await connectToMongoDB();
 
   try {
-    const project = await Project.findById(params._id);
+    const project = await Project.findById(params._id)
+  .select("developmentDetails projectDetails")
+  .populate("developmentDetails.tasks")
+  .populate({
+    path: "developmentDetails.teams",
+    populate: {
+      path: "tasks",
+      select: "status", // Select only the 'status' field from tasks
+    },
+  })
+
 
     if (!project) {
       return NextResponse.json({

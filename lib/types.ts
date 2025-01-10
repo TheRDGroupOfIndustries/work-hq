@@ -48,6 +48,8 @@ export interface CustomUser extends NextAuthUser {
   performance?: { month: number; year: number; performance: number };
   managerID?: string; // Manger reference to know about the dev working on this manager
 
+  tasks?: TaskValues[];
+
   // Vendor-specific fields
   vendorBasedProjects?: string[];
 }
@@ -143,6 +145,20 @@ export interface PaymentInfoValues extends PaymentInfoDBTypes {
 
 export interface PaymentValues extends PaymentDBTypes {
   _id: string;
+}
+
+export interface TicketValues {
+  _id: string;
+  ticketNo: string; // Unique ticket number
+  subject: string; // Subject of the ticket
+  issueType: string; // Type of issue
+  priority: "Low" | "Medium" | "High"; // Priority level
+  ticketDate: Date; // Date the ticket was created
+  issueMessage: string; // Description of the issue
+  status: "open" | "close"; // Current status of the ticket
+  channelID?: string; // Optional reference to chat channel ID
+  userID: string | CustomUser; // Reference to the user who created the ticket
+  projectID: string | ProjectValues; // Reference to the project the ticket belongs to
 }
 
 export interface SpecificProjectlayoutProps {

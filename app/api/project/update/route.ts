@@ -56,6 +56,19 @@ export const PUT = async (request: NextRequest) => {
       changedFields.push('projectID');
     }
 
+    if (updateData.teams) {
+      const newTeams = updateData.teams.map((id: string) => id.toString());
+      const existingTeams = existingProject.developmentDetails.teams.map((id: string) => id.toString());
+      
+      const additions = newTeams.filter((id: string) => !existingTeams.includes(id));
+      const removals = existingTeams.filter((id: string) => !newTeams.includes(id));
+      
+      if (additions.length || removals.length) {
+        existingProject.developmentDetails.teams = newTeams;
+        changedFields.push("developmentDetails.teams");
+      }
+    }
+
     const updatedProject = await existingProject.save();
 
     return NextResponse.json({

@@ -13,16 +13,18 @@ import {
   SelectItem,
   SelectTrigger,
 } from "@/components/ui/select";
-import { ProjectValues } from "@/lib/types";
+import { CustomUser, ProjectValues } from "@/lib/types";
 import { RootState } from "@/redux/rootReducer";
 import { setAllProjectsList } from "@/redux/slices/ceo";
 import { ROLE } from "@/tempData";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import RevenueSummary from "../components/revenueSummary";
+import { useSession } from "next-auth/react";
 
 export default function AllProjects() {
   const [allProjects, setAllProjects] = useState<ProjectValues[]>([]);
+
   const dispatch = useDispatch();
 
   //Checking if the data is available in redux or not
@@ -146,6 +148,9 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
   const [search, setSearch] = useState<string>("");
   const [filterCategory, setFilterCategory] = useState<string>("");
 
+  const { data: session } = useSession();
+  const user = session?.user as CustomUser;  
+
   const filteredProjects = projects.filter((project) => {
     const matchesSearch =
       project?.projectDetails?.projectName
@@ -211,7 +216,7 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
             <p>Total Projects - {projects.length} </p>
           </div>
           <div className="w-full flex flex-col gap-4 px-2 ">
-            <AllProjectListTable list={filteredProjects} role="ceo" />
+            <AllProjectListTable list={filteredProjects} role={user.role} />
           </div>
         </div>
       </Container>

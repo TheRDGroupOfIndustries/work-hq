@@ -107,8 +107,7 @@ function ManageProjects({
     setProjects(userProjects);
   }, [userProjects]);
 
-  console.log("project", projects);
-  console.log("userProjects", userProjects);
+
   const [submitting, setSubmitting] = useState<boolean>(false);
 
   const handleProjectSelect = (project: ProjectValues) => {

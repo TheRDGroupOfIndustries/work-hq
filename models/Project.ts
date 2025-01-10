@@ -47,6 +47,7 @@ export interface ProjectDBTypes {
       totalHours: number;
     }[]; // Derived from developers' hours
     teams: string[];
+    tasks: string[];
   };
   createdAt: Date;
 }
@@ -113,8 +114,8 @@ const projectSchema = new Schema<ProjectDBTypes>(
           totalHours: { type: Number, required: true },
         },
       ],
-      teams: [{ type: Schema.Types.ObjectId, ref: "User", required: true }],
-      // tasks: [{ type: Schema.Types.ObjectId, ref: "Task", required: true }],
+      teams: [{ type: Schema.Types.ObjectId, ref: "User", required: false }],
+      tasks: [{ type: Schema.Types.ObjectId, ref: "Task", required: false }],
     },
   },
   { timestamps: true }

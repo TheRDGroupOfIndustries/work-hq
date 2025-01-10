@@ -5,6 +5,12 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React from "react";
 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
@@ -15,6 +21,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useProjectContext } from "@/context/ProjectProvider";
+import { MoreVertical } from "lucide-react";
+import Link from "next/link";
 
 export default function AllProjectListTable({
   list,
@@ -24,11 +32,12 @@ export default function AllProjectListTable({
 }: {
   list: ProjectValues[];
   routeTo?: string;
-  role?: "ceo";
+  role?: string;
   loading?: boolean;
 }) {
   const { selectedProject, setSelectedProject } = useProjectContext();
   const router = useRouter();
+
   return (
     <Table className="relative">
       <TableHeader className="text-gray-600 z-10 border-0 sticky top-0 bg-primary-sky-blue">
@@ -48,20 +57,25 @@ export default function AllProjectListTable({
             list.map((project, index) => (
               <TableRow
                 key={index}
-                onClick={() => {
-                  setSelectedProject({
-                    _id: project?._id,
-                    name: project?.projectDetails?.projectName,
-                  });
-                  if (selectedProject)
-                    router.push(
-                      `/${routeTo}/project/${project._id}/dashboard` + ""
-                    );
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (role === "client" ) {
+                    setSelectedProject({
+                      _id: project?._id,
+                      name: project?.projectDetails?.projectName,
+                    });
+                    if (selectedProject)
+                      router.push(
+                        `/${routeTo}/project/${project._id}/dashboard` + ""
+                      );
+                  }
                 }}
                 className={`h-[60px] cursor-pointer text-[#1E1B39] hover:bg-transparent hover:shadow-[3px_3px_10px_0px_#789BD399,-5px_-5px_10px_0px_#FFFFFF] rounded-lg mb-5 border-l-[20px] border-transparent border-b-0 `}
               >
                 <TableCell className=" ">{`${index + 1}.`}</TableCell>
-                <TableCell className="w-[35vw]  flex items-center gap-2 ">
+                <TableCell
+                  className="w-[35vw]  flex items-center gap-2 "
+                >
                   <Image
                     src={
                       project?.projectDetails?.logo ||
@@ -74,9 +88,16 @@ export default function AllProjectListTable({
                     className="w-10 h-10 object-contain ml-2 overflow-hidden"
                   />
 
-                  <span className="font-medium">
+                  <Link
+                    href={
+                      role === "ceo" || role === "manager"
+                        ? `/c/project/${project?._id}/dashboard`
+                        : ``
+                    }
+                    className="font-medium hover:underline cursor-pointer"
+                  >
                     {project?.projectDetails?.projectName}
-                  </span>
+                  </Link>
                 </TableCell>
                 <TableCell>
                   <span
@@ -122,6 +143,51 @@ export default function AllProjectListTable({
                     </a>
                   </TableCell>
                 )}
+                {(role === "ceo" || role === "manager") && (
+                  <TableCell
+                  >
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <button 
+                            
+                        className="h-8 w-8 p-0">
+                          <MoreVertical className="h-4 w-4" />
+                        </button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem
+                          onClick={(e) => {
+                            e.stopPropagation(); // Prevents the event from reaching the TableRow
+                            setSelectedProject({
+                              _id: project?._id,
+                              name: project?.projectDetails?.projectName,
+                            });
+                          }}
+                        >
+                          <Link
+                            href={`/ceo/project/${project?.projectDetails?.projectName}/dashboard?id=${project?._id}`}
+                          >
+                            Details/Dashboard
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>
+                          <Link
+                            href={`/ceo/project/${project?.projectDetails?.projectName}/assets&scope?id=${project?._id}`}
+                          >
+                            Assets & Scope
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>
+                          <Link
+                          href={`/ceo/project/${project?.projectDetails?.projectName}/kanban?id=${project?._id}`}
+                          >
+                            Kanban
+                          </Link>
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                )}
               </TableRow>
             ))
           ) : (
@@ -157,6 +223,11 @@ export default function AllProjectListTable({
               <TableCell className=" text-nowrap">
                 <Skeleton className="h-4 w-[120px]" />
               </TableCell>
+              {role === "ceo" && (
+                <TableCell className="text-primary-blue overflow-hidden">
+                  <Skeleton className="h-4 w-[120px]" />
+                </TableCell>
+              )}
               {role === "ceo" && (
                 <TableCell className="text-primary-blue overflow-hidden">
                   <Skeleton className="h-4 w-[120px]" />

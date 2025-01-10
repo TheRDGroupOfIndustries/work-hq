@@ -14,6 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { TicketValues } from "@/lib/types";
 import { format } from "date-fns";
 import { MoreVertical } from "lucide-react";
 import React, { useState } from "react";
@@ -32,7 +33,7 @@ export default function HelpDeskTicketsListTable({
   filteredTickets,
   isCEOSide = false,
 }: {
-  filteredTickets: Ticket[];
+  filteredTickets: TicketValues[];
   isCEOSide?: boolean;
 }) {
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
@@ -61,7 +62,7 @@ export default function HelpDeskTicketsListTable({
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead className="w-[53px]">
+          <TableHead className="w-[43px]">
             <Checkbox
               checked={isAllSelected}
               onCheckedChange={handleSelectAll}
@@ -70,7 +71,7 @@ export default function HelpDeskTicketsListTable({
             />
           </TableHead>
           {isCEOSide && <TableHead className="w-[53px]"></TableHead>}
-          {isCEOSide && <TableHead>Client/Vendor Name</TableHead>}
+          {isCEOSide && <TableHead>Client/Vendor</TableHead>}
           <TableHead>Ticket Subject</TableHead>
           <TableHead>Ticket No</TableHead>
           <TableHead>Priority</TableHead>
@@ -93,18 +94,24 @@ export default function HelpDeskTicketsListTable({
                 className="border-[#3A3A3A] data-[state=checked]:bg-[#141263]"
               />
             </TableCell>
-            {isCEOSide && (
-              <TableCell>
-                {index + 1}
-              </TableCell>
-            )}
+            {isCEOSide && <TableCell>{index + 1}</TableCell>}
             {isCEOSide && (
               <TableCell>
                 <div className="flex flex-col">
-                  <h4 className="text-base text-dark-gray">Client Name</h4>
-                  <h5 className="text-base text-light-gray line-clamp-1">
-                    Clinet
-                  </h5>
+                  {ticket.userID && typeof ticket.userID === "object" ? (
+                    <>
+                      <h4 className="text-base text-dark-gray">
+                        {ticket.userID.firstName + " " + ticket.userID.lastName}
+                      </h4>
+                      <h5 className="text-base text-light-gray line-clamp-1">
+                        {ticket.userID.email}
+                      </h5>
+                    </>
+                  ) : (
+                    <h4 className="text-base text-dark-gray">
+                      {ticket.userID}
+                    </h4>
+                  )}
                 </div>
               </TableCell>
             )}
@@ -114,7 +121,7 @@ export default function HelpDeskTicketsListTable({
             <TableCell>
               <div
                 className={
-                  ticket.status === "Open" ? "text-green-800" : "text-red-800"
+                  ticket.status === "open" ? "text-green-800" : "text-red-800"
                 }
               >
                 {ticket.status}

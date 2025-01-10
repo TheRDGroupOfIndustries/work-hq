@@ -26,28 +26,17 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { CustomUser } from "@/lib/types";
+import { RootState } from "@/redux/rootReducer";
 import { ROLE } from "@/tempData";
 import { MoreVertical } from "lucide-react";
-import React, { useState } from "react";
+import Link from "next/link";
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 
-const data = [
-  {
-    id: 1,
-    client: "John Doe",
-    totaRojects: "10",
-    email: "john@gmail.com",
-    totalPayments: "20",
-  },
-  {
-    id: 2,
-    client: "Miles",
-    totaRojects: "20",
-    email: "miles@gmail.com",
-    totalPayments: "50",
-  },
-];
 
 export default function AllClinets() {
+  const [clientAndVendors, setClientAndVendor] = useState<CustomUser[] | []>([]);
   const [search, setSearch] = useState<string>("");
   const [filterCategory, setFilterCategory] = useState<string>("");
 
@@ -58,6 +47,41 @@ export default function AllClinets() {
       onClick: () => console.log("Export Report"),
     },
   ] as ButtonObjectType[];
+
+  const clientAndVendorList = useSelector(
+    (state: RootState) => state.ceo.clientAndVendorList
+  );
+
+  useEffect(() => {
+    const fetchVendorsAndClients = async () => {
+      const clientAndVendorRes = await fetch(
+        "/api/user/get/getAllVendorsAndClients",
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      const vendorsAndClientstData = await clientAndVendorRes.json();
+      setClientAndVendor(vendorsAndClientstData.vendorsAndClients);
+    };
+
+    if (clientAndVendorList.length > 0) {
+      setClientAndVendor(clientAndVendorList);
+    } else {
+      fetchVendorsAndClients();
+    }
+  }, [clientAndVendorList]);
+
+  
+  const filteredClientAndVendors = (clientAndVendors || []).filter((clientAndVendor) => {
+    const matchesSearch =
+    clientAndVendor?.firstName?.toLowerCase().includes(search.toLowerCase()) ||
+    clientAndVendor?.lastName?.toLowerCase().includes(search.toLowerCase());
+
+    
+    return matchesSearch
+  });
   return (
     <MainContainer role={ROLE}>
       <Headline
@@ -83,9 +107,7 @@ export default function AllClinets() {
             </div>
           </SelectTrigger>
           <SelectContent>
-            <SelectItem  value={"category"}>
-              {"category"}
-            </SelectItem>
+            <SelectItem value={"category"}>{"category"}</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -97,13 +119,13 @@ export default function AllClinets() {
           </h1>
           <p className="text-sm text-[#6A6A6A]">Total number - 05</p>
         </div>
-        <DataTableTasks />
+        <DataTableTasks clientAndVendors={filteredClientAndVendors} />
       </Container>
     </MainContainer>
   );
 }
 
-function DataTableTasks() {
+function DataTableTasks({ clientAndVendors }: { clientAndVendors: CustomUser[] }) {
   return (
     <div className="w-full">
       <Table>
@@ -118,16 +140,16 @@ function DataTableTasks() {
           </TableRow>
         </TableHeader>
         <TableBody className="text-[#3A3A3A] max-h-[400px] text-base border-0 mb-5 px-10 overflow-hidden  ">
-          {data.map((row, index) => (
+          {clientAndVendors.map((row, index) => (
             <TableRow
-              key={row.id}
+              key={row._id}
               className={`h-[60px]  text-[#344054] hover:bg-transparent rounded-lg mb-5 border-l-[20px] border-transparent border-b-0 `}
             >
               <TableCell className=" ">{`${index + 1}.`}</TableCell>
-              <TableCell>{row.client}</TableCell>
-              <TableCell>{row.totaRojects}</TableCell>
+              <TableCell>{row.firstName + " " + row.lastName}</TableCell>
+              <TableCell>{row.allProjects?.length}</TableCell>
               <TableCell className="text-primary-blue">{row.email}</TableCell>
-              <TableCell>{row.totalPayments}</TableCell>
+              <TableCell>{900}</TableCell>
               <TableCell>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -136,7 +158,9 @@ function DataTableTasks() {
                     </button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem>View details</DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <Link href={`/ceo/client-vendors/${row.firstName}?id=${row._id}`}>Details</Link>
+                    </DropdownMenuItem>
                     <DropdownMenuItem>Edit ticket</DropdownMenuItem>
                     <DropdownMenuItem className="text-red-600">
                       Delete ticket

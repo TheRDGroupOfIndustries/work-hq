@@ -14,52 +14,23 @@ import {
     DropdownMenuTrigger,
   } from "@/components/ui/dropdown-menu"
 import { MoreVertical } from 'lucide-react';
+import { PaymentValues } from "@/lib/types";
+import React from "react";
 
 
 
 
-export default function PaymentHistory() {
+export default function PaymentHistory({payments}:{payments: PaymentValues[]}) {
   return (
     <Container className="p-4 flex flex-col gap-4">
-    <h1 className="text-base font-semibold">Total Payments - 03</h1>
-    <DataTableTasks />
+    <h1 className="text-base font-semibold">Total Payments - {payments.length}</h1>
+    <DataTableTasks payments={payments} />
   </Container>
   )
 }
 
 
-const data = [
-    {
-      id: 1,
-      subject: "Milestone 1 Payment",
-      status: "Requested",
-      project: "CSK",
-      transactionId: "#01234567891",
-      amount: "10000",
-      transactionDate: "01 January, 2024",
-    },
-    {
-      id: 2,
-      subject: "Milestone 1 Payment",
-      status: "Requested",
-      project: "CSK",
-      transactionId: "#01234567891",
-      amount: "10000",
-      transactionDate: "01 January, 2024",
-    },
-    {
-      id: 3,
-      subject: "Milestone 1 Payment",
-      status: "Completed",
-      project: "CSK",
-      transactionId: "#01234567891",
-      amount: "10000",
-      transactionDate: "01 January, 2024",
-    },
-    
-  ];
-
-function DataTableTasks() {
+function DataTableTasks({payments}:{payments: PaymentValues[]}) {
     return (
       <div className="w-full">
         <Table>
@@ -76,18 +47,18 @@ function DataTableTasks() {
             </TableRow>
           </TableHeader>
           <TableBody className="text-[#3A3A3A] max-h-[400px] text-base border-0 mb-5 px-10 overflow-hidden  ">
-            {data.map((row, index) => (
+            {payments.map((row, index) => (
               <TableRow
-                key={row.id}
+                key={row._id}
                 className={`h-[60px]  text-[#344054] hover:bg-transparent rounded-lg mb-5 border-l-[20px] border-transparent border-b-0 `}
               >
                 <TableCell className=" ">{`${index + 1}.`}</TableCell>
-                <TableCell >{row.subject}</TableCell>
-                <TableCell className={`${row.status === "Completed" ? "!text-green-400" : "!text-primary-blue"}`}>{row.status}</TableCell>
-                <TableCell>{row.project}</TableCell>
-                <TableCell>{row.transactionId}</TableCell>
+                <TableCell >{row.paymentTitle}</TableCell>
+                <TableCell className={`${row.status === "fulfilled" ? "!text-green-400" : "!text-primary-blue"}`}>{row.status}</TableCell>
+                <TableCell>{"k"}</TableCell>
+                <TableCell>{row.transactionID}</TableCell>
                 <TableCell>{row.amount}</TableCell>
-                <TableCell>{row.transactionDate}</TableCell>
+                <TableCell>{ ""}</TableCell>
                 <TableCell>
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
