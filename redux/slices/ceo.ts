@@ -1,5 +1,4 @@
-import { Ticket } from '@/components/reusables/components/HelpDeskTicketsListTable';
-import { CustomUser, PaymentInfoValues, ProjectValues } from '@/lib/types';
+import { CustomUser, PaymentInfoValues, ProjectValues, TicketValues } from '@/lib/types';
 import { PayrollHistory } from '@/types';
 import { createSlice } from '@reduxjs/toolkit';
 
@@ -10,7 +9,7 @@ export interface CeoState {
     employeesList: CustomUser[] | []
     clientAndVendorList: CustomUser[] | []
     allProjectsList: ProjectValues[] | []
-    helpdeskTicketsList: Ticket[] | []
+    helpdeskTicketsList: TicketValues[] | []
     payrollHistoryList: PayrollHistory[] | []
 
     // Payment

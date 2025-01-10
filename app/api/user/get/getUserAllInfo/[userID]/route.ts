@@ -44,7 +44,7 @@ export const GET = async (request: NextRequest, { params }: { params: { userID: 
   try {
     // Fetch user data by ID from params
     const userData = await User.findById(params.userID)
-    .populate("myProjects")
+    .populate("myProjects allProjects")
 
     if (!userData) {
       return NextResponse.json({

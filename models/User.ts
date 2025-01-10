@@ -32,6 +32,7 @@ export interface UserDBTypes {
   joiningDate?: Date;
   position?: string[]; // Developer positions
   myProjects?: Schema.Types.ObjectId[]; // Reference to projects
+  tasks: Schema.Types.ObjectId[]; // Developer tasks
   totalSpendHours?: { date: Date; totalHours: number; loggedInTime: number }[];
   performance?: { month: number; year: number; performance: number };
   managerID?: Schema.Types.ObjectId; // Populated based on Projects schema (linked)
@@ -96,6 +97,7 @@ const userSchema = new Schema<UserDBTypes>(
       year: { type: Number },
       performance: { type: Number },
     },
+    tasks: [{ type: Schema.Types.ObjectId, ref: "Task", required: false }],
     managerID: { type: Schema.Types.ObjectId, ref: "User" },
 
     // Vendor-based project references

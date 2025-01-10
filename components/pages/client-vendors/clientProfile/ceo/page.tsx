@@ -4,16 +4,23 @@ import Headline, {
 } from "@/components/reusables/components/headline";
 import Container from "@/components/reusables/wrapper/Container";
 import MainContainer from "@/components/reusables/wrapper/mainContainer";
+import { CustomUser, PaymentValues, ProjectValues } from "@/lib/types";
 import { ROLE } from "@/tempData";
 import { Ban, Mail, MessageCircleMore, Phone } from "lucide-react";
-import React, { useState } from "react";
+import Image from "next/image";
+import { useSearchParams } from "next/navigation";
+import React, { useEffect, useState } from "react";
 import PaymentHistory from "../../components/PaymentHistory";
 import Projects from "../../components/Projects";
-import { Label } from "@/components/ui/label";
 
 export default function ClinetProfile() {
-  const [performance, setPerformance] = useState(40);
-  const [taskCompleted, setTaskCompleted] = useState(30);
+  const [client, setClient] = useState<CustomUser>();
+  const [payments, setPayments] = useState<PaymentValues[]>();
+  const [projects, setProjects] = useState<ProjectValues[]>();
+  // get query params
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
+
   const headLineButtons = [
     {
       buttonText: "Export Report",
@@ -29,24 +36,75 @@ export default function ClinetProfile() {
       onClick: () => console.log("Export Report"),
     },
   ] as ButtonObjectType[];
+
+  useEffect(() => {
+    const getData = async () => {
+      const [clientRes, salaryHistoryRes] = await Promise.all([
+        fetch("/api/user/get/getUserAllInfo/" + id, {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        }),
+
+        fetch("/api/payment/get/getByUserID/" + id, {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        }),
+      ]);
+
+      const [clientData, salaryHistoryData] = await Promise.all([
+        clientRes.json(),
+        salaryHistoryRes.json(),
+      ]);
+
+      if (clientData.userData) setClient(clientData.userData);
+      if (salaryHistoryData.payments) setPayments(salaryHistoryData.payments);
+      if (clientData.userData.allProjects)
+        setProjects(clientData.userData.allProjects);
+    };
+
+    getData();
+  }, [id]);
+
+  const totalPayment = payments?.reduce(
+    (total, payment) => total + payment.amount,
+    0
+  );
+  const totalProjectsCompleted = projects?.filter(
+    (project) => project.developmentDetails.status === "completed"
+  ).length;
+
+  const totalProjectsProgress = projects?.filter(
+    (project) => project.developmentDetails.status === "inProgress"
+  ).length;
+
+  const totalProjectsRefactoring = projects?.filter(
+    (project) => project.developmentDetails.status === "refactoring"
+  ).length;
+
   return (
     <MainContainer role={ROLE}>
       <Headline
         role={ROLE}
-        title="Project Overview"
-        subTitle="Project"
+        title={client?.firstName + " " + client?.lastName}
+        subTitle={client?.role}
         buttonObjects={headLineButtons}
       />
 
       <Container>
         <div className="w-full h-fit grid grid-cols-[1fr_2fr] p-4">
-          <div className="h-full w-full flex flex-col items-center justify-center border-r border-[#9c9c9c] gap-4">
-            <div className="w-[140px] h-[140px] rounded-full bg-[#d2d2d2]"></div>
-            <h6 className="text-base text-[#007AFF]">asdfghj@gmail.com</h6>
-            <h6 className="text-base text-dark-gray">
-              Current Status:<span className="text-[#22ff00]">Logged In</span>
-            </h6>
-            <h6 className="text-base  text-dark-gray ">Full stack developer</h6>
+          <div className="h-full w-full flex flex-col items-center justify-center border-r border-[#9c9c9c] gap-2">
+            <div className="w-[140px] h-[140px] rounded-full bg-[#d2d2d2]">
+              <Image
+                src={client?.profileImage || "/assets/user.png"}
+                alt="Profile Image"
+                width="140"
+                height="140"
+                className="w-full h-full rounded-full object-cover overflow-hidden"
+              />
+            </div>
+            <h4 className="text-base text-dark-gray">{client?.role}</h4>
+            <h6 className="text-base text-[#007AFF]">{client?.email}</h6>
+            <h6 className="text-base ">Fullstack</h6>
             <div className="flex flex-row items-center gap-4 max-h-[100px]">
               <Phone />
               <Mail />
@@ -54,41 +112,24 @@ export default function ClinetProfile() {
             </div>
           </div>
           <div className="h-full flex flex-col gap-2 items-center justify-center w-full">
-            <Line title="Total payments done" value={11} />
-            <Line title="Total payments done" value={11} />
-            <Line title="Total payments done" value={11} />
-            <div className="flex flex-col gap-4">
-            <Label className="text-base">Performance</Label>
-            <div className="relative h-3 w-full overflow-hidden rounded-full bg-primary/20 ">
-              <div
-                className="h-full w-full flex-1 bg-green-600 transition-all"
-                style={{
-                  transform: `translateX(-${100 - (performance || 0)}%)`,
-                }}
-              ></div>
-            </div>
-
-            <span className="self-end">{performance}%</span>
-          </div>
-
-          <div className="flex flex-col gap-4">
-            <Label className="text-base">TaskCompleted</Label>
-            <div className="relative h-3 w-full overflow-hidden rounded-full bg-primary/20 ">
-              <div
-                className="h-full w-full flex-1 bg-green-600 transition-all"
-                style={{
-                  transform: `translateX(-${100 - (taskCompleted || 0)}%)`,
-                }}
-              ></div>
-            </div>
-
-            <span className="self-end">{taskCompleted}%</span>
-          </div>
+            <Line title="Total payments done" value={totalPayment ?? 0} />
+            <Line
+              title="Total Project Completed"
+              value={totalProjectsCompleted ?? 0}
+            />
+            <Line
+              title="Total Project is Progress"
+              value={totalProjectsProgress ?? 0}
+            />
+            <Line
+              title="Projects in Maintenance"
+              value={totalProjectsRefactoring ?? 0}
+            />
           </div>
         </div>
       </Container>
-      <PaymentHistory />
-      <Projects />
+      <PaymentHistory payments={payments ?? []} />
+      <Projects projects={projects ?? []} />
     </MainContainer>
   );
 }

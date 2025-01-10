@@ -1,14 +1,15 @@
-import { NextResponse } from "next/server";
-import connectToMongoDB from "@/utils/db";
 import User from "@/models/User";
+import connectToMongoDB from "@/utils/db";
+import { NextResponse } from "next/server";
 
 export const GET = async () => {
   await connectToMongoDB();
 
   try {
-    const vendorsAndClients = await User.find({ role: { $in: ["vendor", "vendorClient"] } }).select(
-      "username firstName lastName email phone role vendorID clients"
-    );
+    const vendorsAndClients = await User.find({
+      role: { $in: ["vendor", "vendorClient", "client"] },
+    })
+    // .select("username firstName lastName email phone role vendorID clients");
 
     if (vendorsAndClients.length === 0) {
       return NextResponse.json({

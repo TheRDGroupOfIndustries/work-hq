@@ -118,7 +118,7 @@ export default function AllTransactionsHistoryTable({
   );
 }
 
-function Details({ payments }: { payments: PayrollHistory }) {
+function Details({ payments }: { payments: PayrollHistory }) {       
   return (
     <Dialog>
       {/* Prevent DropdownMenu from closing */}
