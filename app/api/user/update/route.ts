@@ -114,7 +114,26 @@ export const PUT = async (request: NextRequest) => {
       changedFields.push("position");
     }
     if (myProjects !== undefined) {
-      existingUser.myProjects = myProjects;
+      const newProjects = myProjects.map((id: string) => id.toString());
+      const existingProjects = existingUser.myProjects.map((id: string) => id.toString());
+
+      // Add new IDs that are not already in existingTeams
+      const additions = newProjects.filter((id : string) => !existingProjects.includes(id));
+
+      // Remove IDs that are not in newTeams
+      const removals = existingProjects.filter((id:string) => !newProjects.includes(id));
+
+      if (additions.length || removals.length) {
+        existingUser.myProjects = [
+          ...existingProjects, // Retain existing teams
+          ...additions,     // Add only new unique IDs
+        ];
+      }
+
+      
+
+
+      
       changedFields.push("myProjects");
     }
     if (totalSpendHours !== undefined) {

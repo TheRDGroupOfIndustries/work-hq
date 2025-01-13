@@ -11,7 +11,9 @@ import {
   SelectItem,
   SelectTrigger,
 } from "@/components/ui/select";
+import { useProjectContext } from "@/context/ProjectProvider";
 import { CustomUser, ProjectValues, TaskValues } from "@/lib/types";
+import { formatDateString } from "@/lib/utils";
 import { ROLE } from "@/tempData";
 import { motion } from "framer-motion";
 import { ChartLine, Ellipsis } from "lucide-react";
@@ -27,19 +29,15 @@ export interface Column {
   tasks: TaskValues[];
 }
 
-
-
 export default function Kanban() {
   const [search, setSearch] = useState("");
   const searchParams = useSearchParams();
-  const id = searchParams.get("id");
+  const { selectedProjectDetails } = useProjectContext();
+  const id = selectedProjectDetails?._id || searchParams.get("id");
   const [teamMembers, setTeamMembers] = useState<CustomUser[] | []>([]);
 
   const [project, setProject] = useState<ProjectValues | null>(null);
 
-
-
-  // const { selectedProjectTasks } = useProjectContext();
 
   const router = useRouter();
 
@@ -86,79 +84,159 @@ export default function Kanban() {
     setHoveredIndex(null);
   };
 
+  // const onDragEnd = async (
+  //   columnId: TaskStatus,
+  //   draggedTaskValues: TaskValues
+  // ) => {
+  //   try {
+  //     console.log("draggedTaskValues", draggedTaskValues);
+  //     console.log("columnId", columnId);
+  //     const response = await fetch(
+  //       `/api/task/update/${draggedTaskValues._id}`,
+  //       {
+  //         method: "PATCH",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify({
+  //           // ...draggedTaskValues,
+  //           status: columnId,
+  //         }),
+  //       }
+  //     );
+
+  //     if (response.status === 200) {
+  //       console.log("seting columns");
+  //       setColumns((prevColumns) => {
+  //         const newColumns = prevColumns.map((col) => ({
+  //           ...col,
+  //           tasks: [...col.tasks],
+  //         }));
+
+  //         const sourceColumn = newColumns.find(
+  //           (col) => col.id === draggingColumnId
+  //         );
+
+  //         if (sourceColumn && draggedTask.current !== null) {
+  //           const taskIndex = sourceColumn.tasks.findIndex(
+  //             (task) => task.taskNo.toString() === draggingTaskId
+  //           );
+
+  //           if (taskIndex !== -1) {
+  //             const [task] = sourceColumn.tasks.splice(taskIndex, 1);
+
+  //             const destColumn = newColumns.find((col) => col.id === columnId);
+  //             if (destColumn) {
+  //               const insertIndex =
+  //                 dropIndex !== null ? dropIndex : destColumn.tasks.length;
+  //               destColumn.tasks.splice(insertIndex, 0, {
+  //                 ...task,
+  //                 status: columnId,
+  //               });
+
+  //               toast.success(
+  //                 `Task - ${draggedTaskValues.issueSubject} moved successfully to ${columnId} column`
+  //               );
+  //             }
+  //           }
+  //         }
+
+  //         return newColumns;
+  //       });
+
+  //       // Reset all dragging-related and hover states
+  //       setDraggingTaskId(null);
+  //       setDraggingColumnId(null);
+  //       draggedTask.current = null;
+  //       setDropIndex(null);
+  //       resetHoverStates();
+  //     } else {
+  //       toast.error("Failed to update task in the database");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error updating task:", error);
+  //     toast.error("Error updating task in the database");
+  //   }
+  // };
+
+
   const onDragEnd = async (
     columnId: TaskStatus,
     draggedTaskValues: TaskValues
   ) => {
+    console.log("draggedTaskValues", draggedTaskValues);
+    console.log("columnId", columnId);
+     setColumns((prevColumns) => {
+       const newColumns = prevColumns.map((col) => ({
+         ...col,
+         tasks: [...col.tasks],
+       }));
+
+       const sourceColumn = newColumns.find(
+         (col) => col.id === draggingColumnId
+       );
+
+       if (sourceColumn && draggedTask.current !== null) {
+         const taskIndex = sourceColumn.tasks.findIndex(
+           (task) => task.taskNo.toString() === draggingTaskId
+         );
+
+         if (taskIndex !== -1) {
+           const [task] = sourceColumn.tasks.splice(taskIndex, 1);
+
+           const destColumn = newColumns.find((col) => col.id === columnId);
+           if (destColumn) {
+             const insertIndex =
+               dropIndex !== null ? dropIndex : destColumn.tasks.length;
+             destColumn.tasks.splice(insertIndex, 0, {
+               ...task,
+               status: columnId,
+             });
+
+             toast.success(
+               `Task - ${draggedTaskValues.issueSubject} moved successfully to ${columnId} column`
+             );
+           }
+         }
+       }
+
+       return newColumns;
+     });
+
+     // Reset all dragging-related and hover states
+     setDraggingTaskId(null);
+     setDraggingColumnId(null);
+     draggedTask.current = null;
+     setDropIndex(null);
+     resetHoverStates();
     try {
       const response = await fetch(
-        `/api/task/update/${draggedTaskValues._id}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            ...draggedTaskValues,
-            status: columnId,
-          }),
-        }
-      );
-
-      if (response.status === 200) {
-        setColumns((prevColumns) => {
-          const newColumns = prevColumns.map((col) => ({
-            ...col,
-            tasks: [...col.tasks],
-          }));
-
-          const sourceColumn = newColumns.find(
-            (col) => col.id === draggingColumnId
-          );
-
-          if (sourceColumn && draggedTask.current !== null) {
-            const taskIndex = sourceColumn.tasks.findIndex(
-              (task) => task.taskNo.toString() === draggingTaskId
+              `/api/task/update/${draggedTaskValues._id}`,
+              {
+                method: "PATCH",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  // ...draggedTaskValues,
+                  status: columnId,
+                }),
+              }
             );
 
-            if (taskIndex !== -1) {
-              const [task] = sourceColumn.tasks.splice(taskIndex, 1);
-
-              const destColumn = newColumns.find((col) => col.id === columnId);
-              if (destColumn) {
-                const insertIndex =
-                  dropIndex !== null ? dropIndex : destColumn.tasks.length;
-                destColumn.tasks.splice(insertIndex, 0, {
-                  ...task,
-                  status: columnId,
-                });
-
-                toast.success(
-                  `Task - ${draggedTaskValues.issueSubject} moved successfully to ${columnId} column`
-                );
-              }
-            }
-          }
-
-          return newColumns;
-        });
-
-        // Reset all dragging-related and hover states
-        setDraggingTaskId(null);
-        setDraggingColumnId(null);
-        draggedTask.current = null;
-        setDropIndex(null);
-        resetHoverStates();
+      if(response.status === 200){
+        toast.success("Updated successfully");
       } else {
         toast.error("Failed to update task in the database");
       }
+
     } catch (error) {
       console.error("Error updating task:", error);
       toast.error("Error updating task in the database");
     }
   };
-
-    useEffect(() => {
+  
+  useEffect(() => {
     const fetchProject = async () => {
       try {
         const [getProjectRes] = await Promise.all([
@@ -170,38 +248,37 @@ export default function Kanban() {
 
         const [getProjectData] = await Promise.all([getProjectRes.json()]);
 
-        console.log("getProjectData", getProjectData);
+        // console.log("getProjectData", getProjectData);
 
-        // setProject(getProjectData.project);
-        // setTeamMembers(getProjectData.project.developmentDetails.teams);
-        // const tasks : TaskValues[] = getProjectData.project.developmentDetails.tasks;
+        setProject(getProjectData.project);
+        setTeamMembers(getProjectData.project.developmentDetails.teams);
+        const tasks: TaskValues[] =
+          getProjectData.project.developmentDetails.tasks;
 
-        // const initialColumns: Column[] = [
-        //   {
-        //     id: "pending",
-        //     title: "To Do",
-        //     tasks: tasks.filter((task) => task.status === "pending"),
-        //   },
-        //   {
-        //     id: "inProgress",
-        //     title: "In Progress",
-        //     tasks: tasks.filter((task) => task.status === "inProgress"),
-        //   },
-        //   {
-        //     id: "completed",
-        //     title: "Completed",
-        //     tasks: tasks.filter((task) => task.status === "completed"),
-        //   },
-        //   {
-        //     id: "refactoring",
-        //     title: "Refactoring",
-        //     tasks: tasks.filter((task) => task.status === "refactoring"),
-        //   },
-        // ];
+        const initialColumns: Column[] = [
+          {
+            id: "pending",
+            title: "To Do",
+            tasks: tasks.filter((task) => task.status === "pending"),
+          },
+          {
+            id: "inProgress",
+            title: "In Progress",
+            tasks: tasks.filter((task) => task.status === "inProgress"),
+          },
+          {
+            id: "completed",
+            title: "Completed",
+            tasks: tasks.filter((task) => task.status === "completed"),
+          },
+          {
+            id: "refactoring",
+            title: "Refactoring",
+            tasks: tasks.filter((task) => task.status === "refactoring"),
+          },
+        ];
 
-        // setColumns(initialColumns);
-
-
+        setColumns(initialColumns);
       } catch (error) {
         console.error("Error fetching payroll history:", error);
       }
@@ -272,27 +349,44 @@ export default function Kanban() {
           className="flex -space-x-2 ml-auto"
         >
           {/* Render user avatars */}
-          {teamMembers.slice(0, 4).map((teamMember, i) => (
-            <Image
-              key={i}
-              src={teamMember.profileImage || "/assets/user.png"}
-              alt={`User ${i + 1}`}
-              className="cursor-pointer rounded-full size-12 border-2 border-background"
-              width={32}
-              height={32}
-            />
-          ))}
-          {/* Additional users button */}
-          {teamMembers.length > 4 && (
-            <Button
-              size="icon"
-              variant="outline"
-              className="cursor-pointer rounded-full size-12 border-2 border-background"
-            >
-              +{teamMembers.length - 4}
-            </Button>
+          {teamMembers.length > 0 ? (
+            <>
+              {teamMembers.slice(0, 4).map((teamMember, i) => (
+                <Image
+                  key={i}
+                  src={teamMember.profileImage || "/assets/user.png"}
+                  alt={`User ${i + 1}`}
+                  className="cursor-pointer rounded-full size-12 border-2 border-background"
+                  width={32}
+                  height={32}
+                />
+              ))}
+              {/* Additional users button */}
+              {teamMembers.length > 4 && (
+                <Button
+                  size="icon"
+                  variant="outline"
+                  className="cursor-pointer rounded-full size-12 border-2 border-background"
+                >
+                  +{teamMembers.length - 4}
+                </Button>
+              )}
+            </>
+          ) : (
+            null
           )}
         </div>
+        {
+          teamMembers.length === 0 && (
+            <Button
+              onClick={() => router.push("team-members?id=" + id)}
+              variant="outline"
+              className="cursor-pointer  text-[#697077] flex flex-row gap-1 items-center justify-end w-[200px] text-base h-[40px] outline-none shadow-neuro-3 bg-transparent rounded-lg px-4"
+            >
+              Add Team Members
+            </Button>
+          )
+        }
       </div>
 
       {/* Kanban board columns */}
@@ -363,7 +457,7 @@ function TaskCard({
   onDragStart,
   onDragEnd,
   onDragOver,
-  index,
+  // index,
   isHovered,
 }: TaskCardProps) {
   return (
@@ -394,7 +488,7 @@ function TaskCard({
             <Ellipsis color="var(--light-gray)" />
           </div>
           <p className="text-sm text-light-gray">{task.issueSubject}</p>
-          <span>{`Task - ${index + 1}`}</span>
+          {/* <span>{`Task - ${index + 1}`}</span> */}
           <p className="text-xs text-end">
             Priority:{" "}
             <span
@@ -410,7 +504,7 @@ function TaskCard({
             </span>
           </p>
           <p className="text-xs text-end mt-1">
-            Due: {task.dueDate.toLocaleDateString()}
+            Due: {formatDateString(String(task.dueDate))}
           </p>
         </div>
       </Container>

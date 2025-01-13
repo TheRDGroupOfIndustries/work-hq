@@ -47,6 +47,7 @@ const ProjectTable: React.FC<ProjectTableProps> = ({ projects }) => {
   const [search, setSearch] = useState<string>("");
   const [filterCategory, setFilterCategory] = useState<string>("");
 
+
   const filteredProjects = projects.filter((project) => {
     const matchesSearch =
       project?.projectDetails?.projectName
@@ -181,7 +182,7 @@ const ProjectTable: React.FC<ProjectTableProps> = ({ projects }) => {
         </tbody>
       </table> */}
 
-      <AllProjectListTable list={filteredProjects} routeTo="dev" />
+      <AllProjectListTable list={filteredProjects} routeTo="dev" role={"developer"} />
     </div>
   );
 };

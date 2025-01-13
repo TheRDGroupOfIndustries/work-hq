@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import connectToMongoDB from "@/utils/db";
 import Project from "@/models/Project";
+import User from "@/models/User";
 
 export const PUT = async (request: NextRequest) => {
   const { _id, ...updateData } = await request.json();
@@ -58,18 +59,50 @@ export const PUT = async (request: NextRequest) => {
 
     if (updateData.teams) {
       const newTeams = updateData.teams.map((id: string) => id.toString());
+      // console.log("newTeams", newTeams);
+    
       const existingTeams = existingProject.developmentDetails.teams.map((id: string) => id.toString());
-      
+      // console.log("existingTeams", existingTeams);
+    
+      // Add new IDs that are not already in existingTeams
       const additions = newTeams.filter((id: string) => !existingTeams.includes(id));
+      // console.log("additions", additions);
+    
+      // Remove IDs from existingTeams that are not in newTeams
       const removals = existingTeams.filter((id: string) => !newTeams.includes(id));
-      
+      // console.log("removals", removals);
+    
+      // Update existingTeams only with additions
       if (additions.length || removals.length) {
-        existingProject.developmentDetails.teams = newTeams;
+        existingProject.developmentDetails.teams = [
+          ...existingTeams, // Retain existing teams
+          ...additions,     // Add only new unique IDs
+        ];
         changedFields.push("developmentDetails.teams");
+
+        // Add new project in user myProjects array
+        if (additions.length) {
+          await Promise.all(
+            additions.map(async (id: string) => {
+              const user = await User.findById(id);
+              if (user) {
+                if (!user.myProjects.includes(existingProject._id)) {
+                  user.myProjects.push(existingProject._id);
+                }
+                await user.save();
+                return user;
+              }
+              return null;
+            })
+          );
+        }
       }
     }
+    
 
     const updatedProject = await existingProject.save();
+
+    
 
     return NextResponse.json({
       status: 200,

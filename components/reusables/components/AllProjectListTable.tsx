@@ -59,7 +59,7 @@ export default function AllProjectListTable({
                 key={index}
                 onClick={(e) => {
                   e.stopPropagation();
-                  if (role === "client" ) {
+                  if (role === "client" || role === "developer") {  
                     setSelectedProject({
                       _id: project?._id,
                       name: project?.projectDetails?.projectName,

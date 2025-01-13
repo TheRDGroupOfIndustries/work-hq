@@ -10,15 +10,19 @@ export const GET = async (
 
   try {
     const project = await Project.findById(params._id)
-  .select("developmentDetails projectDetails")
-  .populate("developmentDetails.tasks")
-  .populate({
-    path: "developmentDetails.teams",
-    populate: {
-      path: "tasks",
-      select: "status", // Select only the 'status' field from tasks
-    },
-  })
+    .select("developmentDetails projectDetails")
+    .populate({
+      path: "developmentDetails.tasks",
+      match: {}, // No `$exists` here; populate will ignore missing fields automatically
+    })
+    .populate({
+      path: "developmentDetails.teams",
+      populate: {
+        path: "tasks",
+        match: {}, // No `$exists` here either
+        select: "status",
+      },
+    });
 
 
     if (!project) {

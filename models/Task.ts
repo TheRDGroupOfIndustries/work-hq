@@ -50,6 +50,6 @@ const taskSchema = new Schema<TaskDBTypes>(
 );
 
 // const Task = models && (models.Task || model<TaskDBTypes>("Task", taskSchema));
-const Task = models && (models.Task || model<TaskDBTypes>("Task", taskSchema));
+const Task = models.Task || model<TaskDBTypes>("Task", taskSchema);
 
 export default Task;

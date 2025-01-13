@@ -17,7 +17,11 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: '**.com',
-      }
+      },
+      {
+        protocol: "https",
+        hostname: "5p1n73rhe6.ufs.sh",
+      },
     ],
   },
 };
