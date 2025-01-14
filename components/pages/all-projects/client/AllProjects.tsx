@@ -180,7 +180,7 @@ const ProjectTable: React.FC<ProjectTableProps> = ({ projects }) => {
         </tbody>
       </table> */}
 
-      <AllProjectListTable list={filteredProjects} routeTo="c" />
+      <AllProjectListTable role="client" list={filteredProjects} routeTo="c" />
     </div>
   );
 };
