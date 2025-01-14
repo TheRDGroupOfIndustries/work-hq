@@ -9,18 +9,24 @@ import MainContainer from "@/components/reusables/wrapper/mainContainer";
 import { Label } from "@/components/ui/label";
 // import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { CustomUser } from "@/lib/types";
 import { ROLE } from "@/tempData";
-import { VENDOR } from "@/types";
+import { Role, VENDOR } from "@/types";
+import { uploadNewFile } from "@/utils/actions/fileUpload.action";
 import {
   IndianRupee,
+  Loader,
   Mail,
   MessageCircleMore,
   MessageCircleMoreIcon,
+  PenOff,
   Phone,
   SquarePen,
 } from "lucide-react";
-import { signOut } from "next-auth/react";
-import { useState } from "react";
+import { signOut, useSession } from "next-auth/react";
+import Image from "next/image";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 interface NOTIFICATION {
   _id: string;
@@ -65,43 +71,121 @@ const notification: NOTIFICATION[] = [
 ];
 
 export default function Profile() {
+  const { data: session } = useSession();
+  const user = session?.user as CustomUser;
   const [performance, setPerformance] = useState(40);
   const [taskCompleted, setTaskCompleted] = useState(30);
+  const [userData, setUserData] = useState<CustomUser>(user);
+  const [editOpen, setEditOpen] = useState(false);
+  const [uploadingPreview, setUploadingPreview] = useState<boolean>(false);
   const headLineButtons = [
     {
-      buttonText: "Edit Profile",
-      icon: <SquarePen />,
+      buttonText: editOpen ? "Cancel" : "Edit Profile",
+      icon: editOpen ? <PenOff /> : <SquarePen />,
       onNeedIcon: false,
-      onClick: () => console.log("Export Report"),
+      onClick: () => {
+        setEditOpen(!editOpen);
+        setUserData(user);
+      },
     },
     {
-      buttonText: "Logout",
+      buttonText: editOpen ? "Save" : "Logout",
       icon: <Logout color="white" />,
       type: "withCustomColor",
       onNeedIcon: false,
-      onClick: () => signOut(),
+      onClick: () => (editOpen ? handleSave() : signOut()),
     },
   ] as ButtonObjectType[];
+
+  async function handleSave() {
+    const updateUserRec = await fetch("/api/user/update", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        _id: userData._id,
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        profileImage: userData.profileImage,
+        email: userData.email,
+        phone: userData.phone,
+        position: userData.position,
+      }),
+    });
+
+    setEditOpen(false);
+
+    if (updateUserRec.status) {
+      toast.success("Profile updated successfully");
+    }
+  }
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingPreview(true);
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const uploadResponse = await uploadNewFile(formData);
+      if (uploadResponse?.url) {
+        setUserData((prevData) => ({
+          ...prevData,
+          profileImage: uploadResponse.url,
+        }));
+      } else {
+        alert("File upload failed. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      alert("Failed to upload file. Please try again later.");
+    } finally {
+      setUploadingPreview(false);
+    }
+  };
   return (
     <MainContainer>
       <Headline
-        role={ROLE}
+        role={user.role as Role}
         title="Profile"
         subTitle="Project / profile"
         buttonObjects={headLineButtons}
       />
 
       <div className="w-full flex flex-row gap-4 ">
-        <Container className="max-w-[40%] h-fit">
-          <div className="flex flex-row  sm:mx-0 items-center  gap-4">
-            <div className="min-w-[130px] min-h-[130px] rounded-full bg-[#D9D9D9]"></div>
+        <Container className="max-w-[40%] h-fit ">
+          <div className="flex flex-row  sm:mx-0 items-center  gap-4 overflow-hidden">
+            <div className="relative min-w-[130px] min-h-[130px] rounded-full bg-[#D9D9D9]">
+              <Image
+                src={userData.profileImage || "/assets/user.png"}
+                width={130}
+                height={130}
+                alt="Profile"
+                className=" rounded-full"
+              />
+              <input
+                type="file"
+                name=""
+                id=""
+                onChange={handleFileChange}
+                className={`${
+                  editOpen || !uploadingPreview ? "" : "hidden"
+                } absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer `}
+              />
+              {uploadingPreview && (
+                <div className="absolute top-0 left-0 w-full h-full flex-center">
+                  <Loader className="w-10 h-10 animate-spin" />
+                </div>
+              )}
+            </div>
             <div className="flex flex-col gap-3">
               <h1 className=" text-gray-800 text-2xl font-normal">
-                Ashri mallick
+                {user.firstName + " " + user.lastName}
               </h1>
-              <p className=" text-gray-600 text-lg font-normal">
-                ashriarya@gmail.com
-              </p>
+              <p className=" text-gray-600 text-lg font-normal">{user.email}</p>
               <div className="flex flex-row items-center gap-4 max-h-[100px]">
                 <Phone />
                 <Mail />
@@ -164,7 +248,11 @@ export default function Profile() {
               </TabsTrigger>
             </TabsList>
             <TabsContent value="paymentInfo">
-              <PersonalInfo />
+              <PersonalInfo
+                user={userData}
+                setUserData={setUserData}
+                editOpen={editOpen}
+              />
             </TabsContent>
             <TabsContent value="notifications">
               <Notifications />
@@ -176,38 +264,87 @@ export default function Profile() {
   );
 }
 
-function PersonalInfo() {
+function PersonalInfo({
+  user,
+  setUserData,
+  editOpen,
+}: {
+  user: CustomUser;
+  setUserData: (user: CustomUser) => void;
+  editOpen: boolean;
+}) {
   return (
     <div className="flex flex-col gap-6 mt-4 px-4">
       <div className="grid grid-cols-[1fr_2fr]">
         <span className="text-[#344054] text-base font-medium">First Name</span>
-        <span className="text-[#667085] text-base">Ashri</span>
+        <input
+          type="text"
+          disabled={!editOpen}
+          value={user.firstName}
+          onChange={(e) => setUserData({ ...user, firstName: e.target.value })}
+          className=" disabled:text-[#667085] text-black text-base disabled:bg-transparent p-2 disabled:outline-none disabled:p-0 "
+        />
       </div>
       <div className="grid grid-cols-[1fr_2fr]">
         <span className="text-[#344054] text-base font-medium">Last Name</span>
-        <span className="text-[#667085] text-base">Ashri</span>
+        <input
+          type="text"
+          disabled={!editOpen}
+          value={user.lastName}
+          onChange={(e) => setUserData({ ...user, lastName: e.target.value })}
+          className=" disabled:text-[#667085] text-black text-base disabled:bg-transparent p-2 disabled:outline-none disabled:p-0 "
+        />
       </div>
       <div className="grid grid-cols-[1fr_2fr]">
         <span className="text-[#344054] text-base font-medium">Role</span>
-        <span className="text-[#667085] text-base">Developer</span>
+        <input
+          type="text"
+          disabled={!editOpen}
+          value={user.role}
+          onChange={(e) => setUserData({ ...user, role: e.target.value })}
+          className=" disabled:text-[#667085] text-black text-base disabled:bg-transparent p-2 disabled:outline-none disabled:p-0 "
+        />
       </div>
       <div className="grid grid-cols-[1fr_2fr]">
         <span className="text-[#344054] text-base font-medium">Position</span>
-        <span className="text-[#667085] text-base">dev</span>
+        <input
+          type="text"
+          disabled={!editOpen}
+          value={user?.position?.join(", ")} // Join the array into a comma-separated string
+          onChange={(e) =>
+            setUserData({
+              ...user,
+              position: e.target.value.split(",").map((pos) => pos.trim()),
+            })
+          } // Split the string into an array and trim whitespace
+          className=" disabled:text-[#667085] text-black text-base disabled:bg-transparent p-2 disabled:outline-none disabled:p-0"
+        />
       </div>
-      <div className="grid grid-cols-[1fr_2fr]">
+      {/* <div className="grid grid-cols-[1fr_2fr]">
         <span className="text-[#344054] text-base font-medium">Password</span>
-        <span className="text-[#667085] text-base">Ashri</span>
-      </div>
+        <span className="text-[#667085] text-base"></span>
+      </div> */}
       <div className="grid grid-cols-[1fr_2fr] justify-start">
         <span className="text-[#344054] text-base font-medium">
           Phone Number
         </span>
-        <span className="text-[#667085] text-base">+91 1234567891</span>
+        <input
+          type="text"
+          disabled={!editOpen}
+          value={user.phone || ""}
+          onChange={(e) => setUserData({ ...user, phone: e.target.value })}
+          className=" disabled:text-[#667085] text-black text-base disabled:bg-transparent p-2 disabled:outline-none disabled:p-0"
+        />
       </div>
       <div className="grid grid-cols-[1fr_2fr]">
         <span className="text-[#344054] text-base font-medium">Email</span>
-        <span className="text-[#667085] text-base">ashriarya@gmail</span>
+        <input
+          type="text"
+          disabled={!editOpen}
+          value={user.email}
+          onChange={(e) => setUserData({ ...user, email: e.target.value })}
+          className=" disabled:text-[#667085] text-black text-base disabled:bg-transparent p-2 disabled:outline-none disabled:p-0"
+        />
       </div>
     </div>
   );
