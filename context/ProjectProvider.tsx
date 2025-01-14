@@ -62,7 +62,7 @@ const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({
       });
 
       const data = await res.json();
-      console.log("data: ", data);
+      // console.log("data: ", data);
       if (res.ok) {
         setUserAllProjects(data.projects); // Set the fetched projects
       } else {
@@ -91,7 +91,7 @@ const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({
         );
         const taskData = await taskRes.json();
         setProjectDetails(projectDetailsData.project as ProjectValues);
-        setProjectTasks(taskData.project as TaskValues[]);
+        setProjectTasks(taskData.tasks as TaskValues[]);
 
         setSelectedProject({
           _id: projectDetailsData.project._id || "",

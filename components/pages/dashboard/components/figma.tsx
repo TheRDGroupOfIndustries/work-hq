@@ -1,9 +1,18 @@
 "use client";
 
+import SquareButton from "@/components/reusables/wrapper/squareButton";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Role, VENDOR } from "@/types";
-import { Link, MessageCircleMore, SendHorizontal, X } from "lucide-react";
+import { Link, MessageCircleMore, Plus, SendHorizontal, X } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 
 export default function Figma({ link, role }: { link?: string; role: Role }) {
   const [isChatOpen, setIsChatOpen] = useState(true);
@@ -29,14 +38,14 @@ export default function Figma({ link, role }: { link?: string; role: Role }) {
             } `}
           >
             {link ? (
-            <iframe
-              // style="border: 1px solid rgba(0, 0, 0, 0.1);"
-              className="  z-[-2] w-full h-full "
-              width="100%"
-              height="100%"
-              src={link}
-              // allowfullscreen
-            ></iframe>
+              <iframe
+                // style="border: 1px solid rgba(0, 0, 0, 0.1);"
+                className="  z-[-2] w-full h-full "
+                width="100%"
+                height="100%"
+                src={link}
+                // allowfullscreen
+              ></iframe>
             ) : (
               <div className="w-full h-full flex flex-col items-center justify-center">
                 <p className="text-lg font-semibold text-[#858585]">
@@ -54,6 +63,9 @@ export default function Figma({ link, role }: { link?: string; role: Role }) {
               >
                 <MessageCircleMore color="white" size={20} />
               </div>
+              {(role === "developer" || role === "manager") && (
+                <AddLink oldLink={link ?? ""} />
+              )}
             </div>
           </div>
           <div
@@ -114,5 +126,62 @@ export default function Figma({ link, role }: { link?: string; role: Role }) {
         </div>
       </div>
     </div>
+  );
+}
+
+function AddLink({ oldLink }: { oldLink: string }) {
+  const [link, setLink] = useState(oldLink);
+  const [submiting, setSubmitting] = useState(false);
+  const handleSubmit = async () => {
+    setSubmitting(true);
+    const res = await fetch("/api/dashboard/figma", {
+      method: "POST",
+      body: JSON.stringify({ link }),
+    });
+    if(res.ok){
+      toast.success("Link added successfully");
+    } else {
+      toast.error("Something went wrong");
+    }
+    document.getElementById("close")?.click();
+    setSubmitting(false);
+  }
+  return (
+    <Dialog>
+      <DialogTrigger>
+        <div className="h-[40px] w-[40px] bg-black flex flex-row items-center justify-center cursor-pointer ">
+          <Plus color="white" size={20} />
+        </div>
+      </DialogTrigger>
+      <DialogContent
+        onClick={(e) => e.stopPropagation()}
+        className="w-[633px] max-w-[633px] max-h-[90vh] m-4 bg-primary-sky-blue flex flex-col gap-6 rounded-3xl p-5 lg:p-6"
+      >
+        <h1 className="text-2xl font-semibold text-dark-gray">Add Link</h1>
+        <div className="flex flex-col gap-3 overflow-y-auto">
+          <div className="w-full flex flex-col gap-3 p-3 ">
+            <Label className="text-base font-medium text-gray-800">Link</Label>
+            <input
+              type="text"
+              disabled={submiting}
+              value={link}
+              onChange={(e) => setLink(e.target.value)}
+              className="w-full text-base h-[40px] outline-none shadow-[3px_3px_3px_0px_#789BD399,-3px_-3px_5px_0px_#FFFFFF] bg-transparent rounded-lg px-4"
+              required
+            />
+          </div>
+        </div>
+        <div className="flex flex-row gap-2 justify-end">
+          <DialogClose asChild>
+            <SquareButton id="close" className="text-[#6A6A6A] w-fit self-end">
+              Close
+            </SquareButton>
+          </DialogClose>
+          <SquareButton disabled={submiting} id="close" onClick={() => handleSubmit()} className="text-[#6A6A6A] w-fit self-end">
+            {submiting ? "Submitting" : "Submit"}
+          </SquareButton>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }

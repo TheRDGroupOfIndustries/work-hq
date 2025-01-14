@@ -105,11 +105,13 @@ export default function HomePage() {
 
       <div className="w-full flex flex-row gap-4">
         <div className="w-full flex flex-col xl:flex-row gap-10">
-          <ProjectReportCard
+          {/* <ProjectReportCard
             report={dashboardProjectReport}
             totalTasks={100}
             role={ROLE}
-          />
+            title="gh"
+            subTitleTotal="Total Tasks"
+          /> */}
 
           {/* <HoursCountCard
             totalHours={
@@ -122,11 +124,11 @@ export default function HomePage() {
             role={ROLE} // Replace with actual role
           /> */}
 
-          <HoursCountCard
+          {/* <HoursCountCard
             totalHours={100}
             data={dashbordHoursCount}
             role={ROLE}
-          />
+          /> */}
         </div>
       </div>
 

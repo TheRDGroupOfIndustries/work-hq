@@ -337,7 +337,7 @@ function Details({ payments }: { payments: PayrollHistory }) {
           <DialogClose asChild>
             <SquareButton id="close" className="text-[#6A6A6A] w-fit self-end">
               Close
-            </SquareButton>
+            </SquareButton>                        
           </DialogClose>
         </div>
       </DialogContent>

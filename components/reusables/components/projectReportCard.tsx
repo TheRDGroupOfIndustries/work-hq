@@ -12,7 +12,7 @@ import MidSizeCard from "../wrapper/midSizeCard";
 
 export interface TaskStatusReport {
   completed: number;
-  onGoing: number;
+  inProgress: number;
   pending: number;
   refactoring: number;
   maintenance?: number;
@@ -58,7 +58,7 @@ export default function ProjectReportCard({
   useEffect(() => {
     if (typeof totalTasks === "undefined" || isNaN(Number(totalTasks))) {
       const calculatedTotal =
-        report.completed + report.onGoing + report.pending +(report.refactoring ?? 0);
+        report.completed + report.inProgress + report.pending +(report.refactoring ?? 0);
       setTotal(calculatedTotal);
     } else {
       setTotal(totalTasks);
@@ -101,7 +101,7 @@ export function Chart({
     },
     {
       status: "On going",
-      noOfTasks: report?.onGoing || 0,
+      noOfTasks: report?.inProgress || 0,
       fill: `${
         isVendor
           ? "var(--vendor-pie-chart-color-2)"
@@ -199,7 +199,7 @@ function SideBar({
           <div className="">On going</div>
         </div>
         <div className="flex flex-row text-[#615E83] items-center">
-          {report?.onGoing || 0}
+          {report?.inProgress || 0}
         </div>
       </div>
 

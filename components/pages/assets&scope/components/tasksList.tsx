@@ -15,6 +15,7 @@ import Filter from "@/components/icons/Filter";
 import SortBy from "@/components/icons/SortBy";
 import { EllipsisVertical } from "lucide-react";
 import { TaskValues } from "@/lib/types";
+import { formatDateString } from "@/lib/utils";
 
 export default function TasksList({
   role,
@@ -103,8 +104,8 @@ const DataTableTasks = ({ tasks }: { tasks: TaskValues[] }) => {
                   </div>
                 </TableCell>
                 <TableCell>{row.status}</TableCell>
-                <TableCell>{row.createdAt}</TableCell>
-                <TableCell>{row.assignedTo}</TableCell>
+                <TableCell>{formatDateString(row.createdAt)}</TableCell>
+                <TableCell>{row.assignedTo.name}</TableCell>
                 <TableCell>
                   <EllipsisVertical
                     size={16}

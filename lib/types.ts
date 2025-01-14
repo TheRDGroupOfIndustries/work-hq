@@ -138,6 +138,7 @@ export interface TaskValues extends TaskDBTypes {
     name: string;
     avatar: string;
   };
+  createdAt: string;
 }
 
 export interface PaymentInfoValues extends PaymentInfoDBTypes {

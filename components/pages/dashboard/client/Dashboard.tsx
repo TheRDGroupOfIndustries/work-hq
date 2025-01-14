@@ -23,6 +23,7 @@ import Deadline from "@/components/icons/Deadline";
 import YourPerformanceSpendHour from "@/components/reusables/components/YourPerformanceSpendHour";
 import DevWorkStatus from "../components/DevWorkStatus";
 import YourTasks from "../components/YourTasks";
+import { Role } from "@/types";
 
 export default function Dashboard() {
   const { data: session } = useSession();
@@ -37,7 +38,7 @@ export default function Dashboard() {
           (acc[task?.status as keyof TaskStatusReport] || 0) + 1;
         return acc;
       },
-      { completed: 0, onGoing: 0, pending: 0, refactoring: 0 }
+      { completed: 0, inProgress: 0, pending: 0, refactoring: 0 }
     );
 
   const totalTasks = selectedProjectTasks?.length || 0;
@@ -118,7 +119,7 @@ export default function Dashboard() {
             data={dashbordHoursCount}
             role={ROLE}
           />
-        </>
+        </>             
       )}
       <div className="w-full flex flex-row justify-between gap-4">
         <div className="w-full flex flex-col xl:flex-row justify-between gap-10">
@@ -127,6 +128,8 @@ export default function Dashboard() {
               report={taskStatusReport}
               totalTasks={totalTasks}
               role={ROLE}
+              title="Progress tasks Report"
+              subTitleTotal={`Total tasks: ${totalTasks}`}
             />
           ) : (
             <div className="text-center text-gray-500 shadow-neuro-3 p-4 rounded-3xl">
@@ -162,17 +165,15 @@ export default function Dashboard() {
         </div>
       )}
 
-      {selectedProjectDetails?.developmentDetails?.figma?.link && (
         <Figma
           link={selectedProjectDetails?.developmentDetails?.figma?.link}
-          role={ROLE}
+          role={user?.role as Role}
         />
-      )}
 
       {selectedProjectDetails?.developmentDetails?.deployment?.link && (
         <Deployment
           link={selectedProjectDetails?.developmentDetails?.deployment?.link}
-          role={ROLE}
+          role={user?.role as Role}
         />
       )}
 

@@ -23,7 +23,7 @@ export default function AssetsAndScope() {
           (acc[task?.status as keyof TaskStatusReport] || 0) + 1;
         return acc;
       },
-      { completed: 0, onGoing: 0, pending: 0, refactoring: 0 }
+      { completed: 0, inProgress: 0, pending: 0, refactoring: 0 }
     );
 
   const totalTasks = selectedProjectTasks?.length || 0;
@@ -61,9 +61,11 @@ export default function AssetsAndScope() {
         <div className="w-full flex flex-col xl:flex-row justify-between gap-10">
           {taskStatusReport ? (
             <ProjectReportCard
-              report={taskStatusReport}
-              totalTasks={totalTasks}
-              role={ROLE}
+            report={taskStatusReport}
+            totalTasks={totalTasks}
+            role={ROLE}
+            title="Progress tasks Report"
+            subTitleTotal={`Total tasks: ${totalTasks}`}
             />
           ) : (
             <div className="text-center text-gray-500 shadow-neuro-3 p-4 rounded-3xl">
