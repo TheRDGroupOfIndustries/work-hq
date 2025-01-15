@@ -31,6 +31,19 @@ export default function Payment() {
       onNeedIcon: false,
       dialogContent: <EditCompanyPaymentDetails/>,
     },
+  
+    {
+      buttonText: "Add Payment",
+      onNeedIcon: false,
+      dialogContent: <AddEmployeeSalary />,
+    },
+    {
+      buttonText: "Conpany Payment",
+      icon: <CircleAlert size={20} />,
+      type: "lightGray",
+      onNeedIcon: false,
+      dialogContent: <PaymentRequestClient />,
+    },
   ] as ButtonObjectType[];
 
   const headLineButtonsManager = [

@@ -123,11 +123,11 @@ export default function AllProjectListTable({
                   <TableCell className="text-primary-blue overflow-hidden">
                     <a
                       className="max-w-[200px] "
-                      href={project?.developmentDetails?.figma?.link}
+                      href={project?.developmentDetails?.figmaLink?.link}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      {project?.developmentDetails?.figma?.link}
+                      {project?.developmentDetails?.figmaLink?.link}
                     </a>
                   </TableCell>
                 )}

@@ -166,16 +166,14 @@ export default function Dashboard() {
       )}
 
         <Figma
-          link={selectedProjectDetails?.developmentDetails?.figma?.link}
+          link={selectedProjectDetails?.developmentDetails?.figmaLink?.link}
           role={user?.role as Role}
         />
 
-      {selectedProjectDetails?.developmentDetails?.deployment?.link && (
         <Deployment
           link={selectedProjectDetails?.developmentDetails?.deployment?.link}
           role={user?.role as Role}
         />
-      )}
 
       <ProjectInfo role={ROLE} />
     </MainContainer>

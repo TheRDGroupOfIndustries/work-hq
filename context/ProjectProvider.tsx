@@ -62,7 +62,7 @@ const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({
       });
 
       const data = await res.json();
-      // console.log("data: ", data);
+      console.log("data: ", data);
       if (res.ok) {
         setUserAllProjects(data.projects); // Set the fetched projects
       } else {

@@ -115,7 +115,7 @@ export interface ProjectValues {
       link: string;
       channelID: string;
     };
-    figma?: {
+    figmaLink?: {
       link: string;
       channelID: string;
     };

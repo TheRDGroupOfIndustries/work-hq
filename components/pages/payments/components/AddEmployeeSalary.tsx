@@ -284,7 +284,7 @@ export function EmployeeSelect({
 
       setEmployees(
         // Filter users with role "developer"
-        data.users.filter((user: CustomUser) => user.role === "developer")
+        data.users.filter((user: CustomUser) => user.role === "developer" || user.role === "manager")
       );
     }
 
@@ -348,8 +348,7 @@ export function EmployeeSelect({
                 onClick={() => handleSelect(employee)}
               >
                 <div className="font-medium">
-                  {employee.firstName + " " + employee.lastName}{" "}
-                  {employee.lastName}
+                  {`${employee.firstName} ${employee.lastName} (${employee.role})`}
                 </div>
                 <div className="text-sm text-gray-500">{""}</div>
               </div>

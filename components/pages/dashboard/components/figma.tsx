@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useProjectContext } from "@/context/ProjectProvider";
 import { Role, VENDOR } from "@/types";
 import { Link, MessageCircleMore, Plus, SendHorizontal, X } from "lucide-react";
 import { useState } from "react";
@@ -63,7 +64,7 @@ export default function Figma({ link, role }: { link?: string; role: Role }) {
               >
                 <MessageCircleMore color="white" size={20} />
               </div>
-              {(role === "developer" || role === "manager") && (
+              {(role === "developer" || role === "manager" || role === "ceo") && (
                 <AddLink oldLink={link ?? ""} />
               )}
             </div>
@@ -132,13 +133,28 @@ export default function Figma({ link, role }: { link?: string; role: Role }) {
 function AddLink({ oldLink }: { oldLink: string }) {
   const [link, setLink] = useState(oldLink);
   const [submiting, setSubmitting] = useState(false);
+
+  const { selectedProjectDetails } = useProjectContext();
+
   const handleSubmit = async () => {
     setSubmitting(true);
-    const res = await fetch("/api/dashboard/figma", {
-      method: "POST",
-      body: JSON.stringify({ link }),
+    const updateProjectRec = await fetch("/api/project/update", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        _id: selectedProjectDetails?._id,
+        developmentDetails: {
+          figmaLink: {
+            link: link, 
+            channelID: "", 
+          },
+        },
+        
+      }),
     });
-    if(res.ok){
+    if(updateProjectRec.ok){
       toast.success("Link added successfully");
     } else {
       toast.error("Something went wrong");

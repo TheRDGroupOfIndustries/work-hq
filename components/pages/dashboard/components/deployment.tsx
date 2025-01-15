@@ -3,7 +3,17 @@
 import { useState } from "react";
 import { Role, VENDOR } from "@/types";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Link, MessageCircleMore, SendHorizontal, X } from "lucide-react";
+import { Link, MessageCircleMore, Plus, SendHorizontal, X } from "lucide-react";
+import SquareButton from "@/components/reusables/wrapper/squareButton";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { useProjectContext } from "@/context/ProjectProvider";
+import { toast } from "sonner";
+import { Label } from "@/components/ui/label";
 
 export default function Deployment({
   link,
@@ -57,7 +67,11 @@ export default function Deployment({
               >
                 <MessageCircleMore color="white" size={20} />
               </div>
+              {(role === "developer" || role === "manager" || role === "ceo") && (
+                <AddLink oldLink={link ?? ""} />
+              )}
             </div>
+            
           </div>
           <div
             className={`  h-full  w-full flex flex-col gap-4 p-3 sm:p-4 md:p-5 lg:p-6 ${
@@ -121,5 +135,77 @@ export default function Deployment({
         </div>
       </div>
     </div>
+  );
+}
+
+function AddLink({ oldLink }: { oldLink: string }) {
+  const [link, setLink] = useState(oldLink);
+  const [submiting, setSubmitting] = useState(false);
+
+  const { selectedProjectDetails } = useProjectContext();
+
+  const handleSubmit = async () => {
+    setSubmitting(true);
+    const updateProjectRec = await fetch("/api/project/update", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        _id: selectedProjectDetails?._id,
+        developmentDetails: {
+          deployment: {
+            link: link, 
+            channelID: "", 
+          },
+        },
+        
+      }),
+    });
+    if(updateProjectRec.ok){
+      toast.success("Link added successfully");
+    } else {
+      toast.error("Something went wrong");
+    }
+    document.getElementById("close")?.click();
+    setSubmitting(false);
+  }
+  return (
+    <Dialog>
+      <DialogTrigger>
+        <div className="h-[40px] w-[40px] bg-black flex flex-row items-center justify-center cursor-pointer ">
+          <Plus color="white" size={20} />
+        </div>
+      </DialogTrigger>
+      <DialogContent
+        onClick={(e) => e.stopPropagation()}
+        className="w-[633px] max-w-[633px] max-h-[90vh] m-4 bg-primary-sky-blue flex flex-col gap-6 rounded-3xl p-5 lg:p-6"
+      >
+        <h1 className="text-2xl font-semibold text-dark-gray">Add Link</h1>
+        <div className="flex flex-col gap-3 overflow-y-auto">
+          <div className="w-full flex flex-col gap-3 p-3 ">
+            <Label className="text-base font-medium text-gray-800">Link</Label>
+            <input
+              type="text"
+              disabled={submiting}
+              value={link}
+              onChange={(e) => setLink(e.target.value)}
+              className="w-full text-base h-[40px] outline-none shadow-[3px_3px_3px_0px_#789BD399,-3px_-3px_5px_0px_#FFFFFF] bg-transparent rounded-lg px-4"
+              required
+            />
+          </div>
+        </div>
+        <div className="flex flex-row gap-2 justify-end">
+          <DialogClose asChild>
+            <SquareButton id="close" className="text-[#6A6A6A] w-fit self-end">
+              Close
+            </SquareButton>
+          </DialogClose>
+          <SquareButton disabled={submiting} id="close" onClick={() => handleSubmit()} className="text-[#6A6A6A] w-fit self-end">
+            {submiting ? "Submitting" : "Submit"}
+          </SquareButton>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }

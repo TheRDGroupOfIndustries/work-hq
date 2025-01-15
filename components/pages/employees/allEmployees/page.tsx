@@ -3,11 +3,7 @@ import Filter from "@/components/icons/Filter";
 import Container from "@/components/reusables/wrapper/Container";
 import MainContainer from "@/components/reusables/wrapper/mainContainer";
 import SquareButton from "@/components/reusables/wrapper/squareButton";
-import {
-  Dialog,
-  DialogContent,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -34,10 +30,10 @@ import { RootState } from "@/redux/rootReducer";
 import { setEmployeesList } from "@/redux/slices/ceo";
 import { ROLE } from "@/tempData";
 import { VENDOR } from "@/types";
-import { MoreVertical, Plus} from "lucide-react";
+import { MoreVertical, Plus } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import {  useRouter } from "next/navigation";
+import { default as React, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import EmployeesSummary from "../components/EmployeesSummary";
 import TodayEmployeesProgress from "../components/TodayEmployeesProgress";
@@ -65,18 +61,26 @@ export default function AllEmployees() {
   useEffect(() => {
     const fetchPayrollHistory = async () => {
       try {
-        const response = await fetch("/api/user/get/getAllDevs", {
+        const response = await fetch("/api/user/get", {
           method: "GET",
           headers: { "Content-Type": "application/json" },
         });
-        const data = await response.json();
+        const userData = await response.json();
 
-        setEmployees(data.developers || []);
+        setEmployees(
+          userData.users.filter(
+            (user: CustomUser) =>
+              user.role === "developer" || user.role === "manager"
+          ) || []
+        );
 
         dispatch(
           setEmployeesList(
             // Filter users with role "developer"
-            data.developers
+            userData.users.filter(
+              (user: CustomUser) =>
+                user.role === "developer" || user.role === "manager"
+            )
           )
         );
       } catch (error) {
@@ -182,6 +186,7 @@ export default function AllEmployees() {
 }
 
 function DataTableTasks({ employees }: { employees: CustomUser[] }) {
+  const navigate = useRouter();
   return (
     <div className=" w-full ">
       <Table>
@@ -202,8 +207,13 @@ function DataTableTasks({ employees }: { employees: CustomUser[] }) {
         <TableBody className="text-[#3A3A3A] max-h-[400px] text-base border-0 mb-5 px-10 overflow-hidden  ">
           {employees.map((row, index) => (
             <TableRow
+              onClick={() => {
+                navigate.push(
+                  `/ceo/employees/${row.firstName + row.lastName}?id=${row._id}`
+                );
+              }}
               key={row.id}
-              className={`h-[60px] text-nowrap  text-[#344054] hover:bg-transparent rounded-lg mb-5 border-l-[20px] border-transparent border-b-0 `}
+              className={`h-[60px] text-nowrap  text-[#344054] hover:bg-transparent rounded-lg mb-5 border-l-[20px] border-transparent border-b-0 cursor-pointer `}
             >
               <TableCell className=" ">{`${index + 1}.`}</TableCell>
               <TableCell>
@@ -245,7 +255,7 @@ function DataTableTasks({ employees }: { employees: CustomUser[] }) {
               <TableCell>{"isk"}</TableCell>
               <TableCell>{"isk"}</TableCell>
               <TableCell className="text-primary-blue">{row.email}</TableCell>
-              <TableCell>
+              {/* <TableCell>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <button className="h-8 w-8 p-0">
@@ -255,14 +265,15 @@ function DataTableTasks({ employees }: { employees: CustomUser[] }) {
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem>
                       <Link
-                        href={`/ceo/employees/${row.firstName+row.lastName}?id=${row._id}`}
+                        href={`/ceo/employees/${
+                          row.firstName + row.lastName
+                        }?id=${row._id}`}
                       >
                         Details
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem className="text-red-600">
                       <Dialog>
-                        {/* Prevent DropdownMenu from closing */}
                         <DialogTrigger asChild>
                           <button
                             className="w-full text-left"
@@ -285,11 +296,7 @@ function DataTableTasks({ employees }: { employees: CustomUser[] }) {
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
-                {/* <ManageProjects
-                        userProjects={row.myProjects as ProjectValues[]}
-                        employee={row}
-                /> */}
-              </TableCell>
+              </TableCell> */}
             </TableRow>
           ))}
         </TableBody>
@@ -297,4 +304,3 @@ function DataTableTasks({ employees }: { employees: CustomUser[] }) {
     </div>
   );
 }
-

@@ -106,7 +106,7 @@ export default function DesktopSidebar({
         {links.map(({ id, title, Icon, link, path }) => {
           const linkCheck = role === CEO || role === MANAGER ? `${link}${path}` : `${link}/${_id}/${path}`;
           const isActive =
-            decodeURIComponent(pathname) === linkCheck
+            decodeURIComponent(pathname).includes(linkCheck)
           return (
             <Link
               href={role === CEO || role === MANAGER ? `${link}/${path}` : `${link}/${_id}/${path}`}

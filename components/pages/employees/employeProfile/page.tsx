@@ -107,9 +107,9 @@ export default function EmployeProfile() {
             </div>
           </div>
           <div className="h-full flex flex-col gap-2 items-center justify-center w-full">
-            <Line title="Total tasks done" value={11} />
+            <Line title="Total tasks done" value={employee.tasks?.length || 0} />
             <Line title="Total tasks pending " value={11} />
-            <Line title="Projects Working On" value={11} />
+            <Line title="Projects Working On" value={employee.myProjects?.length || 0} />
             <Line title="Total Working Hours" value={11} />
             <div className="  w-[70%] flex flex-col gap-4">
               <Label className="text-base">Performance</Label>
@@ -167,7 +167,7 @@ export default function EmployeProfile() {
               
       <SalaryHistory payments={salaryHistory} />
 
-      <ProjectList list={projects} employee={employee}/>
+      <ProjectList list={projects}/>
     </MainContainer>
   );
 }
