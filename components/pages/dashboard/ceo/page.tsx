@@ -29,7 +29,6 @@ import MidInformationCard, {
   MidInformationCardProps,
 } from "../components/midInformationCard";
 import StatusCardsHeadline from "../components/StatusCardsHeadline";
-import { useSession } from "next-auth/react";
 
 export default function Dashboard() {
   const [loading, setLoading] = useState(false);
@@ -241,8 +240,6 @@ function ProjectList({
   loading: boolean;
 }) {
   const router = useRouter();
-  const {data : session} = useSession()
-  const user = session?.user as CustomUser
   return (
     <Container>
       <div className="flex flex-col w-full h-[500px] gap-4">

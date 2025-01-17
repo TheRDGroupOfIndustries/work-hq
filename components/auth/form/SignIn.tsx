@@ -35,7 +35,7 @@ const SignIn: React.FC = () => {
   }, [router, session]);
 
   const handleEmailOrPhone = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let inputValue = e.target.value;
+    const inputValue = e.target.value;
     setEmailOrPhone(inputValue);
 
     if (emailPattern.test(inputValue)) {

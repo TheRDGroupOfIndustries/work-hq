@@ -24,6 +24,8 @@ import YourPerformanceSpendHour from "@/components/reusables/components/YourPerf
 import DevWorkStatus from "../components/DevWorkStatus";
 import YourTasks from "../components/YourTasks";
 import { Role } from "@/types";
+import { useEffect } from "react";
+import axios from "axios";
 
 export default function Dashboard() {
   const { data: session } = useSession();
@@ -100,6 +102,22 @@ export default function Dashboard() {
       onClick: () => console.log("Export Report"),
     },
   ] as ButtonObjectType[];
+
+  useEffect(() => {
+    if (user?.role === 'developer' && user?.loginStep === 1) {
+      console.log("User", user);
+      const fetchData = async () => {
+      const response = await axios.get('/api/wakaTime/get-weekly-working-hours', {
+        params: { accessToken: user.wakaTime?.access_token },
+      });
+      console.log("response data: ",response.data);
+    }
+    fetchData();
+    }
+  }, [user]);
+
+
+  
 
   return (
     <MainContainer role={ROLE}>

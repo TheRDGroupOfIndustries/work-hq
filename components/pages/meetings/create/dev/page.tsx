@@ -123,7 +123,7 @@ export default function MeetingsRequest() {
     } catch (error) {
       console.error('Error creating meeting:', error);
     }
-  }, [date, description, endTime, selectedProject, session?.user, startTime, title, router, selectedAttendees]);
+  }, [session?.user, selectedProject, title, description, date, startTime, endTime, isInstant, selectedAttendees, router]);
 
   return (
     <MainContainer role={ROLE}>

@@ -3,7 +3,6 @@ import { getServerSession } from "next-auth";
 import connectToMongoDB from "@/utils/db";
 import Meeting from "@/models/Meeting";
 import { CustomUser } from "@/lib/types";
-import { serverVideoClient } from "@/utils/serverClient";
 import { Types } from "mongoose";
 
 export async function POST(request: NextRequest) {

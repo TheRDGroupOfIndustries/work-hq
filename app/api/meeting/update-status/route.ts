@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import connectToMongoDB from "@/utils/db";
 import Meeting from "@/models/Meeting";
 
-export async function POST(request: NextRequest) {
+export async function POST() {
   await connectToMongoDB();
 
   try {

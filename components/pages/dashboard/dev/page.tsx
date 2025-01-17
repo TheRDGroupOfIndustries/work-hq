@@ -1,8 +1,6 @@
 "use client";
-import HoursCountCard from "@/components/reusables/components/hoursCountCard";
-import ProjectReportCard from "@/components/reusables/components/projectReportCard";
 import MainContainer from "@/components/reusables/wrapper/mainContainer";
-import { dashboardProjectReport, dashbordHoursCount, ROLE } from "@/tempData";
+import { dashbordHoursCount, ROLE } from "@/tempData";
 import Deployment from "../components/deployment";
 import Figma from "../components/figma";
 // import Headline from "./components/headline";
@@ -138,9 +136,9 @@ export default function HomePage() {
         <YourTasks list={list}  title="Your Completed Tasks"/>
       </div>
 
-      {selectedProjectDetails?.developmentDetails?.figma?.link && (
+      {selectedProjectDetails?.developmentDetails?.figmaLink ?.link && (
         <Figma
-          link={selectedProjectDetails?.developmentDetails?.figma?.link}
+          link={selectedProjectDetails?.developmentDetails?.figmaLink?.link}
           role={ROLE}
         />
       )}

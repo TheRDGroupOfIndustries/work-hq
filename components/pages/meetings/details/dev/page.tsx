@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useProjectContext } from '@/context/ProjectProvider';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -38,7 +38,7 @@ export default function MeetingsDetails() {
   const [meetings, setMeetings] = useState<Meeting[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const fetchMeetings = async () => {
+  const fetchMeetings = useCallback(async () => {
     if (session?.user && selectedProject) {
       setIsLoading(true);
       try {
@@ -59,22 +59,22 @@ export default function MeetingsDetails() {
         setIsLoading(false);
       }
     }
-  };
+  },[session, selectedProject]);
 
-  const updateMeetingStatuses = async () => {
+  const updateMeetingStatuses = useCallback(async () => {
     try {
       await fetch('/api/meeting/update-status', { method: 'POST' });
       await fetchMeetings();
     } catch (error) {
       console.error('Error updating meeting statuses:', error);
     }
-  };
+  },[fetchMeetings]);
 
   useEffect(() => {
     fetchMeetings();
     const intervalId = setInterval(updateMeetingStatuses, 60000); // Check every minute
     return () => clearInterval(intervalId);
-  }, [session, selectedProject]);
+  }, [session, selectedProject, fetchMeetings, updateMeetingStatuses]);
 
   return (
     <MainContainer role={ROLE}>

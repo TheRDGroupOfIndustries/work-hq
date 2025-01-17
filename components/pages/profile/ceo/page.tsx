@@ -43,8 +43,8 @@ const notification = [
 ];
 
 export default function Profile() {
-  const [performance, setPerformance] = useState(40);
-  const [taskCompleted, setTaskCompleted] = useState(30);
+  const [performance, ] = useState(40);
+  const [taskCompleted, ] = useState(30);
   const headLineButtons = [
     {
       buttonText: "Edit Profile",
@@ -199,7 +199,13 @@ function Notifications() {
   );
 }
 
-function NotificationCard({item}) {
+interface NotificationItem {
+  id: string;
+  type: string;
+  // Add any other properties that the item object might have
+}
+
+function NotificationCard({item}:{item:NotificationItem}) {
   return (
     <div className="flex flex-row w-full rounded-xl  gap-4 p-4 hover:shadow-neuro-3 ">
       <div className="w-[100px]  flex flex-row items-center justify-center">

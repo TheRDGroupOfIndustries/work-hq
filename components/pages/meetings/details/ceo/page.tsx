@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import SquareButton from "@/components/reusables/wrapper/squareButton";
@@ -39,7 +39,7 @@ export default function MeetingsDetails() {
   const [meetings, setMeetings] = useState<Meeting[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const fetchMeetings = async () => {
+  const fetchMeetings = useCallback( async () => {
     setIsLoading(true);
     try {
       const response = await fetch(`/api/meeting/get/all`);
@@ -65,16 +65,16 @@ export default function MeetingsDetails() {
     } finally {
       setIsLoading(false);
     }
-  };
+  },[session?.user?._id]);
 
-  const updateMeetingStatuses = async () => {
+  const updateMeetingStatuses = useCallback( async () => {
     try {
       await fetch('/api/meeting/update-status', { method: 'POST' });
       await fetchMeetings();
     } catch (error) {
       console.error('Error updating meeting statuses:', error);
     }
-  };
+  },[fetchMeetings]);
 
   useEffect(() => {
     if (session?.user) {
@@ -82,7 +82,7 @@ export default function MeetingsDetails() {
       const intervalId = setInterval(updateMeetingStatuses, 60000); // Check every minute
       return () => clearInterval(intervalId);
     }
-  }, [session]);
+  }, [fetchMeetings, session?.user, updateMeetingStatuses]);
 
   const handleMeetingAction = async (meetingId: string, action: 'accept' | 'cancel') => {
     try {

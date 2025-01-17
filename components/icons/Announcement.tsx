@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function Announcement({size}: {size?: number}) {
+export default function Announcement({}: {size?: number}) {
   return (
     <svg
       width="41"

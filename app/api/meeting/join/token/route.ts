@@ -1,10 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { createVideoToken } from "@/utils/serverClient";
 import { CustomUser } from "@/lib/types";
 import { authOptions } from "@/lib/authOptions";
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   const session = await getServerSession(authOptions);
   if (!session || !session.user) {
     return NextResponse.json({

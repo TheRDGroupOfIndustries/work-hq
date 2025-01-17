@@ -20,8 +20,8 @@ export default function EmployeProfile() {
   const [employee, setEmployee] = useState<CustomUser>({} as CustomUser);
   const [salaryHistory, setSalaryHistory] = useState<PaymentValues[]>([]);
   const [projects, setProjects] = useState<ProjectValues[]>([]);
-  const [performance, setPerformance] = useState(40);
-  const [taskCompleted, setTaskCompleted] = useState(30);
+  const [performance] = useState(40);
+  const [taskCompleted] = useState(30);
   const headLineButtons = [
     {
       buttonText: "Export Report",

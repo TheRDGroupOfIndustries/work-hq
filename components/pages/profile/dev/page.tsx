@@ -25,7 +25,7 @@ import {
 } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 interface NOTIFICATION {
@@ -73,8 +73,8 @@ const notification: NOTIFICATION[] = [
 export default function Profile() {
   const { data: session } = useSession();
   const user = session?.user as CustomUser;
-  const [performance, setPerformance] = useState(40);
-  const [taskCompleted, setTaskCompleted] = useState(30);
+  const [performance, ] = useState(40);
+  const [taskCompleted, ] = useState(30);
   const [userData, setUserData] = useState<CustomUser>(user);
   const [editOpen, setEditOpen] = useState(false);
   const [uploadingPreview, setUploadingPreview] = useState<boolean>(false);

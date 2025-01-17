@@ -4,6 +4,7 @@ import { Channel, ChannelSort, DefaultGenerics } from "stream-chat";
 import { authOptions } from "@/lib/authOptions";
 import { serverClient } from "@/utils/serverClient";
 import Project from "@/models/Project";
+import { CustomUser } from "@/lib/types";
 
 export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -15,7 +16,8 @@ export async function GET(req: NextRequest) {
   const projectId = searchParams.get("projectId");
 
   try {
-    let filter: any = {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const filter : any = {
       members: { $in: [session.user._id] },
       type: { $in: ["messaging", "group"] },
     };
@@ -43,7 +45,7 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ error: "Project not found" }, { status: 404 });
       }
 
-      const projectMembers = project.developmentDetails.teams.map((user: any) =>
+      const projectMembers = project.developmentDetails.teams.map((user: CustomUser) =>
         user._id.toString()
       );
       filter.members.$in.push(...projectMembers);

@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 import { useProjectContext } from "@/context/ProjectProvider";
 import { useSession } from "next-auth/react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import Image from "next/image";
 
 interface User {
   _id: string,
@@ -20,6 +21,7 @@ interface User {
 
 interface AddChatProps {
   setIsAddChatOpen: (value: boolean) => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   existingChannels: any[];
 }
 
@@ -197,7 +199,8 @@ function Card({ user, onSelect }: { user: User; onSelect: (user: User) => void }
       <div className="flex justify-center items-center">
         <div className="w-[60px] h-[60px] bg-slate-400 rounded-full overflow-hidden">
           {user.profileImage ? (
-            <img
+            <Image
+              fill
               src={user.profileImage as string || ''}
               alt={user.profileImage || 'User'}
               className="w-full h-full object-cover"

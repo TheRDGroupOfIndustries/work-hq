@@ -53,6 +53,7 @@ export async function POST(
       }))
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const messageData: any = {
       text,
       user_id: session.user._id,
@@ -84,7 +85,7 @@ export async function DELETE(
   try {
     const channel = serverClient.channel('messaging', params.chatId)
     // Type assertion to resolve the TypeScript error
-    const typedChannel = channel as Channel & { deleteMessage: (messageId: string) => Promise<any> }
+    const typedChannel = channel as Channel & { deleteMessage: (messageId: string) => Promise<unknown> }
     await typedChannel.deleteMessage(params.messageId)
 
     return NextResponse.json({ success: true })

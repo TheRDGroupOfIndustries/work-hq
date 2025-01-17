@@ -5,15 +5,6 @@ import Headline, {
 } from "@/components/reusables/components/headline";
 import Container from "@/components/reusables/wrapper/Container";
 import MainContainer from "@/components/reusables/wrapper/mainContainer";
-import SquareButton from "@/components/reusables/wrapper/squareButton";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 
 import {
   Select,
@@ -30,16 +21,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Textarea } from "@/components/ui/textarea";
 import { useProjectContext } from "@/context/ProjectProvider";
-import { CustomUser, ProjectValues } from "@/lib/types";
-import { RootState } from "@/redux/rootReducer";
+import { CustomUser } from "@/lib/types";
 import { ROLE } from "@/tempData";
-import { Loader2, Search, Trash, X } from "lucide-react";
-import { useSession } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
-import React, { useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
+import React, { useEffect, useState } from "react";
 
 export default function AllClinets() {
   const searchParams = useSearchParams();
@@ -51,7 +37,7 @@ export default function AllClinets() {
 
   const [teamMembers, setTeamMembers] = useState<CustomUser[] | []>([]);
 
-  const [project, setProject] = useState<ProjectValues | null>(null);
+  // const [setProject] = useState<ProjectValues | null>(null);
 
   // const projectRedux = useSelector(
   //   (state: RootState) => state.ceo.allProjectsList
@@ -71,7 +57,7 @@ export default function AllClinets() {
 
         // console.log("getProjectData", getProjectData);
 
-        setProject(getProjectData.project);
+        // setProject(getProjectData.project);
         // setTeamMembers(getProjectData.developmentDetails);
 
         setTeamMembers(getProjectData.project.developmentDetails.teams);
@@ -134,7 +120,7 @@ export default function AllClinets() {
             </h1>
           </div>
         </div>
-        <DataTableTasks teamMembers={teamMembers} projectID={id || ""} />
+        <DataTableTasks teamMembers={teamMembers} />
       </Container>
     </MainContainer>
   );
@@ -142,10 +128,8 @@ export default function AllClinets() {
 
 function DataTableTasks({
   teamMembers,
-  projectID,
 }: {
   teamMembers: CustomUser[];
-  projectID: string;
 }) {
   return (
     <div className="w-full">

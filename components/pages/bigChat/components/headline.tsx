@@ -465,7 +465,8 @@ function Card({ user, onSelect, isSelected }: { user: User; onSelect: (user: Use
       <div className="flex justify-center items-center">
         <div className="w-[60px] h-[60px] bg-slate-400 rounded-full overflow-hidden">
           {user.profileImage ? (
-            <img
+            <Image
+              fill
               src={user.profileImage as string || ''}
               alt={user.profileImage || 'User'}
               className="w-full h-full object-cover"

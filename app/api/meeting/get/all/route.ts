@@ -1,11 +1,11 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import connectToMongoDB from "@/utils/db";
 import Meeting from "@/models/Meeting";
 import { CustomUser } from "@/lib/types";
 import { authOptions } from "@/lib/authOptions";
 
-export const GET = async (request: NextRequest) => {
+export const GET = async () => {
   const session = await getServerSession(authOptions);
   if (!session) {
     return NextResponse.json({

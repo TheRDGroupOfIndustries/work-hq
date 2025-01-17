@@ -1,14 +1,12 @@
 import Container from "@/components/reusables/wrapper/Container";
 import SquareButton from "@/components/reusables/wrapper/squareButton";
-import { CustomUser } from "@/lib/types";
-import { useSession } from "next-auth/react";
 import React from "react";
 
 export function WorkStatusNotLoggedIn() {
-  const { data: session } = useSession();
-  const user = session?.user as CustomUser;
+  // const { data: session } = useSession();
+  // const user = session?.user as CustomUser;
 
-  const workStatus = user?.workStatus || "loggedOut";
+  // const workStatus = user?.workStatus || "loggedOut";
   return (
     <Container>
       <div className="w-full flex flex-row items-center justify-between">

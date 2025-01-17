@@ -5,17 +5,15 @@ import { useRouter } from "next/navigation";
 // import { Button } from "@/components/ui/button";
 import { useEffect } from "react";
 import { CustomUser } from "@/lib/types";
-import { useUser } from "@/context/UserProvider";
 
 export default function Home() {
   const { data: session, status } = useSession();
   const user = session?.user as CustomUser;
   const router = useRouter();
-  const {SignUpRole} = useUser();
+  // const {SignUpRole} = useUser();
+  const SignUpRole = user.role
 
-  useEffect(() => {
-    console.log("session", session);
-  }, [session]);
+
 useEffect(() => {
   console.log("Sign Up Role", SignUpRole);
   if(!SignUpRole || SignUpRole === "null" ) {

@@ -19,7 +19,6 @@ import Headline from "@/components/reusables/components/headline";
 import MainContainer from "@/components/reusables/wrapper/mainContainer";
 import Container from "@/components/reusables/wrapper/Container";
 import { ChartLine, Ellipsis } from "lucide-react";
-import { useProjectContext } from "@/context/ProjectProvider";
 
 export type TaskStatus = "pending" | "inProgress" | "completed" | "refactoring";
 export interface Column {
@@ -28,95 +27,7 @@ export interface Column {
   tasks: TaskValues[];
 }
 
-const initialColumns: Column[] = [
-  {
-    id: "pending",
-    title: "To Do",
-    tasks: [
-      {
-        _id: "task1",
-        projectID: "proj1",
-        createdBy: "user1",
-        taskNo: 1,
-        issueSubject: "Create the Navigation",
-        estimatedTime: 120,
-        assignedTo: {
-          _id: "user1",
-          name: "User 1",
-          avatar: "/assets/user.png",
-        },
-        status: "pending",
-        priority: "medium",
-        dueDate: new Date("2023-12-01"),
-      },
-      {
-        _id: "task2",
-        projectID: "proj1",
-        createdBy: "user2",
-        taskNo: 2,
-        issueSubject: "Design User Interface",
-        estimatedTime: 180,
-        assignedTo: {
-          _id: "user2",
-          name: "User 2",
-          avatar: "/assets/user.png",
-        },
-        status: "pending",
-        priority: "medium",
-        dueDate: new Date("2023-12-01"),
-      },
-    ],
-  },
-  {
-    id: "inProgress",
-    title: "In Progress",
-    tasks: [
-      {
-        _id: "task3",
-        projectID: "proj1",
-        createdBy: "user3",
-        taskNo: 3,
-        issueSubject: "Implement Authentication",
-        estimatedTime: 240,
-        assignedTo: {
-          _id: "user3",
-          name: "User 3",
-          avatar: "/assets/user.png",
-        },
-        status: "inProgress",
-        priority: "medium",
-        dueDate: new Date("2023-12-01"),
-      },
-    ],
-  },
-  {
-    id: "completed",
-    title: "Completed",
-    tasks: [
-      {
-        _id: "task4",
-        projectID: "proj1",
-        createdBy: "user4",
-        taskNo: 4,
-        issueSubject: "Set Up Project Structure",
-        estimatedTime: 300,
-        assignedTo: {
-          _id: "user4",
-          name: "User 4",
-          avatar: "/assets/user.png",
-        },
-        status: "completed",
-        priority: "medium",
-        dueDate: new Date("2023-12-01"),
-      },
-    ],
-  },
-  {
-    id: "refactoring",
-    title: "Refactoring",
-    tasks: [],
-  },
-];
+
 
 export default function Kanban() {
   const [search, setSearch] = useState("");
@@ -135,7 +46,7 @@ export default function Kanban() {
   ];
 
   // State management for kanban board columns
-  const [columns, setColumns] = useState<Column[]>(initialColumns);
+  const [columns, setColumns] = useState<Column[]>([]);
   const [draggingTaskId, setDraggingTaskId] = useState<string | null>(null);
   const [draggingColumnId, setDraggingColumnId] = useState<TaskStatus | null>(
     null
@@ -189,7 +100,7 @@ export default function Kanban() {
 
       if (response.status === 200) {
         setColumns((prevColumns) => {
-          const newColumns = prevColumns.map((col) => ({
+          const newColumns = prevColumns?.map((col) => ({
             ...col,
             tasks: [...col.tasks],
           }));

@@ -7,13 +7,13 @@ export default async function AuthFormPage({
   params: { form: string };
   children: React.ReactNode;
 }) {
-  const currentPage = authFormPages.find(page => params.form === page.id);
+  const CurrentPage = authFormPages.find(page => params.form === page.id);
 
   return (
     <>
-      {currentPage ? (
+      {CurrentPage ? (
         <>
-          <currentPage.sectionNode key={currentPage.id} />
+          <CurrentPage.sectionNode key={CurrentPage.id} />
           {children}
         </>
       ) : (

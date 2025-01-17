@@ -53,7 +53,15 @@ const Navbar = ({ role }: { role: Role }) => {
 
       {/* left */}
       <div className="flex flex-row items-center gap-3 sm:gap-9 text-lg font-semibold px-5">
-        <h1 className="text-2xl font-semibold">Logo</h1>
+        <h1 className="text-2xl font-semibold">
+          <Image
+          src="/logo.png"
+          alt="Loading"
+          width={600}
+          height={600}
+          className="w-[15vh] h-[15vh] object-contain animate-pulse"
+        />
+        </h1>
         <div className="hidden lg:flex-center text-nowrap">
           {pathname !== "/c/all-projects" && <SelectProject role={role} />}
           <Link

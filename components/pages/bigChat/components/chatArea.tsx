@@ -5,7 +5,7 @@ import { useChat } from '@/context/ChatProvider';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { User, Event, MessageResponse, DefaultGenerics } from 'stream-chat';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { FileIcon, ImageIcon, VideoIcon, Download, Reply, Trash2, MoreVertical } from 'lucide-react';
+import { FileIcon, Download, Reply, Trash2, MoreVertical } from 'lucide-react';
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,6 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import InputArea from './inputArea';
+import Image from 'next/image';
 
 interface Attachment {
   type?: string;
@@ -211,7 +212,8 @@ export default function ChatArea() {
                       if (attachment.type?.startsWith('image/')) {
                         return (
                           <div key={index} className="relative group">
-                            <img
+                            <Image
+                              fill
                               src={attachment.asset_url}
                               alt={attachment.title || 'Image'}
                               className="max-w-[200px] max-h-[200px] object-cover rounded cursor-pointer hover:opacity-90 transition-opacity"
