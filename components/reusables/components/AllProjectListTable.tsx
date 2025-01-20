@@ -122,24 +122,26 @@ export default function AllProjectListTable({
                 {role === "ceo" && (
                   <TableCell className="text-primary-blue overflow-hidden">
                     <a
-                      className="max-w-[200px] "
+                      className={`max-w-[200px] inline-block px-3 text-nowrap
+                    py-1 rounded-full text-sm ${project?.developmentDetails?.figmaLink?.link ? "bg-gray-200 text-gray-800" : "bg-gray-200 text-gray-400"}`}
                       href={project?.developmentDetails?.figmaLink?.link}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      {project?.developmentDetails?.figmaLink?.link}
+                      Figma
                     </a>
                   </TableCell>
                 )}
                 {role === "ceo" && (
                   <TableCell className="text-primary-blue overflow-hidden">
                     <a
-                      className="max-w-[200px] "
+                      className={`max-w-[200px] inline-block px-3 text-nowrap
+                    py-1 rounded-full text-sm  ${project?.developmentDetails?.deployment?.link ? "bg-gray-200 text-gray-800" : "bg-gray-200 text-gray-400"}`}
                       href={project?.developmentDetails?.deployment?.link}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      {project?.developmentDetails?.deployment?.link}
+                      Deployment
                     </a>
                   </TableCell>
                 )}

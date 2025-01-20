@@ -10,7 +10,6 @@ export const GET = async (
 
   try {
     const project = await Project.findById(params._id)
-    .select("developmentDetails projectDetails")
     .populate({
       path: "developmentDetails.tasks",
       match: {}, // No `$exists` here; populate will ignore missing fields automatically

@@ -121,7 +121,6 @@ export default function ProjectInfo({ role }: { role: Role }) {
                 <Image
                   src={
                     selectedProjectDetails?.projectDetails?.logo ||
-                    selectedProjectDetails?.companyDetails?.logo ||
                     "/assets/user.png"
                   }
                   alt="company logo"

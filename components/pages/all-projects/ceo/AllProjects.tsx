@@ -35,7 +35,7 @@ export default function AllProjects() {
   const [projectSummaryReportm, setProjectSummaryReport] =
     useState<TaskStatusReport>({
       completed: 0,
-      onGoing: 0,
+      inProgress: 0,
       pending: 0,
       refactoring: 0,
     });
@@ -74,7 +74,7 @@ export default function AllProjects() {
             (project: ProjectValues) =>
               project.developmentDetails.status === "completed"
           ).length,
-          onGoing: projects.filter(
+          inProgress: projects.filter(
             (project: ProjectValues) =>
               project.developmentDetails.status === "inProgress"
           ).length,
@@ -102,7 +102,7 @@ export default function AllProjects() {
           (project: ProjectValues) =>
             project.developmentDetails.status === "completed"
         ).length,
-        onGoing: allProjectsList.filter(
+        inProgress: allProjectsList.filter(
           (project: ProjectValues) =>
             project.developmentDetails.status === "inProgress"
         ).length,

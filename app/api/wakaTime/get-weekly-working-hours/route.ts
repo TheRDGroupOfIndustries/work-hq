@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-
-interface Day {
-  range: {
-    date: string;
-  };
-  grand_total: {
-    total_seconds: number;
-  };
-}
+import axios from 'axios';
+// interface Day {
+//   range: {
+//     date: string;
+//   };
+//   grand_total: {
+//     total_seconds: number;
+//   };
+// }
 
 export const GET = async (req: NextRequest) => {
   try {
@@ -23,34 +23,34 @@ export const GET = async (req: NextRequest) => {
     const startDate = new Date();
     startDate.setDate(today.getDate() - 6);
 
-    const encodedToken = Buffer.from(`${accessToken}:`).toString("base64");
+    // const encodedToken = Buffer.from(`${accessToken}:`).toString("base64");
 
-    const response = await fetch(
-      `https://wakatime.com/api/v1/users/current/summaries?start=${
-        startDate.toISOString().split("T")[0]
-      }&end=${today.toISOString().split("T")[0]}`,
-      {
-        headers: {
-          Authorization: `Basic ${encodedToken}`,
-        },
-      }
-    );
+    // const response = await axios.get(`https://wakatime.com/api/v1/users/current/summaries?start=${
+    //     startDate.toISOString().split("T")[0]
+    //   }&end=${today.toISOString().split("T")[0]}`, {
+    //   headers: {
+    //     Authorization: `Bearer ${accessToken}`,
+    //   },
+    // });
 
-    if (!response.ok) {
-      const errorText = await response.text(); // Fetch detailed error
-      throw new Error(`Error fetching data: ${response.status} - ${errorText}`);
-    }
+    const response = await axios.get(`https://wakatime.com/api/v1/77f019bb-defe-4480-b091-5c1741170189/current/summaries?scope=read_summaries.categories&start=2025-01-18&end=2025-01-18`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      scopes: "read_summaries.categories"
+    },
+  });
 
-    const data = await response.json();
+    console.log('WakaTime data:', response.data);
+  
 
-    const resData = data.data.map((day: Day) => ({
-      parameter: new Date(day.range.date)
-        .toLocaleDateString("en-US", { weekday: "short" })
-        .toUpperCase(),
-      hours: Math.round(day.grand_total.total_seconds / 3600),
-    }));
+    // const resData = data.data.map((day: Day) => ({
+    //   parameter: new Date(day.range.date)
+    //     .toLocaleDateString("en-US", { weekday: "short" })
+    //     .toUpperCase(),
+    //   hours: Math.round(day.grand_total.total_seconds / 3600),
+    // }));
 
-    return NextResponse.json(resData, { status: 200 });
+    return NextResponse.json(response.data, { status: 200 });
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error : any) {
     console.error("Error fetching WakaTime data:", error);

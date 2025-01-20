@@ -70,6 +70,7 @@ export default function DesktopSidebar({
             <Image
               src={
                 selectedProjectDetails?.companyDetails?.logo ||
+                selectedProjectDetails?.projectDetails?.logo ||
                 "/assets/user.png"
               }
               alt="profile image"

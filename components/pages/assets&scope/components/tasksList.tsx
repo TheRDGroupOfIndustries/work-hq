@@ -106,13 +106,13 @@ const DataTableTasks = ({ tasks }: { tasks: TaskValues[] }) => {
                 <TableCell>{row.status}</TableCell>
                 <TableCell>{formatDateString(row.createdAt)}</TableCell>
                 <TableCell>{row.assignedTo.name}</TableCell>
-                <TableCell>
+                {/* <TableCell>
                   <EllipsisVertical
                     size={16}
                     color="#1E1B39"
                     className="cursor-pointer"
                   />
-                </TableCell>
+                </TableCell> */}
               </TableRow>
             ))
           )}

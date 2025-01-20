@@ -6,12 +6,6 @@ import Headline, {
 import Container from "@/components/reusables/wrapper/Container";
 import MainContainer from "@/components/reusables/wrapper/mainContainer";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
   Select,
   SelectContent,
   // SelectGroup,
@@ -29,8 +23,7 @@ import {
 import { CustomUser } from "@/lib/types";
 import { RootState } from "@/redux/rootReducer";
 import { ROLE } from "@/tempData";
-import { MoreVertical } from "lucide-react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
@@ -86,7 +79,7 @@ export default function AllClinets() {
     <MainContainer role={ROLE}>
       <Headline
         role={ROLE}
-        title="Project Overview"
+        title="Client and Vendors"
         subTitle="Project"
         buttonObjects={headLineButtons}
       />
@@ -126,6 +119,7 @@ export default function AllClinets() {
 }
 
 function DataTableTasks({ clientAndVendors }: { clientAndVendors: CustomUser[] }) {
+  const navigate = useRouter();
   return (
     <div className="w-full">
       <Table>
@@ -136,21 +130,24 @@ function DataTableTasks({ clientAndVendors }: { clientAndVendors: CustomUser[] }
             <TableHead className="">Total Projects</TableHead>
             <TableHead className="">Email</TableHead>
             <TableHead className="">Total Payments</TableHead>
-            <TableHead className="w-[40px]"></TableHead>
+            {/* <TableHead className="w-[40px]"></TableHead> */}
           </TableRow>
         </TableHeader>
         <TableBody className="text-[#3A3A3A] max-h-[400px] text-base border-0 mb-5 px-10 overflow-hidden  ">
           {clientAndVendors.map((row, index) => (
             <TableRow
               key={row._id}
-              className={`h-[60px]  text-[#344054] hover:bg-transparent rounded-lg mb-5 border-l-[20px] border-transparent border-b-0 `}
+              className={`h-[60px]  text-[#344054] hover:bg-transparent rounded-lg mb-5 border-l-[20px] border-transparent border-b-0  `}
+              onClick={() =>{
+                navigate.push(`/ceo/client-vendors/${row.firstName}?id=${row._id}`)
+              }}
             >
               <TableCell className=" ">{`${index + 1}.`}</TableCell>
-              <TableCell>{row.firstName + " " + row.lastName}</TableCell>
+              <TableCell className="cursor-pointer" >{row.firstName + " " + row.lastName}</TableCell>
               <TableCell>{row.allProjects?.length}</TableCell>
               <TableCell className="text-primary-blue">{row.email}</TableCell>
               <TableCell>{900}</TableCell>
-              <TableCell>
+              {/* <TableCell>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <button className="h-8 w-8 p-0">
@@ -167,7 +164,7 @@ function DataTableTasks({ clientAndVendors }: { clientAndVendors: CustomUser[] }
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
-              </TableCell>
+              </TableCell> */}
             </TableRow>
           ))}
         </TableBody>

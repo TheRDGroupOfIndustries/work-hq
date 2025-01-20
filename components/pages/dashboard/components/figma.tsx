@@ -56,7 +56,9 @@ export default function Figma({ link, role }: { link?: string; role: Role }) {
             )}
             <div className="absolute left-[45px] bottom-[35px] flex flex-row gap-4 ">
               <div className="h-[40px] w-[40px] bg-black flex flex-row items-center justify-center cursor-pointer ">
+              {(role === "developer" || role === "manager" || role === "ceo") && (
                 <Link color="white" size={20} />
+              )}
               </div>
               <div
                 onClick={() => setIsChatOpen(!isChatOpen)}
